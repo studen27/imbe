@@ -26,8 +26,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -231,10 +231,14 @@ public class BookEditor extends Activity implements OnClickListener {
 		// 첫 page를 생성하고 pageViewer에 add
 		inflater = (LayoutInflater) context
 				.getSystemService(LAYOUT_INFLATER_SERVICE);
-		View view = inflater.inflate(R.layout.book_title,
-				(ViewGroup) findViewById(R.id.book_title_root));
-		pages.add(new PageView(this));
-		pages.get(0).setTextView(view);
+//		View view = inflater.inflate(R.layout.book_title,
+//				(ViewGroup) findViewById(R.id.book_title_root));
+		PageView pv = new PageView(this);		
+		
+		pv.createTextView(Constants.PAGE_TYPE.Title, inflater);//밑에써도됨
+		pages.add(pv);		
+		
+//		pages.get(0).setTextView(view);
 		pageViewer.addView(pages.get(0));
 		pageViewer.addView(pages.get(0).getTextView());
 
@@ -332,6 +336,7 @@ public class BookEditor extends Activity implements OnClickListener {
 						+ maxPageNumber.toString());
 				pageViewer.removeAllViews();
 				pageViewer.addView(pages.get(currentPageNumber - 1));
+				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
 			} else {
 				pages.remove(currentPageNumber - 1);
 				maxPageNumber--;
@@ -339,6 +344,7 @@ public class BookEditor extends Activity implements OnClickListener {
 						+ maxPageNumber.toString());
 				pageViewer.removeAllViews();
 				pageViewer.addView(pages.get(currentPageNumber - 1));
+				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
 			}
 			break;
 
@@ -457,6 +463,7 @@ public class BookEditor extends Activity implements OnClickListener {
 			for (int i = 0; i < maxPageNumber; i++) {
 				pages.get(i).createPageViewInfo();
 				pageInfos.add(pages.get(i).getPageViewInfo());
+				Log.i("bookeditor msg",""+pages.get(i).getPageType());
 			}
 			bookInfo.setPageViewInfos(pageInfos); // bookInfo에 넣음
 
@@ -528,6 +535,8 @@ public class BookEditor extends Activity implements OnClickListener {
 				PageView pv = new PageView(this);
 				pv.setPageViewInfo(bookInfo.getPageInfos().get(i)); // 페이지정보 줌
 				pv.setByPageViewInfo(); // 페이지정보대로 페이지 셋
+				pv.createTextView(pv.getPageType(), inflater);
+				Log.i("bookeditor msg",""+pv.getPageType());
 				pages.add(pv);
 			}
 			currentPageNumber = 1;
@@ -597,18 +606,20 @@ public class BookEditor extends Activity implements OnClickListener {
 	private class PageTypeSelectListener implements OnClickListener {
 
 		public void onClick(View v) {
-			View view;
+//			View view;
 
 			switch (v.getId()) {
 			case R.id.book_type1:
-				view = inflater.inflate(R.layout.page_text_left,
-						(ViewGroup) findViewById(R.id.page_text_Left_root));
-				pages.get(maxPageNumber - 1).setTextView(view);
+//				view = inflater.inflate(R.layout.page_text_left,
+//						(ViewGroup) findViewById(R.id.page_text_Left_root));
+//				pages.get(maxPageNumber - 1).setTextView(view);
+				pages.get(maxPageNumber - 1).createTextView(Constants.PAGE_TYPE.LeftText, inflater);
 				break;
 			case R.id.book_type2:
-				view = inflater.inflate(R.layout.page_text_right,
-						(ViewGroup) findViewById(R.id.page_text_right_root));
-				pages.get(maxPageNumber - 1).setTextView(view);
+//				view = inflater.inflate(R.layout.page_text_right,
+//						(ViewGroup) findViewById(R.id.page_text_right_root));
+//				pages.get(maxPageNumber - 1).setTextView(view);
+				pages.get(maxPageNumber - 1).createTextView(Constants.PAGE_TYPE.RightText, inflater);
 				break;
 			}
 

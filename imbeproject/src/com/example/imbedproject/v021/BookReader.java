@@ -93,6 +93,7 @@ public class BookReader extends Activity implements OnClickListener {
 		for(int i = 0; i < pages.size(); i++) {
 			pages.get(i).setEnabled(false);
 		}
+		//pageViewer.addView(pages.get(0).getTextView());
 	}
 
 	public void onStart() {
@@ -119,7 +120,7 @@ public class BookReader extends Activity implements OnClickListener {
 				pageNumberView.setText(currentPageNumber.toString() + "/"
 						+ maxPageNumber.toString());
 				pageViewer.addView(pages.get(currentPageNumber - 1));
-				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
+				//pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
 			} else {
 				// 첫페이지일 경우 경고메세지 출력
 				Toast.makeText(this, "첫 페이지 입니다.", Toast.LENGTH_SHORT).show();
@@ -139,7 +140,7 @@ public class BookReader extends Activity implements OnClickListener {
 				pageNumberView.setText(currentPageNumber.toString() + "/"
 						+ maxPageNumber.toString());
 				pageViewer.addView(pages.get(currentPageNumber - 1));
-				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());///
+				//pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
 			}
 			break;
 

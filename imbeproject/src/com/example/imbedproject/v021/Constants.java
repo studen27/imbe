@@ -11,6 +11,9 @@ public class Constants extends Application {
 	public static int IMG_MIN_SIZE = 40;
 //	public static String PAKAGE_NAME = "com.example.pagemanager";
 	public static String SAVE_FILENAME = "pages.dat";
+	public static enum PAGE_TYPE {
+		Title, LeftText, RightText
+	}
 
 	public static enum ANCHOR_TYPE {
 		NW, NN, NE, WW, EE, SW, SS, SE, ROTATE, MOVE

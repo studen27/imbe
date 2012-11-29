@@ -13,12 +13,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-import android.view.View;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
-import android.widget.EditText;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.example.imbedproject.v021.Constants.ANCHOR_TYPE;
 import com.example.imbedproject.v021.Constants.DRAWING_STATE;
@@ -42,7 +43,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     private DRAWING_STATE drawingState;	//그리기상태
     private MyImage selectedImage;		//선택된이미지
     private SurfaceHolder holder;		//서피스뷰 홀더
-    private MySimpleGestureListener sg;	//제스처리스너
+    protected MySimpleGestureListener sg;	//제스처리스너
     private MyGestureDetector gd;		//제스처디텍터
     protected Paint pnt;					//그리기 색
 //    protected MyPath path;				//현재 그릴 선        
@@ -51,10 +52,12 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     protected ArrayList<MyImage> images;	//이미지들
 //    protected ArrayList<MyImageInfo> imgInfos;	//이미지정보들
     protected PageViewInfo pageViewInfo;	//자기 페이지 정보. 생성시 안만들어지고 takePageViewInfo시 만들어짐
-    private PageViewThread pageViewThread;	//그리는 스레드
+//    private PageViewThread pageViewThread;	//그리는 스레드(현재사용안함)
+    private String text = "No Text";					//내 페이지 글
+    private Constants.PAGE_TYPE pageType;		//페이지타입: 표지/왼쪽텍스트/오른텍스트 
     
-    private boolean isEnable;
-    private View textView;
+    private boolean isEnable;		//편집가능한가     
+    private View textView;			//
     
     //constructor1 코드로 생성시 호출됨.
     public PageView(Context context) {
@@ -125,7 +128,6 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 //		}
 	};
 
-
     //getter&setter
     public void setPaintColor(int color){
     	pnt.setColor(color);
@@ -157,6 +159,40 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	}	
 	public ArrayList<MyImage> getImages() {
 		return images;
+	}	
+	public String getText() {
+		return text;
+	}	
+	public View getTextView() {
+		return textView;
+	}
+	public void setTextView(View textView) {
+		this.textView = textView;
+	}	
+	public Constants.PAGE_TYPE getPageType() {
+		return pageType;
+	}
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		isEnable = enabled;		
+	}
+	
+	//textView생성
+	public void createTextView(Constants.PAGE_TYPE pageType, LayoutInflater inflater){
+		View view;
+		if(pageType == Constants.PAGE_TYPE.Title){			
+			view = inflater.inflate(R.layout.book_title,
+			(ViewGroup) findViewById(R.id.book_title_root));			
+		}else if (pageType == Constants.PAGE_TYPE.LeftText){
+			view = inflater.inflate(R.layout.page_text_left,
+					(ViewGroup) findViewById(R.id.page_text_Left_root));
+			
+		}else{
+			view = inflater.inflate(R.layout.page_text_right,
+					(ViewGroup) findViewById(R.id.page_text_right_root));
+		}
+		this.pageType = pageType;
+		textView = view;
 	}
 	
 	//페이지정보 생성
@@ -180,6 +216,9 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 			mi.setByImgInfo(getResources());					//정보대로 이미지 셋시킴
 			images.add(mi);
 		}
+		
+		text = pageViewInfo.getText();
+		pageType = pageViewInfo.getPageType();		
     }
     
     //배경그림설정
@@ -339,7 +378,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	}
 	
 	//--------------------제스처리스너----------------------------
-	private final class MySimpleGestureListener extends GestureDetector.SimpleOnGestureListener{
+	protected final class MySimpleGestureListener extends GestureDetector.SimpleOnGestureListener{
 
 		public boolean onDown(MotionEvent event){
 			Log.i("msg","onDown");
@@ -477,27 +516,10 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	}
 	
 	//그리기 중지(페이지 삭제전 호출. surfaceDestroyed 에서 중지하면 왠지 에러가 나서 더 빨리 중지위함.  
-	public void stopThread(){
-		pageViewThread.setRunning(false);
-	}
+//	public void stopThread(){
+//		pageViewThread.setRunning(false);
+//	}
 	
-	
-	
-	public View getTextView() {
-		return textView;
-	}
-
-	public void setTextView(View textView) {
-		this.textView = textView;
-	}
-
-	@Override
-	public void setEnabled(boolean enabled) {
-		// TODO Auto-generated method stub
-		super.setEnabled(enabled);
-		isEnable = enabled;
-		
-	}
 
 	//그리는 스레드--------------
 	class PageViewThread extends Thread{//implements Runnable{
