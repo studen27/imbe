@@ -58,7 +58,8 @@ public class BookEditor extends Activity implements OnClickListener {
 	private Dialog humanImageDialog;
 	private Dialog animalImageDialog;
 	private AlertDialog pageTypeDialog;
-	private String preBgFileName;	
+	private String preBgFileName;
+	private LayoutInflater inflater;
 
 	// Buttons
 	private Button prev_butten;
@@ -228,8 +229,14 @@ public class BookEditor extends Activity implements OnClickListener {
 		bgmBtn.setOnClickListener(this);
 
 		// 첫 page를 생성하고 pageViewer에 add
+		LayoutInflater inflater = (LayoutInflater) context
+				.getSystemService(LAYOUT_INFLATER_SERVICE);
+		View view = inflater.inflate(R.layout.book_title,
+				(ViewGroup) findViewById(R.id.book_title_root));
 		pages.add(new PageView(this));
+		pages.get(0).setTextView(view);
 		pageViewer.addView(pages.get(0));
+		pageViewer.addView(pages.get(0).getTextView());
 
 		// 페이지번호 설정
 		pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -274,6 +281,7 @@ public class BookEditor extends Activity implements OnClickListener {
 				pageNumberView.setText(currentPageNumber.toString() + "/"
 						+ maxPageNumber.toString());
 				pageViewer.addView(pages.get(currentPageNumber - 1));
+				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
 			} else {
 				// 첫페이지일 경우 경고메세지 출력
 				Toast.makeText(this, "첫 페이지 입니다.", Toast.LENGTH_SHORT).show();
@@ -291,12 +299,20 @@ public class BookEditor extends Activity implements OnClickListener {
 //				pages.get(currentPageNumber - 1).stopThread();	//그리기 중지시킴(스레드 사용시)
 				pages.add(new PageView(this));
 				pageTypeDialog.show();
+				pageViewer.removeAllViews();
+				currentPageNumber++;
+				pageNumberView.setText(currentPageNumber.toString() + "/"
+						+ maxPageNumber.toString());
+				pageViewer.addView(pages.get(currentPageNumber - 1));
+			} else {
+				pageViewer.removeAllViews();
+				currentPageNumber++;
+				pageNumberView.setText(currentPageNumber.toString() + "/"
+						+ maxPageNumber.toString());
+				pageViewer.addView(pages.get(currentPageNumber - 1));
+				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
 			}
-			pageViewer.removeAllViews();
-			currentPageNumber++;
-			pageNumberView.setText(currentPageNumber.toString() + "/"
-					+ maxPageNumber.toString());
-			pageViewer.addView(pages.get(currentPageNumber - 1));
+			
 			break;
 
 		// maxPageNumber가 1이면 경고메세지 출력
@@ -577,22 +593,30 @@ public class BookEditor extends Activity implements OnClickListener {
 		}
 
 	}
-	
+
 	private class PageTypeSelectListener implements OnClickListener {
 
 		public void onClick(View v) {
+			View view;
+
 			switch (v.getId()) {
 			case R.id.book_type1:
-				Toast.makeText(context, "1", Toast.LENGTH_SHORT).show();
+				view = inflater.inflate(R.layout.page_text_left,
+						(ViewGroup) findViewById(R.id.page_text_Left_root));
+				pages.get(maxPageNumber - 1).setTextView(view);
 				break;
 			case R.id.book_type2:
-				Toast.makeText(context, "2", Toast.LENGTH_SHORT).show();
+				view = inflater.inflate(R.layout.page_text_right,
+						(ViewGroup) findViewById(R.id.page_text_right_root));
+				pages.get(maxPageNumber - 1).setTextView(view);
 				break;
 			}
+
+			pageViewer.addView(pages.get(maxPageNumber - 1).getTextView());
 			pageTypeDialog.dismiss();
 			backgroundDialog.show();
 		}
-		
+
 	}
 
 }

@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
+import android.view.View;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.widget.EditText;
@@ -53,6 +54,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     private PageViewThread pageViewThread;	//그리는 스레드
     
     private boolean isEnable;
+    private View textView;
     
     //constructor1 코드로 생성시 호출됨.
     public PageView(Context context) {
@@ -481,6 +483,14 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	
 	
 	
+	public View getTextView() {
+		return textView;
+	}
+
+	public void setTextView(View textView) {
+		this.textView = textView;
+	}
+
 	@Override
 	public void setEnabled(boolean enabled) {
 		// TODO Auto-generated method stub
