@@ -139,7 +139,7 @@ public class BookReader extends Activity implements OnClickListener {
 				pageNumberView.setText(currentPageNumber.toString() + "/"
 						+ maxPageNumber.toString());
 				pageViewer.addView(pages.get(currentPageNumber - 1));
-				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
+				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());///
 			}
 			break;
 
