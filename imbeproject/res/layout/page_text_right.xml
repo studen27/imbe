@@ -11,6 +11,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:background="#99FFFFFF"
         android:ems="10"
         android:text="type article" />
 

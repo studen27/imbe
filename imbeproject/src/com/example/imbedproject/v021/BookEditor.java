@@ -229,7 +229,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		bgmBtn.setOnClickListener(this);
 
 		// 첫 page를 생성하고 pageViewer에 add
-		LayoutInflater inflater = (LayoutInflater) context
+		inflater = (LayoutInflater) context
 				.getSystemService(LAYOUT_INFLATER_SERVICE);
 		View view = inflater.inflate(R.layout.book_title,
 				(ViewGroup) findViewById(R.id.book_title_root));
