@@ -20,6 +20,7 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.example.imbedproject.v021.Constants.ANCHOR_TYPE;
 import com.example.imbedproject.v021.Constants.DRAWING_STATE;
@@ -53,8 +54,9 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 //    protected ArrayList<MyImageInfo> imgInfos;	//이미지정보들
     protected PageViewInfo pageViewInfo;	//자기 페이지 정보. 생성시 안만들어지고 takePageViewInfo시 만들어짐
 //    private PageViewThread pageViewThread;	//그리는 스레드(현재사용안함)
-    private String text = "No Text";					//내 페이지 글
-    private Constants.PAGE_TYPE pageType;		//페이지타입: 표지/왼쪽텍스트/오른텍스트 
+    private String myText = "No Text";					//내 페이지 글
+    private Constants.PAGE_TYPE pageType;		//페이지타입: 표지/왼쪽텍스트/오른텍스트
+    EditText editText;
     
     private boolean isEnable;		//편집가능한가     
     private View textView;			//
@@ -161,7 +163,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 		return images;
 	}	
 	public String getText() {
-		return text;
+		return myText;
 	}	
 	public View getTextView() {
 		return textView;
@@ -175,22 +177,30 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
 		isEnable = enabled;		
+	}	
+	public EditText getEditText() {
+		return editText;
 	}
-	
+	public void setMyText(String myText) {
+		this.myText = myText;
+	}
+
 	//textView생성
 	public void createTextView(Constants.PAGE_TYPE pageType, LayoutInflater inflater){
 		View view;
-		if(pageType == Constants.PAGE_TYPE.Title){			
-			view = inflater.inflate(R.layout.book_title,
-			(ViewGroup) findViewById(R.id.book_title_root));			
-		}else if (pageType == Constants.PAGE_TYPE.LeftText){
-			view = inflater.inflate(R.layout.page_text_left,
-					(ViewGroup) findViewById(R.id.page_text_Left_root));
-			
-		}else{
-			view = inflater.inflate(R.layout.page_text_right,
-					(ViewGroup) findViewById(R.id.page_text_right_root));
-		}
+		
+		if(pageType == Constants.PAGE_TYPE.Title){			//표지
+			view = inflater.inflate(R.layout.book_title,(ViewGroup) findViewById(R.id.book_title_root));
+			 editText = (EditText)view.findViewById(R.id.textTitle);
+		}else if (pageType == Constants.PAGE_TYPE.LeftText){//왼쪽텍스트
+			view = inflater.inflate(R.layout.page_text_left, (ViewGroup) findViewById(R.id.page_text_Left_root));
+			editText = (EditText)view.findViewById(R.id.textLeft);			
+		}else{												//오른텍스트
+			view = inflater.inflate(R.layout.page_text_right,(ViewGroup) findViewById(R.id.page_text_right_root));
+			editText = (EditText)view.findViewById(R.id.textRight);
+		}		
+		editText.setText(myText);
+		
 		this.pageType = pageType;
 		textView = view;
 	}
@@ -217,7 +227,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 			images.add(mi);
 		}
 		
-		text = pageViewInfo.getText();
+		myText = pageViewInfo.getText();
 		pageType = pageViewInfo.getPageType();		
     }
     
@@ -259,20 +269,20 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 		callOnDraw();
 	}
     
-	// modify by 60062446 박정실
-	public void setBgImg(int bgId) {
-		int id = bgId;
-		try { // 파일이 없는경우 대비
-			bgBd = (BitmapDrawable) getResources().getDrawable(id);
-			bgBitmap = Bitmap.createScaledBitmap(bgBd.getBitmap(), width,
-					height, true);
-		} catch (NotFoundException e) {
-			bgBd = null;
-			bgBitmap = null;
-		}
-		
-		callOnDraw();
-	}
+//	// modify by 60062446 박정실
+//	public void setBgImg(int bgId) {
+//		int id = bgId;
+//		try { // 파일이 없는경우 대비
+//			bgBd = (BitmapDrawable) getResources().getDrawable(id);
+//			bgBitmap = Bitmap.createScaledBitmap(bgBd.getBitmap(), width,
+//					height, true);
+//		} catch (NotFoundException e) {
+//			bgBd = null;
+//			bgBitmap = null;
+//		}
+//		
+//		callOnDraw();
+//	}
     
     // 이미지 넣기
 	// created by 60062446 박정실

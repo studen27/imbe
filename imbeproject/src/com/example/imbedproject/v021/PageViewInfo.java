@@ -32,7 +32,7 @@ public class PageViewInfo implements Serializable {
 			imgInfos.add(mi.getImgInfo());			//이미지 정보배열에 추가
 		}		
 
-		text = pageView.getText();
+		text = pageView.getEditText().getText().toString();
 		pageType = pageView.getPageType();
 	}
 	
