@@ -287,7 +287,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     // 이미지 넣기
 	// created by 60062446 박정실
     public void insertImage(int id) {
-    	images.add(new MyImage(getResources(), id, 100, 100));
+    	images.add(new MyImage(getResources(), id, width/2 - 50, height/2 - 100));
     	callOnDraw();
     }
     
