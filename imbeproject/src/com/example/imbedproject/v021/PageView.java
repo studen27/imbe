@@ -106,7 +106,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     	setBgImg();									//배경설정    	
 		Log.i("msg",this.getWidth() + " " + this.getHeight() );
 		
-		pageViewThread = new PageViewThread(holder, this);	//스레드사용시, 페이지추가할때 에뮬에서의 속도문제 때문에 일단 사용안함 
+		pageViewThread = new PageViewThread(holder, this);	//스레드사용 
 		pageViewThread.setRunning(true);					//실기에서는 빠름.
 		pageViewThread.start();
 	}
