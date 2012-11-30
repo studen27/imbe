@@ -286,6 +286,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		// 아니면 currentpageNumber를 1 감소시킨후 재출력
 		case R.id.prev_button:
 			if (!(currentPageNumber == 1)) {
+				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pageViewer.removeAllViews();
 				currentPageNumber--;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -304,17 +305,18 @@ public class BookEditor extends Activity implements OnClickListener {
 		// 아니면 이동후 재출력
 		case R.id.next_button:
 			if (currentPageNumber == maxPageNumber) {
+				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				// 마지막 페이지일경우 최대페이지를 증가
 				maxPageNumber++;
-//				pages.get(currentPageNumber - 1).stopThread();	//그리기 중지시킴(스레드 사용시)
 				pages.add(new PageView(this));
-				pageTypeDialog.show();
+				pageTypeDialog.show();				
 				pageViewer.removeAllViews();
 				currentPageNumber++;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
 						+ maxPageNumber.toString());
 				pageViewer.addView(pages.get(currentPageNumber - 1));
 			} else {
+				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pageViewer.removeAllViews();
 				currentPageNumber++;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -335,19 +337,21 @@ public class BookEditor extends Activity implements OnClickListener {
 				Toast.makeText(this, "첫페이지는 지울수 없습니다.",
 						Toast.LENGTH_SHORT).show();
 			} else if (currentPageNumber == maxPageNumber) {
+				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pages.remove(currentPageNumber - 1);
 				maxPageNumber--;
 				currentPageNumber--;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
-						+ maxPageNumber.toString());
+						+ maxPageNumber.toString());				
 				pageViewer.removeAllViews();
 				pageViewer.addView(pages.get(currentPageNumber - 1));
 				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
 			} else {
+				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pages.remove(currentPageNumber - 1);
 				maxPageNumber--;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
-						+ maxPageNumber.toString());
+						+ maxPageNumber.toString());				
 				pageViewer.removeAllViews();
 				pageViewer.addView(pages.get(currentPageNumber - 1));
 				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
@@ -494,6 +498,7 @@ public class BookEditor extends Activity implements OnClickListener {
 
 			// 불러온정보 셋팅
 			maxPageNumber = bookInfo.getPageInfos().size();
+			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 			pages.clear(); // 모든 페이지 지움
 			for (int i = 0; i < maxPageNumber; i++) { // 불러온 페이지정보대로 셋팅
 				PageView pv = new PageView(this);
@@ -532,7 +537,7 @@ public class BookEditor extends Activity implements OnClickListener {
 						}
 					}
 				}
-			}
+			}			
 
 			pageViewer.removeAllViews();
 			pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -681,6 +686,7 @@ public class BookEditor extends Activity implements OnClickListener {
 
 			// 불러온정보 셋팅
 			maxPageNumber = bookInfo.getPageInfos().size();
+			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 			pages.clear(); // 모든 페이지 지움
 			for (int i = 0; i < maxPageNumber; i++) { // 불러온 페이지정보대로 셋팅
 				PageView pv = new PageView(this);

@@ -53,7 +53,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     protected ArrayList<MyImage> images;	//이미지들
 //    protected ArrayList<MyImageInfo> imgInfos;	//이미지정보들
     protected PageViewInfo pageViewInfo;	//자기 페이지 정보. 생성시 안만들어지고 takePageViewInfo시 만들어짐
-//    private PageViewThread pageViewThread;	//그리는 스레드(현재사용안함)
+    private PageViewThread pageViewThread;	//그리는 스레드
     private String myText = "No Text";					//내 페이지 글
     private Constants.PAGE_TYPE pageType;		//페이지타입: 표지/왼쪽텍스트/오른텍스트
     EditText editText;
@@ -106,9 +106,9 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     	setBgImg();									//배경설정    	
 		Log.i("msg",this.getWidth() + " " + this.getHeight() );
 		
-//		pageViewThread = new PageViewThread(holder, this);	//스레드사용시, 페이지추가할때 에뮬에서의 속도문제 때문에 일단 사용안함 
-//		pageViewThread.setRunning(true);					//실기에서는 빠름.
-//		pageViewThread.start();
+		pageViewThread = new PageViewThread(holder, this);	//스레드사용시, 페이지추가할때 에뮬에서의 속도문제 때문에 일단 사용안함 
+		pageViewThread.setRunning(true);					//실기에서는 빠름.
+		pageViewThread.start();
 	}
 	
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
@@ -117,7 +117,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	}
 	
 	//suface종료시
-	public void surfaceDestroyed(SurfaceHolder holder) {
+	public void surfaceDestroyed(SurfaceHolder holder) {	//여기서join하면 에러, stopThread() 에서 함
 //		boolean retry = true;
 //		pageViewThread.setRunning(false);
 //		
@@ -247,7 +247,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 			bgBitmap = null;
 		}
 		
-		callOnDraw();
+//		callOnDraw();
 	}
     //배경그림설정2 (배경파일명을 받음)(현재 미사용이나 만들어놓음)
 	public void setBgImg(String bgFileName) {
@@ -266,7 +266,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 			bgBitmap = null;
 		}
 		
-		callOnDraw();
+//		callOnDraw();
 	}
     
 //	// modify by 60062446 박정실
@@ -288,7 +288,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	// created by 60062446 박정실
     public void insertImage(int id) {
     	images.add(new MyImage(getResources(), id, width/2 - 50, height/2 - 100));
-    	callOnDraw();
+//    	callOnDraw();
     }
     
     //해당 이미지 삭제(MyImage에서 호출)
@@ -305,7 +305,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     public void removeVertexes(){
 //    	paths.clear();
     	vertexes.clear();
-    	callOnDraw();    	
+//    	callOnDraw();    	
     }
     
     //Draw
@@ -434,7 +434,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 					}
 				}
 			}
-			callOnDraw();
+//			callOnDraw();
 
 			return true;
 		}
@@ -468,7 +468,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 			if(drawingState != DRAWING_STATE.drawing && drawingState != DRAWING_STATE.resizing 
 					&& drawingState != DRAWING_STATE.rotating && selectedImage != null){
 				removeImage();
-				callOnDraw();
+//				callOnDraw();
 			}
 		}
 		
@@ -507,7 +507,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 				selectedImage.rotateBitmap(x - prevX);
 			}
 //			invalidate();//화면에 그림을 그림 -> onDraw()실행함.
-			callOnDraw();	//draw
+//			callOnDraw();	//draw
 
 			return true;
 		}
@@ -526,10 +526,18 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	}
 	
 	//그리기 중지(페이지 삭제전 호출. surfaceDestroyed 에서 중지하면 왠지 에러가 나서 더 빨리 중지위함.  
-//	public void stopThread(){
-//		pageViewThread.setRunning(false);
-//	}
-	
+	public void stopThread(){
+		boolean retry = true;
+		pageViewThread.setRunning(false);
+		
+//		while(retry){
+			try {
+				pageViewThread.join();	//스레드 종료 기다림
+				retry = false;
+			} catch (InterruptedException e) {				
+			}
+	//	}
+	}	
 
 	//그리는 스레드--------------
 	class PageViewThread extends Thread{//implements Runnable{
