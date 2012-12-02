@@ -58,7 +58,7 @@ public class Constants extends Application {
 	
 	// created by 60062446 박정실
 		public static final class Human {
-			public static int[] images = { R.drawable.hu01, R.drawable.hu02 };
+			public static int[] images = { R.drawable.hu01, R.drawable.hu02, R.drawable.hu03, R.drawable.hu04 };
 
 			public static int getLength() {
 				return images.length;
@@ -71,7 +71,7 @@ public class Constants extends Application {
 		
 		// created by 60062446 박정실
 		public static final class Animal {
-			public static int[] images = { R.drawable.ani01, R.drawable.ani02 };
+			public static int[] images = { R.drawable.ani01, R.drawable.ani02, R.drawable.ani03 };
 
 			public static int getLength() {
 				return images.length;
@@ -84,7 +84,7 @@ public class Constants extends Application {
 		
 		// created by 60062446 박정실
 		public static final class Other {
-			public static int[] images = { R.drawable.obj01 };
+			public static int[] images = { R.drawable.obj01, R.drawable.obj02 };
 
 			public static int getLength() {
 				return images.length;

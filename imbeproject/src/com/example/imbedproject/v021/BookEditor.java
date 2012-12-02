@@ -57,6 +57,7 @@ public class BookEditor extends Activity implements OnClickListener {
 	private ImageInsertListener insertListner;
 	private Dialog humanImageDialog;
 	private Dialog animalImageDialog;
+	private Dialog objectImageDialog;
 	private AlertDialog pageTypeDialog;
 	private String preBgFileName;
 	private LayoutInflater inflater;
@@ -74,7 +75,7 @@ public class BookEditor extends Activity implements OnClickListener {
 	private Button yellow;
 	private Button bgmBtn;
 
-	final CharSequence[] category = { "인물", "동물" };
+	final CharSequence[] category = { "인물", "동물", "사물" };
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -159,6 +160,28 @@ public class BookEditor extends Activity implements OnClickListener {
 		sv.addView(tl);
 		animalImageDialog.setContentView(sv);
 
+		// objectImageDialog 생성
+		objectImageDialog = new Dialog(this);
+		objectImageDialog.setTitle("이미지를 선택해 주세요");
+		sv = new ScrollView(objectImageDialog.getContext());
+		tl = new TableLayout(sv.getContext());
+		for (int i = 0; i < Constants.Other.getLength(); i++) {
+
+			ImageView image = new ImageView(objectImageDialog.getContext());
+			image.setImageResource(Constants.Other.get(i));
+			image.setId(Constants.Other.get(i));
+			image.setMaxHeight(220);
+			image.setMaxWidth(400);
+			image.setPadding(50, 10, 50, 10);
+			image.setAdjustViewBounds(true);
+			image.setOnClickListener(insertListner);
+			TableRow tr = new TableRow(tl.getContext());
+			tr.addView(image);
+			tl.addView(tr);
+		}
+		sv.addView(tl);
+		objectImageDialog.setContentView(sv);
+
 		alertBuilder = new AlertDialog.Builder(this);
 		alertBuilder.setTitle("Select img");
 		alertBuilder.setItems(category, new DialogInterface.OnClickListener() {
@@ -172,6 +195,8 @@ public class BookEditor extends Activity implements OnClickListener {
 					animalImageDialog.show();
 					break;
 				case 2:
+					objectImageDialog.show();
+					break;
 				}
 			}
 		});
@@ -758,6 +783,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		public void onClick(View v) {
 			humanImageDialog.dismiss();
 			animalImageDialog.dismiss();
+			objectImageDialog.dismiss();
 			pages.get(currentPageNumber - 1).insertImage(v.getId());
 		}
 	}

@@ -112,6 +112,7 @@ public class FileTransportManager {
     
     // 실제로 파일을 업로드하는 함수
     // 업로드된 파일이름 반환
+    // 코드 출처 : http://blog.inculab.net (접속 불가)
     private String HttpFileUpload(String urlString, String params, String fileName) {
 		try {
 
@@ -184,6 +185,7 @@ public class FileTransportManager {
     // Upload 완료 확인 메소드
     // String filename : 확인할 대상이되는 xml file 이름
     // String tagName : 확인할 대상이되는 xml tag name
+    // 코드 출처 : http://gongmille.tistory.com/
     private String getXmlData(String filename, String tagName) { 
         String rss = SERVER_ADDRESS + "/";
         String ret = "";
@@ -216,6 +218,7 @@ public class FileTransportManager {
     // getBookList Method의 결과를 파싱하는 Method
     // String filename : 확인할 대상이되는 xml file 이름
     // String tagName : 확인할 대상이되는 xml tag name
+    // 코드 출처 : http://gongmille.tistory.com/
     private ArrayList<String> getXmlDataList(String filename, String tagName) { 
         String rss = SERVER_ADDRESS + "/";
         ArrayList<String> ret = new ArrayList<String>();
