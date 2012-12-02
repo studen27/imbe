@@ -35,7 +35,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
-        <activity android:name="BookReader">
+        <activity android:name="BookReader"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="com.example.imbedproject.v021.readIntent" />
                 <category android:name="android.intent.category.DEFAULT" />

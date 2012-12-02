@@ -11,8 +11,9 @@ mysql_query("set names utf8"); //이것 또한 한글(utf8)을 지원하기 위�
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 	if(isset($_GET['name'])) $name = $_GET['name'];
-	if(isset($_GET['price'])) $price = $_GET['price'];
-		$qry = "insert into books(name, price) values('$name', $price);";
+	if(isset($_GET['latitude'])) $latitude = $_GET['latitude'];
+	if(isset($_GET['longitude'])) $longitude = $_GET['longitude'];
+	$qry = "insert into books(name, latitude, longitude) values('$name', $latitude, $longitude);";
 	$result = mysql_query($qry);
  
 	$xmlcode = "<?xml version = \"1.0\" encoding = \"utf-8\"?>\n"; //xml파일에 출력할 코드

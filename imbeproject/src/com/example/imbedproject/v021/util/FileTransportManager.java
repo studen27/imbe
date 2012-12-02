@@ -38,8 +38,11 @@ public class FileTransportManager {
     
     // File Upload Method
     // String filePath : 업로드될 대상의 실제 Path
-    public String upload(String filePath) {
+    // int latitude : 좌표
+    // int longitude : 좌표
+    public String upload(String filePath, int latitude, int longitude) {
     	String fileName = "";
+    	
     	// 파일 업로드
     	try {
     		fileName = DoFileUpload(filePath);
@@ -51,7 +54,9 @@ public class FileTransportManager {
     	// get을 이용하여 php파일에 접근하여 query를 날린다.
     	try {
             URL url = new URL(SERVER_ADDRESS + "/insert.php?"
-                    + "name=" + URLEncoder.encode(fileName, "UTF-8")); //변수값을 UTF-8로 인코딩하기 위해 URLEncoder를 이용하여 인코딩함
+                    + "name=" + URLEncoder.encode(fileName, "UTF-8")
+                    + "&latitude=" + URLEncoder.encode(Integer.toString(latitude), "UTF-8")
+                    + "&longitude=" + URLEncoder.encode(Integer.toString(longitude), "UTF-8")); //변수값을 UTF-8로 인코딩하기 위해 URLEncoder를 이용하여 인코딩함
             url.openStream(); //서버의 DB에 입력하기 위해 웹서버의 insert.php파일에 입력된 이름과 가격을 넘김
              
         } catch(Exception e) {
@@ -64,16 +69,23 @@ public class FileTransportManager {
     // 근처 책 목록을 받아오는 함수
     // 후에 맵과 융합되야함
     // 미완성
-    public ArrayList<String> getBookList(String str) {
+    public ArrayList<String> getBookList(int latitude, int longitude) {
     	try {
             data.clear(); //반복적으로 누를경우 똑같은 값이 나오는 것을 방지하기 위해 data를 클리어함
-            URL url = new URL(SERVER_ADDRESS + "/search.php");
+            URL url = new URL(SERVER_ADDRESS + "/search.php"
+                    + "&latitude=" + URLEncoder.encode(Integer.toString(latitude), "UTF-8")
+                    + "&longitude=" + URLEncoder.encode(Integer.toString(longitude), "UTF-8"));
             url.openStream(); //서버의 serarch.php파일을 실행함
- 
-            ArrayList<String> namelist = getXmlDataList("searchresult.xml", "name");//name 태그값을 읽어 namelist 리스트에 저장
-            ArrayList<String> pricelist = getXmlDataList("searchresult.xml", "price"); //price 태그값을 읽어 prica 리스트에 저장
+            
+            
+            ArrayList<String> idList = getXmlDataList("searchresult.xml", "id");
+            ArrayList<String> nameList = getXmlDataList("searchresult.xml", "name");
+            ArrayList<String> latitudeList = getXmlDataList("searchresult.xml", "latitude");
+            ArrayList<String> longitudeList = getXmlDataList("searchresult.xml", "longitude");
+           
              
-            if(namelist.isEmpty())
+            /*
+            if(idList.isEmpty())
                 data.add("아무것도 검색되지 않았습니다.");
             else {
                 for(int i = 0; i < namelist.size(); i++) {
@@ -81,6 +93,8 @@ public class FileTransportManager {
                     data.add(s);
                 }
             }
+            */
+            
         } catch(Exception e) {
             Log.e("Error", e.getMessage());
         } finally{
@@ -167,9 +181,9 @@ public class FileTransportManager {
 		}
 	}
     
-    // 쿼리 insert완료 확인 메소드
+    // Upload 완료 확인 메소드
     // String filename : 확인할 대상이되는 xml file 이름
-    // String str : 확인할 대상이되는 xml tag name
+    // String tagName : 확인할 대상이되는 xml tag name
     private String getXmlData(String filename, String tagName) { 
         String rss = SERVER_ADDRESS + "/";
         String ret = "";
@@ -199,9 +213,10 @@ public class FileTransportManager {
         return ret;
     }
     
-    // 데이터베이스의 내용을 받아오는 함수로 수정 요함
-    // 태그값 여러개를 받아오기위한 ArrayList<string>형 변수
-    private ArrayList<String> getXmlDataList(String filename, String str) { 
+    // getBookList Method의 결과를 파싱하는 Method
+    // String filename : 확인할 대상이되는 xml file 이름
+    // String tagName : 확인할 대상이되는 xml tag name
+    private ArrayList<String> getXmlDataList(String filename, String tagName) { 
         String rss = SERVER_ADDRESS + "/";
         ArrayList<String> ret = new ArrayList<String>();
          
@@ -217,7 +232,7 @@ public class FileTransportManager {
              
             while(eventType != XmlPullParser.END_DOCUMENT) {
                 if(eventType == XmlPullParser.START_TAG) {
-                    if(xpp.getName().equals(str)) { //태그 이름이 str 인자값과 같은 경우
+                    if(xpp.getName().equals(tagName)) { //태그 이름이 str 인자값과 같은 경우
                         ret.add(xpp.nextText());
                     }
                 }
