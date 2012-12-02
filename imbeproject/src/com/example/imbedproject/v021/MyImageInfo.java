@@ -6,6 +6,7 @@ import android.graphics.drawable.BitmapDrawable;
 //created by 60022495 정민규
 //created date : 2012/11/21
 //last modify : 2012/11/23
+//이미지의 저장정보를 담은 객체
 public class MyImageInfo implements Serializable{
 	private static final long serialVersionUID = -986076128360470580L;
 	private String filename;

@@ -29,8 +29,10 @@
             </intent-filter>
         </activity>
         <service android:name="BgmService">
-            
-            
+            <intent-filter>
+                <action android:name="com.example.pagemanager.BgmService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </service>
         <activity android:name="BookReader">
             <intent-filter>

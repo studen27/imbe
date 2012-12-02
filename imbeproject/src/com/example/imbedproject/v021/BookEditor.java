@@ -26,8 +26,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -231,10 +231,14 @@ public class BookEditor extends Activity implements OnClickListener {
 		// 첫 page를 생성하고 pageViewer에 add
 		inflater = (LayoutInflater) context
 				.getSystemService(LAYOUT_INFLATER_SERVICE);
-		View view = inflater.inflate(R.layout.book_title,
-				(ViewGroup) findViewById(R.id.book_title_root));
-		pages.add(new PageView(this));
-		pages.get(0).setTextView(view);
+//		View view = inflater.inflate(R.layout.book_title,
+//				(ViewGroup) findViewById(R.id.book_title_root));
+		PageView pv = new PageView(this);		
+		
+		pv.createTextView(Constants.PAGE_TYPE.Title, inflater);//밑에써도됨
+		pages.add(pv);		
+		
+//		pages.get(0).setTextView(view);
 		pageViewer.addView(pages.get(0));
 		pageViewer.addView(pages.get(0).getTextView());
 
@@ -258,10 +262,16 @@ public class BookEditor extends Activity implements OnClickListener {
 	//메뉴아이템 선택시
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
-		case R.id.menu_save:
+		case R.id.menu_Qsave:	//퀵세이브
+			saveWorkQ();
+			break;
+		case R.id.menu_Qload:	//퀵로드
+			loadWorkQ();
+			break;
+		case R.id.menu_save:	//세이브
 			saveWork();
 			break;
-		case R.id.menu_load:
+		case R.id.menu_load:	//로드
 			loadWork();
 			break;		
 		}		
@@ -276,6 +286,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		// 아니면 currentpageNumber를 1 감소시킨후 재출력
 		case R.id.prev_button:
 			if (!(currentPageNumber == 1)) {
+				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pageViewer.removeAllViews();
 				currentPageNumber--;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -294,17 +305,18 @@ public class BookEditor extends Activity implements OnClickListener {
 		// 아니면 이동후 재출력
 		case R.id.next_button:
 			if (currentPageNumber == maxPageNumber) {
+				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				// 마지막 페이지일경우 최대페이지를 증가
 				maxPageNumber++;
-//				pages.get(currentPageNumber - 1).stopThread();	//그리기 중지시킴(스레드 사용시)
 				pages.add(new PageView(this));
-				pageTypeDialog.show();
+				pageTypeDialog.show();				
 				pageViewer.removeAllViews();
 				currentPageNumber++;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
 						+ maxPageNumber.toString());
 				pageViewer.addView(pages.get(currentPageNumber - 1));
 			} else {
+				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pageViewer.removeAllViews();
 				currentPageNumber++;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -325,20 +337,24 @@ public class BookEditor extends Activity implements OnClickListener {
 				Toast.makeText(this, "첫페이지는 지울수 없습니다.",
 						Toast.LENGTH_SHORT).show();
 			} else if (currentPageNumber == maxPageNumber) {
+				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pages.remove(currentPageNumber - 1);
 				maxPageNumber--;
 				currentPageNumber--;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
-						+ maxPageNumber.toString());
+						+ maxPageNumber.toString());				
 				pageViewer.removeAllViews();
 				pageViewer.addView(pages.get(currentPageNumber - 1));
+				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
 			} else {
+				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pages.remove(currentPageNumber - 1);
 				maxPageNumber--;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
-						+ maxPageNumber.toString());
+						+ maxPageNumber.toString());				
 				pageViewer.removeAllViews();
 				pageViewer.addView(pages.get(currentPageNumber - 1));
+				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
 			}
 			break;
 
@@ -395,11 +411,154 @@ public class BookEditor extends Activity implements OnClickListener {
 	}
 
 	// created 2012/11/22 정민규
-	// 세이브
+	// 퀵세이브
+	public void saveWorkQ() {
+		try {
+			String prefix; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
+			prefix = "";					//------------ 그냥 세이브와 여기정도만 다름
+
+			FileOutputStream fos = openFileOutput(prefix
+					+ Constants.SAVE_FILENAME, Context.MODE_PRIVATE);
+			ObjectOutputStream oos = new ObjectOutputStream(
+					new BufferedOutputStream(fos));
+
+			// 이미지를 기기에 저장. DDMS에 data/data/패키지명/files/ 에 저장됨
+			Bitmap bm;
+			String bmName; // 파일명
+			FileOutputStream out;
+			for (int i = 0; i < maxPageNumber; i++) { // 각 페이지에
+				for (int j = 0; j < pages.get(i).getImages().size(); j++) { // 각 이미지를
+					bmName = prefix + i + "_" + j + "" + ".PNG"; // 파일명 : 책이름+페이지번호+이미지번호
+					out = openFileOutput(bmName, Context.MODE_PRIVATE);
+
+					bm = pages.get(i).getImages().get(j).getBd().getBitmap(); // 원본그림 가져옴
+
+					try {
+						bm.compress(CompressFormat.PNG, 100, out); // 파일로 저장
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						try {
+							out.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+
+			// 페이지들 정보 셋팅
+			ArrayList<PageViewInfo> pageInfos = new ArrayList<PageViewInfo>();
+			for (int i = 0; i < maxPageNumber; i++) {
+				pages.get(i).createPageViewInfo();
+				pageInfos.add(pages.get(i).getPageViewInfo());
+				Log.i("bookeditor msg",""+pages.get(i).getPageType());
+			}
+			bookInfo.setPageViewInfos(pageInfos); // bookInfo에 넣음
+
+			oos.writeObject(bookInfo); // bookInfo객체를 저장
+
+			if (oos != null) { // 스트림 닫기
+				try {
+					oos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			Toast.makeText(this, "저장되었습니다!", 0).show();
+		} catch (Exception e) {
+			Log.e("저장실패:", e.getMessage());
+			Toast.makeText(this, "저장실패!", 0).show();
+		}
+
+	}
+
+	// created 2012/11/22 정민규
+	// 퀵로드
+	public void loadWorkQ() {
+		try {
+			String prefix; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
+			prefix = "";
+
+			FileInputStream fis = openFileInput(prefix
+					+ Constants.SAVE_FILENAME);
+			ObjectInputStream ois = new ObjectInputStream(
+					new BufferedInputStream(fis));
+
+			bookInfo = (BookInfo) ois.readObject();
+
+			if (ois != null) { // 스트림 닫기
+				try {
+					ois.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			// 불러온정보 셋팅
+			maxPageNumber = bookInfo.getPageInfos().size();
+			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
+			pages.clear(); // 모든 페이지 지움
+			for (int i = 0; i < maxPageNumber; i++) { // 불러온 페이지정보대로 셋팅
+				PageView pv = new PageView(this);
+				pv.setPageViewInfo(bookInfo.getPageInfos().get(i)); // 페이지정보 줌
+				pv.setByPageViewInfo();								// 페이지정보대로 페이지 셋
+				pv.createTextView(pv.getPageType(), inflater);		//각페이지 text 셋
+				Log.i("bookeditor msg",""+pv.getPageType());
+				pages.add(pv);
+			}
+			currentPageNumber = 1;
+
+			// 이미지 로드해 셋 data/data/패키지명/files/ 에서 불러옴
+			String bmName; // 파일명
+			FileInputStream in;
+			BitmapDrawable bd;
+			for (int i = 0; i < maxPageNumber; i++) { // 페이지 수 만큼
+				for (int j = 0; j < pages.get(i).getImages().size(); j++) { // 각 이미지만큼
+					bmName = prefix + i + "_" + j + "" + ".PNG"; //파일명 : 책이름+페이지번호+이미지번호
+					in = openFileInput(bmName);
+
+					// bm = BitmapFactory.decodeFile(bmName); //메모리누수 우려
+					bd = new BitmapDrawable(in); //파일에서 그림 가져옴
+					pages.get(i).getImages().get(j).setBitmapByBd(bd);
+
+					Log.i("msg", pages.get(i).getImages().size() + "");
+
+					try {
+						bd = new BitmapDrawable(in);
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						try {
+							in.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}			
+
+			pageViewer.removeAllViews();
+			pageNumberView.setText(currentPageNumber.toString() + "/"
+					+ maxPageNumber.toString());
+			pageViewer.addView(pages.get(currentPageNumber - 1));
+			pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
+			Toast.makeText(this, "불러왔습니다", 0).show();
+		}catch(Exception e){
+			Log.e("불러오기실패:", e.getMessage());
+			Toast.makeText(this, "불러오기실패!", 0).show();
+		}
+	}
+
+	// created 2012/11/29 정민규
+	// 세이브  (파일명 앞에 책이름 붙여 저장.     ~_pages.dat + ?_?.PNG 들로 저장)
 	public void saveWork() {
 		try {
 			String prefix; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
-			if (!bookInfo.getBookName().equals("")) { // 책이름 "" 아니면 책이름으로
+			bookInfo.setBookName((pages.get(0).getEditText().getText().toString()));	//책이름 셋
+			
+			if (!bookInfo.getBookName().equals("")) { // 책이름 "" 아니면 책이름으로				
 				prefix = bookInfo.getBookName();
 				// String[] filter_word =
 				// {"","\\.","\\?","\\/","\\~","\\!","\\@","\\#","\\$","\\%","\\^",
@@ -457,6 +616,7 @@ public class BookEditor extends Activity implements OnClickListener {
 			for (int i = 0; i < maxPageNumber; i++) {
 				pages.get(i).createPageViewInfo();
 				pageInfos.add(pages.get(i).getPageViewInfo());
+				Log.i("bookeditor msg",""+pages.get(i).getPageType());
 			}
 			bookInfo.setPageViewInfos(pageInfos); // bookInfo에 넣음
 
@@ -478,11 +638,14 @@ public class BookEditor extends Activity implements OnClickListener {
 
 	}
 
-	// created 2012/11/22 정민규
+	// created 2012/11/29 정민규
 	// 로드
+	//------현재 파일선택해서 불러오게 해야함. 파일목록은 저장시 sqlite로 db에 하던지 아니면, 파일목록 파싱해서 dat파일만 내오던지 해야할듯
 	public void loadWork() {
 		try {
 			String prefix; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
+			bookInfo.setBookName((pages.get(0).getEditText().getText().toString()));	//책이름 셋
+			
 			if (!bookInfo.getBookName().equals("")) { // 책이름 "" 아니면 책이름으로
 				prefix = bookInfo.getBookName();
 				// String[] filter_word =
@@ -523,11 +686,14 @@ public class BookEditor extends Activity implements OnClickListener {
 
 			// 불러온정보 셋팅
 			maxPageNumber = bookInfo.getPageInfos().size();
+			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 			pages.clear(); // 모든 페이지 지움
 			for (int i = 0; i < maxPageNumber; i++) { // 불러온 페이지정보대로 셋팅
 				PageView pv = new PageView(this);
 				pv.setPageViewInfo(bookInfo.getPageInfos().get(i)); // 페이지정보 줌
-				pv.setByPageViewInfo(); // 페이지정보대로 페이지 셋
+				pv.setByPageViewInfo();								// 페이지정보대로 페이지 셋
+				pv.createTextView(pv.getPageType(), inflater);		//각페이지 text 셋
+				Log.i("bookeditor msg",""+pv.getPageType());
 				pages.add(pv);
 			}
 			currentPageNumber = 1;
@@ -565,13 +731,15 @@ public class BookEditor extends Activity implements OnClickListener {
 			pageNumberView.setText(currentPageNumber.toString() + "/"
 					+ maxPageNumber.toString());
 			pageViewer.addView(pages.get(currentPageNumber - 1));
+			pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
 			Toast.makeText(this, "불러왔습니다", 0).show();
 		}catch(Exception e){
 			Log.e("불러오기실패:", e.getMessage());
 			Toast.makeText(this, "불러오기실패!", 0).show();
 		}
 	}
-
+	
+	//배경선택 리스너
 	private class BackgroundSelectListener implements OnClickListener {
 
 		public void onClick(View v) {
@@ -583,7 +751,8 @@ public class BookEditor extends Activity implements OnClickListener {
 		}
 
 	}
-
+	
+	//이미지선택 리스너
 	private class ImageInsertListener implements OnClickListener {
 
 		public void onClick(View v) {
@@ -591,24 +760,26 @@ public class BookEditor extends Activity implements OnClickListener {
 			animalImageDialog.dismiss();
 			pages.get(currentPageNumber - 1).insertImage(v.getId());
 		}
-
 	}
 
+	//페이지타입선택 리스너
 	private class PageTypeSelectListener implements OnClickListener {
 
 		public void onClick(View v) {
-			View view;
+//			View view;
 
 			switch (v.getId()) {
 			case R.id.book_type1:
-				view = inflater.inflate(R.layout.page_text_left,
-						(ViewGroup) findViewById(R.id.page_text_Left_root));
-				pages.get(maxPageNumber - 1).setTextView(view);
+//				view = inflater.inflate(R.layout.page_text_left,
+//						(ViewGroup) findViewById(R.id.page_text_Left_root));
+//				pages.get(maxPageNumber - 1).setTextView(view);
+				pages.get(maxPageNumber - 1).createTextView(Constants.PAGE_TYPE.LeftText, inflater);
 				break;
 			case R.id.book_type2:
-				view = inflater.inflate(R.layout.page_text_right,
-						(ViewGroup) findViewById(R.id.page_text_right_root));
-				pages.get(maxPageNumber - 1).setTextView(view);
+//				view = inflater.inflate(R.layout.page_text_right,
+//						(ViewGroup) findViewById(R.id.page_text_right_root));
+//				pages.get(maxPageNumber - 1).setTextView(view);
+				pages.get(maxPageNumber - 1).createTextView(Constants.PAGE_TYPE.RightText, inflater);
 				break;
 			}
 

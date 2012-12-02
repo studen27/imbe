@@ -93,6 +93,7 @@ public class BookReader extends Activity implements OnClickListener {
 		for(int i = 0; i < pages.size(); i++) {
 			pages.get(i).setEnabled(false);
 		}
+		//pageViewer.addView(pages.get(0).getTextView());
 	}
 
 	public void onStart() {

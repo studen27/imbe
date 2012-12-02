@@ -13,11 +13,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-import android.view.View;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.example.imbedproject.v021.Constants.ANCHOR_TYPE;
@@ -42,7 +44,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     private DRAWING_STATE drawingState;	//그리기상태
     private MyImage selectedImage;		//선택된이미지
     private SurfaceHolder holder;		//서피스뷰 홀더
-    private MySimpleGestureListener sg;	//제스처리스너
+    protected MySimpleGestureListener sg;	//제스처리스너
     private MyGestureDetector gd;		//제스처디텍터
     protected Paint pnt;					//그리기 색
 //    protected MyPath path;				//현재 그릴 선        
@@ -52,9 +54,12 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 //    protected ArrayList<MyImageInfo> imgInfos;	//이미지정보들
     protected PageViewInfo pageViewInfo;	//자기 페이지 정보. 생성시 안만들어지고 takePageViewInfo시 만들어짐
     private PageViewThread pageViewThread;	//그리는 스레드
+    private String myText = "No Text";					//내 페이지 글
+    private Constants.PAGE_TYPE pageType;		//페이지타입: 표지/왼쪽텍스트/오른텍스트
+    EditText editText;
     
-    private boolean isEnable;
-    private View textView;
+    private boolean isEnable;		//편집가능한가     
+    private View textView;			//
     
     //constructor1 코드로 생성시 호출됨.
     public PageView(Context context) {
@@ -101,9 +106,9 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     	setBgImg();									//배경설정    	
 		Log.i("msg",this.getWidth() + " " + this.getHeight() );
 		
-//		pageViewThread = new PageViewThread(holder, this);	//스레드사용시, 페이지추가할때 에뮬에서의 속도문제 때문에 일단 사용안함 
-//		pageViewThread.setRunning(true);					//실기에서는 빠름.
-//		pageViewThread.start();
+		pageViewThread = new PageViewThread(holder, this);	//스레드사용 
+		pageViewThread.setRunning(true);					//실기에서는 빠름.
+		pageViewThread.start();
 	}
 	
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
@@ -112,7 +117,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	}
 	
 	//suface종료시
-	public void surfaceDestroyed(SurfaceHolder holder) {
+	public void surfaceDestroyed(SurfaceHolder holder) {	//여기서join하면 에러, stopThread() 에서 함
 //		boolean retry = true;
 //		pageViewThread.setRunning(false);
 //		
@@ -124,7 +129,6 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 //			}
 //		}
 	};
-
 
     //getter&setter
     public void setPaintColor(int color){
@@ -157,6 +161,48 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	}	
 	public ArrayList<MyImage> getImages() {
 		return images;
+	}	
+	public String getText() {
+		return myText;
+	}	
+	public View getTextView() {
+		return textView;
+	}
+	public void setTextView(View textView) {
+		this.textView = textView;
+	}	
+	public Constants.PAGE_TYPE getPageType() {
+		return pageType;
+	}
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		isEnable = enabled;		
+	}	
+	public EditText getEditText() {
+		return editText;
+	}
+	public void setMyText(String myText) {
+		this.myText = myText;
+	}
+
+	//textView생성
+	public void createTextView(Constants.PAGE_TYPE pageType, LayoutInflater inflater){
+		View view;
+		
+		if(pageType == Constants.PAGE_TYPE.Title){			//표지
+			view = inflater.inflate(R.layout.book_title,(ViewGroup) findViewById(R.id.book_title_root));
+			 editText = (EditText)view.findViewById(R.id.textTitle);
+		}else if (pageType == Constants.PAGE_TYPE.LeftText){//왼쪽텍스트
+			view = inflater.inflate(R.layout.page_text_left, (ViewGroup) findViewById(R.id.page_text_Left_root));
+			editText = (EditText)view.findViewById(R.id.textLeft);			
+		}else{												//오른텍스트
+			view = inflater.inflate(R.layout.page_text_right,(ViewGroup) findViewById(R.id.page_text_right_root));
+			editText = (EditText)view.findViewById(R.id.textRight);
+		}		
+		editText.setText(myText);
+		
+		this.pageType = pageType;
+		textView = view;
 	}
 	
 	//페이지정보 생성
@@ -180,6 +226,9 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 			mi.setByImgInfo(getResources());					//정보대로 이미지 셋시킴
 			images.add(mi);
 		}
+		
+		myText = pageViewInfo.getText();
+		pageType = pageViewInfo.getPageType();		
     }
     
     //배경그림설정
@@ -198,7 +247,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 			bgBitmap = null;
 		}
 		
-		callOnDraw();
+//		callOnDraw();
 	}
     //배경그림설정2 (배경파일명을 받음)(현재 미사용이나 만들어놓음)
 	public void setBgImg(String bgFileName) {
@@ -217,29 +266,29 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 			bgBitmap = null;
 		}
 		
-		callOnDraw();
+//		callOnDraw();
 	}
     
-	// modify by 60062446 박정실
-	public void setBgImg(int bgId) {
-		int id = bgId;
-		try { // 파일이 없는경우 대비
-			bgBd = (BitmapDrawable) getResources().getDrawable(id);
-			bgBitmap = Bitmap.createScaledBitmap(bgBd.getBitmap(), width,
-					height, true);
-		} catch (NotFoundException e) {
-			bgBd = null;
-			bgBitmap = null;
-		}
-		
-		callOnDraw();
-	}
+//	// modify by 60062446 박정실
+//	public void setBgImg(int bgId) {
+//		int id = bgId;
+//		try { // 파일이 없는경우 대비
+//			bgBd = (BitmapDrawable) getResources().getDrawable(id);
+//			bgBitmap = Bitmap.createScaledBitmap(bgBd.getBitmap(), width,
+//					height, true);
+//		} catch (NotFoundException e) {
+//			bgBd = null;
+//			bgBitmap = null;
+//		}
+//		
+//		callOnDraw();
+//	}
     
     // 이미지 넣기
 	// created by 60062446 박정실
     public void insertImage(int id) {
-    	images.add(new MyImage(getResources(), id, 100, 100));
-    	callOnDraw();
+    	images.add(new MyImage(getResources(), id, width/2 - 50, height/2 - 100));
+//    	callOnDraw();
     }
     
     //해당 이미지 삭제(MyImage에서 호출)
@@ -256,7 +305,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     public void removeVertexes(){
 //    	paths.clear();
     	vertexes.clear();
-    	callOnDraw();    	
+//    	callOnDraw();    	
     }
     
     //Draw
@@ -339,7 +388,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	}
 	
 	//--------------------제스처리스너----------------------------
-	private final class MySimpleGestureListener extends GestureDetector.SimpleOnGestureListener{
+	protected final class MySimpleGestureListener extends GestureDetector.SimpleOnGestureListener{
 
 		public boolean onDown(MotionEvent event){
 			Log.i("msg","onDown");
@@ -385,7 +434,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 					}
 				}
 			}
-			callOnDraw();
+//			callOnDraw();
 
 			return true;
 		}
@@ -419,7 +468,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 			if(drawingState != DRAWING_STATE.drawing && drawingState != DRAWING_STATE.resizing 
 					&& drawingState != DRAWING_STATE.rotating && selectedImage != null){
 				removeImage();
-				callOnDraw();
+//				callOnDraw();
 			}
 		}
 		
@@ -458,7 +507,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 				selectedImage.rotateBitmap(x - prevX);
 			}
 //			invalidate();//화면에 그림을 그림 -> onDraw()실행함.
-			callOnDraw();	//draw
+//			callOnDraw();	//draw
 
 			return true;
 		}
@@ -478,26 +527,17 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	
 	//그리기 중지(페이지 삭제전 호출. surfaceDestroyed 에서 중지하면 왠지 에러가 나서 더 빨리 중지위함.  
 	public void stopThread(){
+		boolean retry = true;
 		pageViewThread.setRunning(false);
-	}
-	
-	
-	
-	public View getTextView() {
-		return textView;
-	}
-
-	public void setTextView(View textView) {
-		this.textView = textView;
-	}
-
-	@Override
-	public void setEnabled(boolean enabled) {
-		// TODO Auto-generated method stub
-		super.setEnabled(enabled);
-		isEnable = enabled;
 		
-	}
+//		while(retry){
+			try {
+				pageViewThread.join();	//스레드 종료 기다림
+				retry = false;
+			} catch (InterruptedException e) {				
+			}
+	//	}
+	}	
 
 	//그리는 스레드--------------
 	class PageViewThread extends Thread{//implements Runnable{
