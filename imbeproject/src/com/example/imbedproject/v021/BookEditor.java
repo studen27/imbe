@@ -819,7 +819,7 @@ public class BookEditor extends Activity implements OnClickListener {
 	public void onResume() {
 		Log.i("msg","BookEditor onResume");
 		super.onResume();
-		if(isStart == false){			//에러코드		
+		if(isStart == false){		
 			pages.get(currentPageNumber - 1).startThread();	//스레드 시작
 		}
 		isStart = false;
