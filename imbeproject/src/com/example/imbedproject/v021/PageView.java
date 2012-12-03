@@ -53,7 +53,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     protected ArrayList<MyImage> images;	//이미지들
 //    protected ArrayList<MyImageInfo> imgInfos;	//이미지정보들
     protected PageViewInfo pageViewInfo;	//자기 페이지 정보. 생성시 안만들어지고 takePageViewInfo시 만들어짐
-    private PageViewThread pageViewThread;	//그리는 스레드
+    private PageViewThread pageViewThread = null;	//그리는 스레드
     private String myText = "No Text";					//내 페이지 글
     private Constants.PAGE_TYPE pageType;		//페이지타입: 표지/왼쪽텍스트/오른텍스트
     EditText editText;
@@ -106,18 +106,17 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     	setBgImg();									//배경설정    	
 		Log.i("msg",this.getWidth() + " " + this.getHeight() );
 		
-		pageViewThread = new PageViewThread(holder, this);	//스레드사용 
-		pageViewThread.setRunning(true);					//실기에서는 빠름.
-		pageViewThread.start();
+		startThread();
 	}
 	
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {		
-		// TODO Auto-generated method stub		
+		Log.i("msg","PageView surfaceChanged");		
 	}
 	
 	//suface종료시
 	public void surfaceDestroyed(SurfaceHolder holder) {	//여기서join하면 에러, stopThread() 에서 함
+		Log.i("msg","PageView surfaceDestoyed");		
 //		boolean retry = true;
 //		pageViewThread.setRunning(false);
 //		
@@ -127,7 +126,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 //				retry = false;
 //			} catch (InterruptedException e) {				
 //			}
-//		}
+//		}		
 	};
 
     //getter&setter
@@ -525,18 +524,30 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 		}
 	}
 	
+	//그리기 시작  
+	public void startThread(){
+		if(pageViewThread == null){
+			pageViewThread = new PageViewThread(holder, this);	//스레드사용 
+			pageViewThread.setRunning(true);					//실기에서는 빠름.
+			pageViewThread.start();
+		}
+	}
+	
 	//그리기 중지(페이지 삭제전 호출. surfaceDestroyed 에서 중지하면 왠지 에러가 나서 더 빨리 중지위함.  
 	public void stopThread(){
 		boolean retry = true;
 		pageViewThread.setRunning(false);
 		
-//		while(retry){
+		while(retry){
 			try {
 				pageViewThread.join();	//스레드 종료 기다림
 				retry = false;
+				pageViewThread = null;
 			} catch (InterruptedException e) {				
 			}
-	//	}
+//			bgBitmap.recycle();
+//			destroyDrawingCache();
+		}
 	}	
 
 	//그리는 스레드--------------

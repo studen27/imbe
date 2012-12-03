@@ -61,6 +61,7 @@ public class BookEditor extends Activity implements OnClickListener {
 	private AlertDialog pageTypeDialog;
 	private String preBgFileName;
 	private LayoutInflater inflater;
+	private boolean isStart = true;		//처음 시작하나. (onResume때문)
 
 	// Buttons
 	private Button prev_butten;
@@ -310,7 +311,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		// currentpageNumber가 1인경우 경고메세지 출력
 		// 아니면 currentpageNumber를 1 감소시킨후 재출력
 		case R.id.prev_button:
-			if (!(currentPageNumber == 1)) {
+			if (!(currentPageNumber == 1)) {				
 				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pageViewer.removeAllViews();
 				currentPageNumber--;
@@ -329,7 +330,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		// maxPageNumber를 1 증가시킨후 images에에 view를 하나 더 추가
 		// 아니면 이동후 재출력
 		case R.id.next_button:
-			if (currentPageNumber == maxPageNumber) {
+			if (currentPageNumber == maxPageNumber) {				
 				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				// 마지막 페이지일경우 최대페이지를 증가
 				maxPageNumber++;
@@ -813,7 +814,36 @@ public class BookEditor extends Activity implements OnClickListener {
 			pageTypeDialog.dismiss();
 			backgroundDialog.show();
 		}
+	}
+	
+	public void onResume() {
+		Log.i("msg","BookEditor onResume");
+		super.onResume();
+		if(isStart == false){			//에러코드		
+			pages.get(currentPageNumber - 1).startThread();	//스레드 시작
+		}
+		isStart = false;
+	}
 
+	public void onPause() {
+		Log.i("msg","BookEditor onPause");
+		super.onPause();
+		pages.get(currentPageNumber - 1).stopThread();	//스레드 중지		
+	}
+
+	public void onStop() {
+		Log.i("msg","BookEditor onStop");
+		super.onStop();
+	}
+
+	public void onRestart() {
+		Log.i("msg","BookEditor onRestart");
+		super.onRestart();
+	}
+	
+	public void onDestroy() {
+		Log.i("msg","BookEditor onDestroy");
+		super.onDestroy();
 	}
 
 }
