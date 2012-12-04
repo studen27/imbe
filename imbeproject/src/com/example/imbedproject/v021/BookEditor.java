@@ -75,6 +75,7 @@ public class BookEditor extends Activity implements OnClickListener {
 	private Button blue;
 	private Button yellow;
 	private Button bgmBtn;
+	private Button setBackground;
 
 	final CharSequence[] category = { "인물", "동물", "사물" };
 
@@ -229,6 +230,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		blue = (Button) findViewById(R.id.blue);
 		yellow = (Button) findViewById(R.id.yellow);
 		bgmBtn = (Button) findViewById(R.id.bgmBtn);
+		setBackground = (Button) findViewById(R.id.setBg);
 
 		pageNumberView = (TextView) findViewById(R.id.page_number);
 		pageViewer = (FrameLayout) findViewById(R.id.farme);
@@ -253,6 +255,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		blue.setOnClickListener(this);
 		yellow.setOnClickListener(this);
 		bgmBtn.setOnClickListener(this);
+		setBackground.setOnClickListener(this);
 
 		// 첫 page를 생성하고 pageViewer에 add
 		inflater = (LayoutInflater) context
@@ -271,7 +274,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		// 페이지번호 설정
 		pageNumberView.setText(currentPageNumber.toString() + "/"
 				+ maxPageNumber.toString());
-
+		
 	}
 
 	public void onStart() {
@@ -432,6 +435,9 @@ public class BookEditor extends Activity implements OnClickListener {
 			editor.commit(); // 변경사항 적용
 
 			Log.i("msg", valueStr);
+			break;
+		case R.id.setBg :
+			backgroundDialog.show();
 			break;
 		}
 	}
@@ -770,9 +776,9 @@ public class BookEditor extends Activity implements OnClickListener {
 
 		public void onClick(View v) {
 			preBgFileName = (Constants.Background.getS(v.getId()));
-			pages.get(maxPageNumber - 1).setBgFileName(preBgFileName);
+			pages.get(currentPageNumber - 1).setBgFileName(preBgFileName);
 			// pages.get(maxPageNumber - 1).setBgImg(v.getId());
-			pages.get(maxPageNumber - 1).setBgImg();
+			pages.get(currentPageNumber - 1).setBgImg();
 			backgroundDialog.dismiss();
 		}
 
@@ -812,7 +818,6 @@ public class BookEditor extends Activity implements OnClickListener {
 
 			pageViewer.addView(pages.get(maxPageNumber - 1).getTextView());
 			pageTypeDialog.dismiss();
-			backgroundDialog.show();
 		}
 	}
 	

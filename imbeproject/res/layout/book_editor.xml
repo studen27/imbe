@@ -76,6 +76,12 @@
                  android:layout_gravity="left"
                  android:text="BGM"/>
 
+             <Button
+                 android:id="@+id/setBg"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="set bg" />
+
 	    </LinearLayout>
         
 		<LinearLayout
