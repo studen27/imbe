@@ -108,7 +108,7 @@ public class BookReader extends Activity implements OnClickListener {
 		pageNumberView.setText(currentPageNumber.toString() + "/"
 				+ maxPageNumber.toString());
 		
-		
+		loadWorkQ();
 	}
 
 	public void onStart() {
@@ -149,7 +149,7 @@ public class BookReader extends Activity implements OnClickListener {
 		// 아니면 currentpageNumber를 1 감소시킨후 재출력
 		case R.id.prev_button:
 			if (!(currentPageNumber == 1)) {				
-				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
+//				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pageViewer.removeAllViews();
 				currentPageNumber--;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -171,7 +171,7 @@ public class BookReader extends Activity implements OnClickListener {
 				// 마지막 페이지일 경우 경고메세지 출력
 				Toast.makeText(this, "마지막 페이지 입니다.", Toast.LENGTH_SHORT).show();
 			} else {
-				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
+//				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pageViewer.removeAllViews();
 				currentPageNumber++;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -295,7 +295,7 @@ public class BookReader extends Activity implements OnClickListener {
 
 			// 불러온정보 셋팅
 			maxPageNumber = bookInfo.getPageInfos().size();
-			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
+//			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 			pages.clear(); // 모든 페이지 지움
 			for (int i = 0; i < maxPageNumber; i++) { // 불러온 페이지정보대로 셋팅
 				PageView pv = new PageView(this);
@@ -483,7 +483,7 @@ public class BookReader extends Activity implements OnClickListener {
 
 			// 불러온정보 셋팅
 			maxPageNumber = bookInfo.getPageInfos().size();
-			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
+//			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 			pages.clear(); // 모든 페이지 지움
 			for (int i = 0; i < maxPageNumber; i++) { // 불러온 페이지정보대로 셋팅
 				PageView pv = new PageView(this);
@@ -540,7 +540,7 @@ public class BookReader extends Activity implements OnClickListener {
 		Log.i("msg","BookEditor onResume");
 		super.onResume();
 		if(isStart == false){		
-			pages.get(currentPageNumber - 1).startThread();	//스레드 시작
+//			pages.get(currentPageNumber - 1).startThread();	//스레드 시작
 		} 
 		
 		isStart = false;
@@ -549,7 +549,7 @@ public class BookReader extends Activity implements OnClickListener {
 	public void onPause() {
 		Log.i("msg","BookEditor onPause");
 		super.onPause();
-		pages.get(currentPageNumber - 1).stopThread();	//스레드 중지		
+//		pages.get(currentPageNumber - 1).stopThread();	//스레드 중지		
 	}
 
 	public void onStop() {

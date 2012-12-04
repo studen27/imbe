@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -62,6 +63,11 @@ public class BookEditor extends Activity implements OnClickListener {
 	private String preBgFileName;
 	private LayoutInflater inflater;
 	private boolean isStart = true;		//처음 시작하나. (onResume때문)
+	SimpleCursorAdapter adapter;
+
+	static final String KEY = "_ID";
+	static final String NAME = "NAME";
+	static final String AUTHOR = "AUTHOR";
 
 	// Buttons
 	private Button prev_butten;
@@ -315,7 +321,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		// 아니면 currentpageNumber를 1 감소시킨후 재출력
 		case R.id.prev_button:
 			if (!(currentPageNumber == 1)) {				
-				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
+//				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pageViewer.removeAllViews();
 				currentPageNumber--;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -334,7 +340,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		// 아니면 이동후 재출력
 		case R.id.next_button:
 			if (currentPageNumber == maxPageNumber) {				
-				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
+//				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				// 마지막 페이지일경우 최대페이지를 증가
 				maxPageNumber++;
 				pages.add(new PageView(this));
@@ -345,7 +351,7 @@ public class BookEditor extends Activity implements OnClickListener {
 						+ maxPageNumber.toString());
 				pageViewer.addView(pages.get(currentPageNumber - 1));
 			} else {
-				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
+//				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pageViewer.removeAllViews();
 				currentPageNumber++;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -366,7 +372,7 @@ public class BookEditor extends Activity implements OnClickListener {
 				Toast.makeText(this, "첫페이지는 지울수 없습니다.",
 						Toast.LENGTH_SHORT).show();
 			} else if (currentPageNumber == maxPageNumber) {
-				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
+//				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pages.remove(currentPageNumber - 1);
 				maxPageNumber--;
 				currentPageNumber--;
@@ -376,7 +382,7 @@ public class BookEditor extends Activity implements OnClickListener {
 				pageViewer.addView(pages.get(currentPageNumber - 1));
 				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
 			} else {
-				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
+//				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pages.remove(currentPageNumber - 1);
 				maxPageNumber--;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -530,7 +536,7 @@ public class BookEditor extends Activity implements OnClickListener {
 
 			// 불러온정보 셋팅
 			maxPageNumber = bookInfo.getPageInfos().size();
-			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
+//			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 			pages.clear(); // 모든 페이지 지움
 			for (int i = 0; i < maxPageNumber; i++) { // 불러온 페이지정보대로 셋팅
 				PageView pv = new PageView(this);
@@ -718,7 +724,7 @@ public class BookEditor extends Activity implements OnClickListener {
 
 			// 불러온정보 셋팅
 			maxPageNumber = bookInfo.getPageInfos().size();
-			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
+//			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 			pages.clear(); // 모든 페이지 지움
 			for (int i = 0; i < maxPageNumber; i++) { // 불러온 페이지정보대로 셋팅
 				PageView pv = new PageView(this);
@@ -824,16 +830,16 @@ public class BookEditor extends Activity implements OnClickListener {
 	public void onResume() {
 		Log.i("msg","BookEditor onResume");
 		super.onResume();
-		if(isStart == false){		
-			pages.get(currentPageNumber - 1).startThread();	//스레드 시작
-		}
-		isStart = false;
+//		if(isStart == false){		
+//			pages.get(currentPageNumber - 1).startThread();	//스레드 시작
+//		}
+//		isStart = false;
 	}
 
 	public void onPause() {
 		Log.i("msg","BookEditor onPause");
 		super.onPause();
-		pages.get(currentPageNumber - 1).stopThread();	//스레드 중지		
+//		pages.get(currentPageNumber - 1).stopThread();	//스레드 중지		
 	}
 
 	public void onStop() {

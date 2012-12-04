@@ -13,6 +13,7 @@ public class Constants extends Application {
 	public static String SAVE_FILENAME = "pages.dat";
 	public static String DB_FILENAME = "books.db";
 	public static String TABLE_NAME = "books";//고치면 프로바이더 create도 고쳐야
+	static final String URI = Constants.PAKAGE_NAME + "/" + Constants.TABLE_NAME;
 	
 	public static enum PAGE_TYPE {
 		Title, LeftText, RightText
