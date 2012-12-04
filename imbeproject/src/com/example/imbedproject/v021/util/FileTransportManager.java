@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -18,12 +19,11 @@ import android.widget.EditText;
 
 //created by 60062446 박정실
 //created date : 2012/12/02
-//last modify : 2012/12/02
+//last modify : 2012/12/05
 public class FileTransportManager {
 	private final String SERVER_ADDRESS = "http://schoolradio.ivyro.net/test";
 	private FileInputStream mFileInputStream = null;
 	private URL connectUrl = null;
-	private EditText mEdityEntry;
 
 	String lineEnd = "\r\n";
 	String twoHyphens = "--";
@@ -37,15 +37,16 @@ public class FileTransportManager {
 	}
     
     // File Upload Method
-    // String filePath : 업로드될 대상의 실제 Path
+    // String filePath : 업로드될 대상의 실제 경로
+    // String originName : 파일의 이름
     // int latitude : 좌표
     // int longitude : 좌표
-    public String upload(String filePath, int latitude, int longitude) {
-    	String fileName = "";
+    public String upload(String filePath, String originName, int latitude, int longitude) {
+    	String actualName = "";
     	
     	// 파일 업로드
     	try {
-    		fileName = DoFileUpload(filePath);
+    		actualName = DoFileUpload(filePath + originName);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -54,7 +55,8 @@ public class FileTransportManager {
     	// get을 이용하여 php파일에 접근하여 query를 날린다.
     	try {
             URL url = new URL(SERVER_ADDRESS + "/insert.php?"
-                    + "name=" + URLEncoder.encode(fileName, "UTF-8")
+                    + "origin_name=" + URLEncoder.encode(originName, "UTF-8")
+                    + "&actual_name=" + URLEncoder.encode(actualName, "UTF-8")
                     + "&latitude=" + URLEncoder.encode(Integer.toString(latitude), "UTF-8")
                     + "&longitude=" + URLEncoder.encode(Integer.toString(longitude), "UTF-8")); //변수값을 UTF-8로 인코딩하기 위해 URLEncoder를 이용하여 인코딩함
             url.openStream(); //서버의 DB에 입력하기 위해 웹서버의 insert.php파일에 입력된 이름과 가격을 넘김
@@ -67,33 +69,32 @@ public class FileTransportManager {
     }
     
     // 근처 책 목록을 받아오는 함수
-    // 후에 맵과 융합되야함
-    // 미완성
-    public ArrayList<String> getBookList(int latitude, int longitude) {
+    // int latitude : 좌표
+    // int latitude : 좌표
+    // 서버에 query를 날려 xml을 이용해 결과를 파싱한다.
+    // 해당 결과를 각각 ArrayList에 넣고 QueryResult객체를 이용하여
+    // 모든 ArrayList를 반환시킨다.
+    public QueryResult getBookList(int latitude, int longitude) {
+    	QueryResult qr = new QueryResult();
     	try {
             data.clear(); //반복적으로 누를경우 똑같은 값이 나오는 것을 방지하기 위해 data를 클리어함
-            URL url = new URL(SERVER_ADDRESS + "/search.php"
-                    + "&latitude=" + URLEncoder.encode(Integer.toString(latitude), "UTF-8")
-                    + "&longitude=" + URLEncoder.encode(Integer.toString(longitude), "UTF-8"));
+            URL url = new URL(SERVER_ADDRESS + "/search.php?"
+                    + "latitude=" + URLEncoder.encode("37222281", "UTF-8")
+                    + "&longitude=" + URLEncoder.encode("127187283", "UTF-8"));
             url.openStream(); //서버의 serarch.php파일을 실행함
             
             
             ArrayList<String> idList = getXmlDataList("searchresult.xml", "id");
-            ArrayList<String> nameList = getXmlDataList("searchresult.xml", "name");
+            ArrayList<String> originNameList = getXmlDataList("searchresult.xml", "origin_name");
+            ArrayList<String> actualNameList = getXmlDataList("searchresult.xml", "actual_name");
             ArrayList<String> latitudeList = getXmlDataList("searchresult.xml", "latitude");
             ArrayList<String> longitudeList = getXmlDataList("searchresult.xml", "longitude");
-           
-             
-            /*
-            if(idList.isEmpty())
-                data.add("아무것도 검색되지 않았습니다.");
-            else {
-                for(int i = 0; i < namelist.size(); i++) {
-                    String s = namelist.get(i) + " - " + pricelist.get(i);
-                    data.add(s);
-                }
-            }
-            */
+            
+            qr.setIdList(idList);
+            qr.setOriginNameList(originNameList);
+            qr.setActualNameList(actualNameList);
+            qr.setLatitudeList(latitudeList);
+            qr.setLongitudeList(longitudeList);
             
         } catch(Exception e) {
             Log.e("Error", e.getMessage());
@@ -101,7 +102,7 @@ public class FileTransportManager {
             
         }
     	
-    	return data;
+    	return qr;
     }
     
     // 파일 업로드 함수
@@ -171,8 +172,7 @@ public class FileTransportManager {
 				b.append((char) ch);
 			}
 			String s = b.toString();
-			Log.e("Test", "result = " + s);
-			mEdityEntry.setText(s);
+			Log.e("Test", s);
 			dos.close();
 			
 			return s;

@@ -42,16 +42,17 @@ public final class R {
         public static final int hu04=0x7f02001c;
         public static final int ic_action_search=0x7f02001d;
         public static final int ic_launcher=0x7f02001e;
-        public static final int obj01=0x7f02001f;
-        public static final int obj02=0x7f020020;
+        public static final int mark=0x7f02001f;
+        public static final int obj01=0x7f020020;
+        public static final int obj02=0x7f020021;
     }
     public static final class id {
         public static final int bgmBtn=0x7f08000e;
         public static final int black=0x7f080009;
         public static final int blue=0x7f08000c;
-        public static final int book_title_root=0x7f080014;
-        public static final int book_type1=0x7f08001b;
-        public static final int book_type2=0x7f08001c;
+        public static final int book_title_root=0x7f080015;
+        public static final int book_type1=0x7f08001c;
+        public static final int book_type2=0x7f08001d;
         public static final int clear=0x7f080008;
         public static final int create_start=0x7f080002;
         public static final int delete_button=0x7f080006;
@@ -61,39 +62,41 @@ public final class R {
         public static final int loadList=0x7f080001;
         public static final int loadListText=0x7f080000;
         public static final int load_start=0x7f080003;
-        public static final int menu_Qload=0x7f080022;
-        public static final int menu_Qsave=0x7f080021;
-        public static final int menu_load=0x7f080024;
-        public static final int menu_save=0x7f080023;
-        public static final int menu_settings=0x7f080020;
+        public static final int mapview=0x7f080013;
+        public static final int menu_Qload=0x7f080023;
+        public static final int menu_Qsave=0x7f080022;
+        public static final int menu_load=0x7f080025;
+        public static final int menu_save=0x7f080024;
+        public static final int menu_settings=0x7f080021;
         public static final int next_button=0x7f080012;
         public static final int page_number=0x7f080005;
-        public static final int page_text_Left_root=0x7f080016;
-        public static final int page_text_right_root=0x7f080018;
-        public static final int page_type_layout_root=0x7f08001a;
+        public static final int page_text_Left_root=0x7f080017;
+        public static final int page_text_right_root=0x7f080019;
+        public static final int page_type_layout_root=0x7f08001b;
         public static final int prev_button=0x7f080010;
         public static final int read_start=0x7f080004;
-        public static final int reader_bgmBtn=0x7f080013;
+        public static final int reader_bgmBtn=0x7f080014;
         public static final int red=0x7f08000a;
         public static final int setBg=0x7f08000f;
-        public static final int textAuthor=0x7f08001f;
-        public static final int textId=0x7f08001d;
-        public static final int textLeft=0x7f080017;
-        public static final int textName=0x7f08001e;
-        public static final int textRight=0x7f080019;
-        public static final int textTitle=0x7f080015;
+        public static final int textAuthor=0x7f080020;
+        public static final int textId=0x7f08001e;
+        public static final int textLeft=0x7f080018;
+        public static final int textName=0x7f08001f;
+        public static final int textRight=0x7f08001a;
+        public static final int textTitle=0x7f080016;
         public static final int yellow=0x7f08000d;
     }
     public static final class layout {
         public static final int activity_load=0x7f030000;
         public static final int activity_main=0x7f030001;
         public static final int book_editor=0x7f030002;
-        public static final int book_reader=0x7f030003;
-        public static final int book_title=0x7f030004;
-        public static final int page_text_left=0x7f030005;
-        public static final int page_text_right=0x7f030006;
-        public static final int page_type_select_dialog=0x7f030007;
-        public static final int row=0x7f030008;
+        public static final int book_finder=0x7f030003;
+        public static final int book_reader=0x7f030004;
+        public static final int book_title=0x7f030005;
+        public static final int page_text_left=0x7f030006;
+        public static final int page_text_right=0x7f030007;
+        public static final int page_type_select_dialog=0x7f030008;
+        public static final int row=0x7f030009;
     }
     public static final class menu {
         public static final int activity_main=0x7f070000;

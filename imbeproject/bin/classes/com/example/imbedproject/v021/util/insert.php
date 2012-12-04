@@ -10,10 +10,11 @@ mysql_selectdb($db_database); //DB 선택
 mysql_query("set names utf8"); //이것 또한 한글(utf8)을 지원하기 위한 것
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-	if(isset($_GET['name'])) $name = $_GET['name'];
+	if(isset($_GET['origin_name'])) $origin_name = $_GET['origin_name'];
+	if(isset($_GET['actual_name'])) $actual_name = $_GET['actual_name'];
 	if(isset($_GET['latitude'])) $latitude = $_GET['latitude'];
 	if(isset($_GET['longitude'])) $longitude = $_GET['longitude'];
-	$qry = "insert into books(name, latitude, longitude) values('$name', $latitude, $longitude);";
+	$qry = "insert into books(origin_name, actual_name, latitude, longitude) values('$origin_name', '$actual_name', $latitude, $longitude);";
 	$result = mysql_query($qry);
  
 	$xmlcode = "<?xml version = \"1.0\" encoding = \"utf-8\"?>\n"; //xml파일에 출력할 코드

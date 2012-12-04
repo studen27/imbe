@@ -64,6 +64,7 @@
              android:name="MyProvider"
              android:authorities="com.example.imbedproject.v021">            
         </provider>
+        <activity android:name="BookFinder"></activity>
     </application>
 
 </manifest>
