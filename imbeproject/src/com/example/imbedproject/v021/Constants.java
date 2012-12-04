@@ -13,6 +13,14 @@ public class Constants extends Application {
 	public static String SAVE_FILENAME = "pages.dat";
 	public static String DB_FILENAME = "books.db";
 	public static String TABLE_NAME = "books";//고치면 프로바이더 create도 고쳐야	
+
+	public static String CALL_TYPE = "CALL_TYPE";	
+	public static int MAIN_EDIT_CREATE = 0;
+	public static int MAIN_EDIT_LOAD = 1;
+	
+//	public static enum CALL_TYPES {
+//		MAIN_EDIT_CREATE, MAIN_EDIT_LOAD
+//	}
 	
 	public static enum PAGE_TYPE {
 		Title, LeftText, RightText, NULL

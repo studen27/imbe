@@ -24,6 +24,7 @@ public class MainActivity extends Activity {
         createButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
 				Intent intent = new Intent("com.example.imbedproject.v021.editIntent");
+				intent.putExtra(Constants.CALL_TYPE.toString(), Constants.MAIN_EDIT_CREATE);//부르는 타입설정
 				startActivity(intent);
 			}
         });
@@ -65,7 +66,12 @@ public class MainActivity extends Activity {
     		if(resultCode == Activity.RESULT_OK){
     			int sId = intent.getIntExtra("SelectedId", 0);			//선택된 줄의 id, 책이름 설정
     			String sName = intent.getStringExtra("SelectedName");
-//    			Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
+    			
+    			Intent i = new Intent(MainActivity.this, BookEditor.class);
+    			i.putExtra(Constants.CALL_TYPE.toString(), Constants.MAIN_EDIT_LOAD);	//부르는 타입설정
+    			i.putExtra("SelectedId", sId);
+				i.putExtra("SelectedName", sName);    			
+				startActivity(i);			//에딧페이지로 넘김
     		}
     	}    	
     }

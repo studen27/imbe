@@ -287,6 +287,13 @@ public class BookEditor extends Activity implements OnClickListener {
 		pageNumberView.setText(currentPageNumber.toString() + "/"
 				+ maxPageNumber.toString());
 		
+		Intent i = getIntent();							//인텐트를 메인에서 받았을때, 넘겨받은 책이름으로 로드함.
+		int type = i.getIntExtra(Constants.CALL_TYPE, 0);
+		if (type == Constants.MAIN_EDIT_LOAD){		
+			int sId = i.getIntExtra("SelectedId", 0);			//선택된 줄의 id, 책이름 설정
+			String sName = i.getStringExtra("SelectedName");
+			loadWork(sId, sName);
+		}
 	}
 
 	public void onStart() {
