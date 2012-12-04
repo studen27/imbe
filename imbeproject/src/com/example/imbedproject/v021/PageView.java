@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -55,8 +56,8 @@ public class PageView extends SurfaceView implements Callback, Serializable {
     protected PageViewInfo pageViewInfo;	//자기 페이지 정보. 생성시 안만들어지고 takePageViewInfo시 만들어짐
 //    private PageViewThread pageViewThread = null;	//그리는 스레드
     private String myText = "No Text";					//내 페이지 글
-    private Constants.PAGE_TYPE pageType;		//페이지타입: 표지/왼쪽텍스트/오른텍스트
-    EditText editText;
+    private Constants.PAGE_TYPE pageType = Constants.PAGE_TYPE.NULL;		//페이지타입: 표지/왼쪽텍스트/오른텍스트
+    EditText editText = null;
     
     private boolean isEnable;		//편집가능한가     
     private View textView;			//
@@ -190,15 +191,21 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 		
 		if(pageType == Constants.PAGE_TYPE.Title){			//표지
 			view = inflater.inflate(R.layout.book_title,(ViewGroup) findViewById(R.id.book_title_root));
-			 editText = (EditText)view.findViewById(R.id.textTitle);
+			editText = (EditText)view.findViewById(R.id.textTitle);
 		}else if (pageType == Constants.PAGE_TYPE.LeftText){//왼쪽텍스트
 			view = inflater.inflate(R.layout.page_text_left, (ViewGroup) findViewById(R.id.page_text_Left_root));
 			editText = (EditText)view.findViewById(R.id.textLeft);			
-		}else{												//오른텍스트
+		}else if (pageType == Constants.PAGE_TYPE.RightText){//오른텍스트
 			view = inflater.inflate(R.layout.page_text_right,(ViewGroup) findViewById(R.id.page_text_right_root));
 			editText = (EditText)view.findViewById(R.id.textRight);
-		}		
-		editText.setText(myText);
+		}else{
+			view = null;
+			editText = null;
+		}
+		
+		if(editText != null){
+			editText.setText(myText);
+		}
 		
 		this.pageType = pageType;
 		textView = view;

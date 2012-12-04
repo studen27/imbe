@@ -2,6 +2,7 @@ package com.example.imbedproject.v021;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,6 +23,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -275,7 +279,9 @@ public class BookEditor extends Activity implements OnClickListener {
 		
 //		pages.get(0).setTextView(view);
 		pageViewer.addView(pages.get(0));
-		pageViewer.addView(pages.get(0).getTextView());
+		if(pages.get(0).getTextView() != null){
+			pageViewer.addView(pages.get(0).getTextView());
+		}		
 
 		// 페이지번호 설정
 		pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -327,7 +333,10 @@ public class BookEditor extends Activity implements OnClickListener {
 				pageNumberView.setText(currentPageNumber.toString() + "/"
 						+ maxPageNumber.toString());
 				pageViewer.addView(pages.get(currentPageNumber - 1));
-				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
+				if(pages.get(currentPageNumber - 1).getTextView() != null){
+					pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
+				}
+
 			} else {
 				// 첫페이지일 경우 경고메세지 출력
 				Toast.makeText(this, "첫 페이지 입니다.", Toast.LENGTH_SHORT).show();
@@ -342,9 +351,10 @@ public class BookEditor extends Activity implements OnClickListener {
 			if (currentPageNumber == maxPageNumber) {				
 //				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				// 마지막 페이지일경우 최대페이지를 증가
+				pageTypeDialog.show();
 				maxPageNumber++;
 				pages.add(new PageView(this));
-				pageTypeDialog.show();				
+				
 				pageViewer.removeAllViews();
 				currentPageNumber++;
 				pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -357,7 +367,9 @@ public class BookEditor extends Activity implements OnClickListener {
 				pageNumberView.setText(currentPageNumber.toString() + "/"
 						+ maxPageNumber.toString());
 				pageViewer.addView(pages.get(currentPageNumber - 1));
-				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
+				if(pages.get(currentPageNumber - 1).getTextView() != null){
+					pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
+				}
 			}
 			
 			break;
@@ -380,7 +392,10 @@ public class BookEditor extends Activity implements OnClickListener {
 						+ maxPageNumber.toString());				
 				pageViewer.removeAllViews();
 				pageViewer.addView(pages.get(currentPageNumber - 1));
-				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
+				if(pages.get(currentPageNumber - 1).getTextView() != null){
+					pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
+				}
+
 			} else {
 //				pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 				pages.remove(currentPageNumber - 1);
@@ -389,7 +404,9 @@ public class BookEditor extends Activity implements OnClickListener {
 						+ maxPageNumber.toString());				
 				pageViewer.removeAllViews();
 				pageViewer.addView(pages.get(currentPageNumber - 1));
-				pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
+				if(pages.get(currentPageNumber - 1).getTextView() != null){
+					pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
+				}
 			}
 			break;
 
@@ -489,8 +506,7 @@ public class BookEditor extends Activity implements OnClickListener {
 			ArrayList<PageViewInfo> pageInfos = new ArrayList<PageViewInfo>();
 			for (int i = 0; i < maxPageNumber; i++) {
 				pages.get(i).createPageViewInfo();
-				pageInfos.add(pages.get(i).getPageViewInfo());
-				Log.i("bookeditor msg",""+pages.get(i).getPageType());
+				pageInfos.add(pages.get(i).getPageViewInfo());				
 			}
 			bookInfo.setPageViewInfos(pageInfos); // bookInfo에 넣음
 
@@ -613,11 +629,25 @@ public class BookEditor extends Activity implements OnClickListener {
 			} else {
 				prefix = ""; //책이름 ""이면 디폴트 파일명
 			}
+			
+			File file = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + prefix + Constants.SAVE_FILENAME);
+			
+			if(file.exists()){	//이미 있는 파일이면
+				AlertDialog.Builder aDialog = new AlertDialog.Builder(this);
+				aDialog.setTitle("같은 제목이 이미 있습니다. 덮어씌우시겠습니까?");
+				aDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {				
+					}
+				});
+				aDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {				
+					}
+				});
+				AlertDialog ad = aDialog.create();
+				ad.show();				
+			}
 
-			// File file = new
-			// File(getDir(getApplicationContext().getPackageName(),MODE_PRIVATE)
-			// + "/" + Constants.SAVE_FILENAME);
-			// FileOutputStream fos = new FileOutputStream(file);
+//			FileOutputStream fos = new FileOutputStream(file);			
 			FileOutputStream fos = openFileOutput(prefix
 					+ Constants.SAVE_FILENAME, Context.MODE_PRIVATE);
 			// ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -668,6 +698,12 @@ public class BookEditor extends Activity implements OnClickListener {
 				}
 			}
 
+			ContentValues cv = new ContentValues();
+			cv.put(NAME, bookInfo.getBookName());
+			cv.put(AUTHOR, "-");
+			ContentResolver cr = getContentResolver();
+			cr.insert(Uri.parse(MyProvider.URI), cv);
+			
 			Toast.makeText(this, "저장되었습니다!", 0).show();
 		} catch (Exception e) {
 			Log.e("저장실패:", e.getMessage());
@@ -677,15 +713,18 @@ public class BookEditor extends Activity implements OnClickListener {
 	}
 
 	// created 2012/11/29 정민규
-	// 로드
-	//------현재 파일선택해서 불러오게 해야함. 파일목록은 저장시 sqlite로 db에 하던지 아니면, 파일목록 파싱해서 dat파일만 내오던지 해야할듯
+	// 로드 (로드 액티비티 호출)
 	public void loadWork() {
+		Intent intent = new Intent(this, LoadActivity.class);
+		startActivityForResult(intent, 0);		
+	}
+	
+	//로드 (선택된 id, 선택된 name 받음. 이름으로 로드함)     sId는 현재안씀
+	public void loadWork(int sId, String sName) {		
 		try {
-			String prefix; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
-			bookInfo.setBookName((pages.get(0).getEditText().getText().toString()));	//책이름 셋
+			String prefix = sName; // 파일명 앞에붙을이름
 			
-			if (!bookInfo.getBookName().equals("")) { // 책이름 "" 아니면 책이름으로
-				prefix = bookInfo.getBookName();
+			if (!prefix.equals("")) { // 책이름 "" 아니면 책이름으로				
 				// String[] filter_word =
 				// {"","\\.","\\?","\\/","\\~","\\!","\\@","\\#","\\$","\\%","\\^",
 				// "\\&","\\*","\\(","\\)","\\_","\\+","\\=","\\|","\\\\","\\}","\\]","\\{","\\[",
@@ -702,9 +741,6 @@ public class BookEditor extends Activity implements OnClickListener {
 				prefix = ""; // 책이름 ""이면 디폴트 파일명
 			}
 
-			// File file = new
-			// File(getDir(getApplicationContext().getPackageName(),MODE_PRIVATE)
-			// + "/" + Constants.SAVE_FILENAME);
 			// FileInputStream fis = new FileInputStream(file);
 			FileInputStream fis = openFileInput(prefix
 					+ Constants.SAVE_FILENAME);
@@ -826,6 +862,18 @@ public class BookEditor extends Activity implements OnClickListener {
 			pageTypeDialog.dismiss();
 		}
 	}
+	
+	//부른 액티비티(로드)의 응답 받음
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent){
+    	super.onActivityResult(requestCode, resultCode, intent);
+    	if(requestCode == 0){
+    		if(resultCode == Activity.RESULT_OK){
+    			int sId = intent.getIntExtra("SelectedId", 0);
+    			String sName = intent.getStringExtra("SelectedName");			//선택된 줄의 id, 책이름 설정
+    			loadWork(sId, sName);
+    		}
+    	}    	
+    }
 	
 	public void onResume() {
 		Log.i("msg","BookEditor onResume");

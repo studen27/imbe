@@ -9,14 +9,13 @@ public class Constants extends Application {
 	public static int ANCHOR_SIZE = 20; // 이것의 두배가 앵커크기
 	public static int IMG_EDGE_RESTRICT = 20; // 이미지 최소크기
 	public static int IMG_MIN_SIZE = 40;
-	public static String PAKAGE_NAME = "com.example.pagemanager";//그냥씀
+	public static String PAKAGE_NAME = "com.example.imbedproject.v021";//그냥씀
 	public static String SAVE_FILENAME = "pages.dat";
 	public static String DB_FILENAME = "books.db";
-	public static String TABLE_NAME = "books";//고치면 프로바이더 create도 고쳐야
-	static final String URI = Constants.PAKAGE_NAME + "/" + Constants.TABLE_NAME;
+	public static String TABLE_NAME = "books";//고치면 프로바이더 create도 고쳐야	
 	
 	public static enum PAGE_TYPE {
-		Title, LeftText, RightText
+		Title, LeftText, RightText, NULL
 	}
 
 	public static enum ANCHOR_TYPE {

@@ -427,10 +427,10 @@ public class BookReader extends Activity implements OnClickListener {
 				}
 			}
 
-			Toast.makeText(this, "저장되었습니다!", 0).show();
+			Toast.makeText(this, bookInfo.getBookName() + "저장되었습니다!", 0).show();
 		} catch (Exception e) {
 			Log.e("저장실패:", e.getMessage());
-			Toast.makeText(this, "저장실패!", 0).show();
+			Toast.makeText(this, bookInfo.getBookName() + "저장실패!", 0).show();
 		}
 
 	}
@@ -529,10 +529,10 @@ public class BookReader extends Activity implements OnClickListener {
 					+ maxPageNumber.toString());
 			pageViewer.addView(pages.get(currentPageNumber - 1));
 			pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
-			Toast.makeText(this, "불러왔습니다", 0).show();
+			Toast.makeText(this, bookInfo.getBookName() + "불러왔습니다", 0).show();
 		}catch(Exception e){
 			Log.e("불러오기실패:", e.getMessage());
-			Toast.makeText(this, "불러오기실패!", 0).show();
+			Toast.makeText(this, bookInfo.getBookName() + "불러오기실패!", 0).show();
 		}
 	}
 	

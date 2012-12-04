@@ -29,12 +29,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <service android:name="BgmService">
-            <intent-filter>
-                <action android:name="com.example.pagemanager.BgmService" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
         <activity android:name="BookReader"
             android:screenOrientation="landscape">
             <intent-filter>
@@ -42,6 +36,20 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name="LoadActivity"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="com.example.imbedproject.loadIntent" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>            
+        </activity>
+
+        <service android:name="BgmService">
+            <intent-filter>
+                <action android:name="com.example.pagemanager.BgmService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
         
         <receiver android:name="MyReceiver" >
             <intent-filter>
@@ -50,7 +58,12 @@
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" >
                 </action>
             </intent-filter>
-        </receiver>
+        </receiver>        
+        
+        <provider
+             android:name="MyProvider"
+             android:authorities="com.example.imbedproject.v021">            
+        </provider>
     </application>
 
 </manifest>

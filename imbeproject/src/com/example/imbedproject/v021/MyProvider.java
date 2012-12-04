@@ -17,23 +17,21 @@ import android.util.Log;
 //created date : 2012/12/04
 //last modify : 2012/12/04
 public class MyProvider extends ContentProvider {
-	static final String URI = Constants.PAKAGE_NAME + "/" + Constants.TABLE_NAME;
+	static final String URI = "content://" + Constants.PAKAGE_NAME + "/" + Constants.TABLE_NAME;
 	static final Uri CONTENT_URI = Uri.parse(URI);
 	static final String DB_NAME = Constants.DB_FILENAME;
 	static final int DB_VERTION = 1;
 	static final int MYDB_DATA = 1;
-	static final UriMatcher uriMatcher;
+	static final UriMatcher uriMatcher;	
 	
-	//	private static final UriMatcher uriMather;	
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(Constants.PAKAGE_NAME, Constants.TABLE_NAME, MYDB_DATA);
 	}
 	
-	static final String KEY = "_ID";
-	static final String NAME = "NAME";
-	static final String DISPLAY_NAME = "DNAME";
-	static final String IMG_FILENAME = "IMG_FILENAME";
+	static final String ID = "_id";
+	static final String NAME = "name";
+	static final String AUTHOR = "author";
 	
 	private SQLiteDatabase db;	
 	/////////////////////////////////////////////////////////////////////////	
@@ -44,10 +42,9 @@ public class MyProvider extends ContentProvider {
 		SQLiteOpenHelper helper = new SQLiteOpenHelper(context, DB_NAME, null, DB_VERTION) {
 			
 		static final String DB_CREATE_QUERY = "Create Table " + "books" + "("
-				+ KEY + " INTEGER PRIMARY KEY AUTOINCREMENT," 
+				+ ID + " INTEGER PRIMARY KEY AUTOINCREMENT," 
 				+ NAME + " TEXT,"
-				+ DISPLAY_NAME + " TEXT,"
-				+ IMG_FILENAME + " TEXT"
+				+ AUTHOR + " TEXT"
 				+ ");";	
 
 			@Override
@@ -83,7 +80,7 @@ public class MyProvider extends ContentProvider {
 		Uri curi;
 		switch (uriMatcher.match(uri)) {
 		case MYDB_DATA:
-			long id = db.insert(Constants.TABLE_NAME, KEY, values);
+			long id = db.insert(Constants.TABLE_NAME, ID, values);
 			if (id > 0) {
 				curi = ContentUris.withAppendedId(CONTENT_URI, id);
 				Log.i("msg",curi.toString());
@@ -95,7 +92,6 @@ public class MyProvider extends ContentProvider {
 
 		default:
 			throw new IllegalArgumentException("Unsupport URI:" + uri);
-
 		}
 		return curi;
 	}
@@ -109,7 +105,7 @@ public class MyProvider extends ContentProvider {
 
 		String orderBy;
 		if (TextUtils.isEmpty(sortOrder)) {
-			orderBy = KEY;
+			orderBy = ID;
 		} else {
 			orderBy = sortOrder;
 		}
