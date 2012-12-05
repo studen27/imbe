@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -17,8 +18,10 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
@@ -67,8 +70,10 @@ public class BookEditor extends Activity implements OnClickListener {
 	private String preBgFileName;
 	private LayoutInflater inflater;
 	private boolean isStart = true;		//처음 시작하나. (onResume때문)
-	SimpleCursorAdapter adapter;
-
+	SimpleCursorAdapter adapter;		//리스트 항목 정보얻기용
+	
+	static final int DO_SQL = 0;
+	static final int NO_SQL = 1;
 	static final String KEY = "_ID";
 	static final String NAME = "NAME";
 	static final String AUTHOR = "AUTHOR";
@@ -244,6 +249,7 @@ public class BookEditor extends Activity implements OnClickListener {
 
 		pageNumberView = (TextView) findViewById(R.id.page_number);
 		pageViewer = (FrameLayout) findViewById(R.id.farme);
+
 		pages = new ArrayList<PageView>();
 
 		bookInfo = new BookInfo();
@@ -615,16 +621,81 @@ public class BookEditor extends Activity implements OnClickListener {
 	// created 2012/11/29 정민규
 	// 세이브  (파일명 앞에 책이름 붙여 저장.     ~_pages.dat + ?_?.PNG 들로 저장)
 	public void saveWork() {
+		String prefix; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
+		bookInfo.setBookName((pages.get(0).getEditText().getText().toString()));	//책이름 셋
+
+//		pages.get(currentPageNumber - 1).getRootView().setDrawingCacheEnabled(true);	//캡쳐소스이나 현재는 제대로안됨. 스레드로 바꿔도 동일
+//		Bitmap bm = pages.get(currentPageNumber - 1).getRootView().getDrawingCache();	//PageView는 검은화면으로 캡쳐됨
+//		String bmName; // 파일명
+//		FileOutputStream out;
+//		bmName = "1234.PNG"; // 파일명 : 책이름+페이지번호+이미지번호
+//		try {
+//			out = openFileOutput(bmName, Context.MODE_PRIVATE);
+//			bm.compress(CompressFormat.PNG, 100, out); // 파일로 저장
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		if (!bookInfo.getBookName().equals("")) { // 책이름 "" 아니면 책이름으로				
+			prefix = bookInfo.getBookName();
+			// String[] filter_word =
+			// {"","\\.","\\?","\\/","\\~","\\!","\\@","\\#","\\$","\\%","\\^",
+			// "\\&","\\*","\\(","\\)","\\_","\\+","\\=","\\|","\\\\","\\}","\\]","\\{","\\[",
+			// "\\\"","\\'","\\:","\\;","\\<","\\,","\\>","\\.","\\?","\\/"};
+			String[] filter_word = { "\\p{Space} ", " ", "\\?", "\\/",
+					"\\*", "\\+", "\\|", "\\\\", "\\\"", "\\:", "\\<",
+					"\\>", "\\?", "\\/" };
+			for (int i = 0; i < filter_word.length; i++) { // 파일명으로 쓸수없는 특수문자를 "_"로 교체
+				prefix = prefix.replaceAll(filter_word[i], "_");
+			}
+
+			prefix = prefix + "_";
+		} else {
+			prefix = ""; //책이름 ""이면 디폴트 파일명
+		}
+
+//		File file = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + prefix + Constants.SAVE_FILENAME);
+		
+	    ContentResolver cr = getContentResolver();
+		Cursor cursor = cr.query(MyProvider.CONTENT_URI, new String[] { MyProvider.ID, MyProvider.NAME, MyProvider.AUTHOR },
+				MyProvider.NAME + "=?", new String[]{bookInfo.getBookName()}, null);		
+		
+		if(cursor.getCount() > 0){	//이미 있으면
+			AlertDialog.Builder aDialog = new AlertDialog.Builder(this);
+			aDialog.setTitle("같은 제목이 이미 있습니다. 덮어씌우시겠습니까?");
+			aDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					saveWork2(NO_SQL);	//변수넘기기 어려워서
+				}
+			});
+			aDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+				}
+			});
+			aDialog.setOnCancelListener(new OnCancelListener() {	//취소시			
+				public void onCancel(DialogInterface arg0) {
+				}
+			});				
+			AlertDialog ad = aDialog.create();
+			ad.show();
+		}else{
+			saveWork2(DO_SQL);
+		}
+	}
+
+	//세이브작업2 (책이름 받아서 그걸로 저장)
+	public void saveWork2(int isDoSql) {
 		try {
 			String prefix; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
 			bookInfo.setBookName((pages.get(0).getEditText().getText().toString()));	//책이름 셋
+
+			if(isDoSql == NO_SQL){	//덮어씌우기일경우
+				deleteWork(bookInfo.getBookName());	//기존 저장된 이미지들 삭제
+			}
 			
 			if (!bookInfo.getBookName().equals("")) { // 책이름 "" 아니면 책이름으로				
 				prefix = bookInfo.getBookName();
-				// String[] filter_word =
-				// {"","\\.","\\?","\\/","\\~","\\!","\\@","\\#","\\$","\\%","\\^",
-				// "\\&","\\*","\\(","\\)","\\_","\\+","\\=","\\|","\\\\","\\}","\\]","\\{","\\[",
-				// "\\\"","\\'","\\:","\\;","\\<","\\,","\\>","\\.","\\?","\\/"};
 				String[] filter_word = { "\\p{Space} ", " ", "\\?", "\\/",
 						"\\*", "\\+", "\\|", "\\\\", "\\\"", "\\:", "\\<",
 						"\\>", "\\?", "\\/" };
@@ -638,21 +709,6 @@ public class BookEditor extends Activity implements OnClickListener {
 			}
 			
 			File file = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + prefix + Constants.SAVE_FILENAME);
-			
-			if(file.exists()){	//이미 있는 파일이면
-				AlertDialog.Builder aDialog = new AlertDialog.Builder(this);
-				aDialog.setTitle("같은 제목이 이미 있습니다. 덮어씌우시겠습니까?");
-				aDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {				
-					}
-				});
-				aDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {				
-					}
-				});
-				AlertDialog ad = aDialog.create();
-				ad.show();				
-			}
 
 //			FileOutputStream fos = new FileOutputStream(file);			
 			FileOutputStream fos = openFileOutput(prefix
@@ -705,18 +761,19 @@ public class BookEditor extends Activity implements OnClickListener {
 				}
 			}
 
-			ContentValues cv = new ContentValues();
-			cv.put(NAME, bookInfo.getBookName());
-			cv.put(AUTHOR, "-");
-			ContentResolver cr = getContentResolver();
-			cr.insert(Uri.parse(MyProvider.URI), cv);
+			if(isDoSql != NO_SQL){	//덮어씌우기 아닐경우
+				ContentValues cv = new ContentValues();	//SQLITE로 DB에 추가
+				cv.put(NAME, bookInfo.getBookName());
+				cv.put(AUTHOR, "-");
+				ContentResolver cr = getContentResolver();
+				cr.insert(Uri.parse(MyProvider.URI), cv);
+			}
 			
 			Toast.makeText(this, "저장되었습니다!", 0).show();
 		} catch (Exception e) {
 			Log.e("저장실패:", e.getMessage());
 			Toast.makeText(this, "저장실패!", 0).show();
-		}
-
+		}		
 	}
 
 	// created 2012/11/29 정민규
@@ -732,10 +789,6 @@ public class BookEditor extends Activity implements OnClickListener {
 			String prefix = sName; // 파일명 앞에붙을이름
 			
 			if (!prefix.equals("")) { // 책이름 "" 아니면 책이름으로				
-				// String[] filter_word =
-				// {"","\\.","\\?","\\/","\\~","\\!","\\@","\\#","\\$","\\%","\\^",
-				// "\\&","\\*","\\(","\\)","\\_","\\+","\\=","\\|","\\\\","\\}","\\]","\\{","\\[",
-				// "\\\"","\\'","\\:","\\;","\\<","\\,","\\>","\\.","\\?","\\/"};
 				String[] filter_word = { "\\p{Space} ", " ", "\\?", "\\/",
 						"\\*", "\\+", "\\|", "\\\\", "\\\"", "\\:", "\\<",
 						"\\>", "\\?", "\\/" };
@@ -748,10 +801,8 @@ public class BookEditor extends Activity implements OnClickListener {
 				prefix = ""; // 책이름 ""이면 디폴트 파일명
 			}
 
-			// FileInputStream fis = new FileInputStream(file);
 			FileInputStream fis = openFileInput(prefix
 					+ Constants.SAVE_FILENAME);
-			// ObjectInputStream ois = new ObjectInputStream(fis);
 			ObjectInputStream ois = new ObjectInputStream(
 					new BufferedInputStream(fis));
 
@@ -820,6 +871,73 @@ public class BookEditor extends Activity implements OnClickListener {
 		}
 	}
 	
+	//삭제작업. DB는 놔둠 (덮어씌우기시)
+	private void deleteWork(String sName) {	//책이름 받음
+		try {
+			String prefix = sName; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
+
+			if (!prefix.equals("")) { // 책이름 "" 아니면 책이름으로				
+				String[] filter_word = { "\\p{Space} ", " ", "\\?", "\\/",
+						"\\*", "\\+", "\\|", "\\\\", "\\\"", "\\:", "\\<",
+						"\\>", "\\?", "\\/" };
+				for (int i = 0; i < filter_word.length; i++) { // 파일명으로 쓸수없는 특수문자를 "_"로 교체
+					prefix = prefix.replaceAll(filter_word[i], "_");
+				}
+
+				prefix = prefix + "_";
+			} else {
+				prefix = ""; // 책이름 ""이면 디폴트 파일명
+			}
+			
+			FileInputStream fis = openFileInput(prefix
+					+ Constants.SAVE_FILENAME);
+			// ObjectInputStream ois = new ObjectInputStream(fis);
+			ObjectInputStream ois = new ObjectInputStream(
+					new BufferedInputStream(fis));
+
+			BookInfo bookInfo = (BookInfo) ois.readObject();	//임시변수 bookInfo따로씀
+			ArrayList<PageView> pages = new ArrayList<PageView>();					//임시변수 pages 따로씀
+
+			if (ois != null) { // 스트림 닫기
+				try {
+					ois.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			// 불러온정보 셋팅(각 페이지당 이미지 수 셋팅)
+			int maxPageNumber = bookInfo.getPageInfos().size();
+			//		pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
+			for (int i = 0; i < maxPageNumber; i++) { // 불러온 페이지정보대로 셋팅
+				PageView pv = new PageView(this);
+				pv.setPageViewInfo(bookInfo.getPageInfos().get(i)); // 페이지정보 줌
+				pv.setByPageViewInfo();								// 페이지정보대로 페이지 셋
+//				pv.createTextView(pv.getPageType(), inflater);		//각페이지 text 셋
+				pages.add(pv);
+			}
+			
+			// 이미지들 삭제			
+			String bmName; // 파일명
+			File tempFile;			
+			for (int i = 0; i < maxPageNumber; i++) { // 각 페이지에
+				for (int j = 0; j < pages.get(i).getImages().size(); j++) { // 각 이미지를
+					bmName = prefix + i + "_" + j + "" + ".PNG"; // 파일명 : 책이름+페이지번호+이미지번호
+					
+					tempFile = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + bmName);
+					Log.i("bookeditor msg",getApplicationContext().getFilesDir().getPath().toString() + "/" + bmName);
+					if(tempFile.exists()){
+						tempFile.delete();	//삭제시도
+					}
+				}
+			}			
+
+			Toast.makeText(this, "기존 데이터 삭제성공", Toast.LENGTH_SHORT).show();
+		}catch(Exception e){
+			Toast.makeText(this, "기존 데이터 이미 삭제됨", Toast.LENGTH_SHORT).show();
+		}
+	}
+
 	//배경선택 리스너
 	private class BackgroundSelectListener implements OnClickListener {
 
@@ -910,6 +1028,5 @@ public class BookEditor extends Activity implements OnClickListener {
 	public void onDestroy() {
 		Log.i("msg","BookEditor onDestroy");
 		super.onDestroy();
-	}
-
+	}	
 }

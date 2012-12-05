@@ -117,7 +117,12 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	
 	//suface종료시
 	public void surfaceDestroyed(SurfaceHolder holder) {	//여기서join하면 에러, stopThread() 에서 함
-		Log.i("msg","PageView surfaceDestoyed");		
+		Log.i("msg","PageView surfaceDestoyed");
+		if(bgBitmap != null){
+			bgBitmap.recycle();		//bg그림메모리반환
+		}
+		destroyDrawingCache();		
+		
 //		boolean retry = true;
 //		pageViewThread.setRunning(false);
 //		

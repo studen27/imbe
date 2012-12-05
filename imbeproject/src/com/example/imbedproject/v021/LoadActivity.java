@@ -93,7 +93,7 @@ public class LoadActivity extends Activity {
 		});        
 	}
 
-	//삭제작업
+	//삭제작업_DB에서도 삭제
 	private void deleteWork(int sId, String sName) {	//선택된줄 id, 책이름 받음
 		try {
 			Log.i("LoadActivity msg","sid : " + sId + " sName : " + sName);
