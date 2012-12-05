@@ -63,8 +63,6 @@ public class BookReader extends Activity implements OnClickListener {
 	private FileTransportManager ftm; // 파일 전송 관리자
 	private LocationManager locationManager;
 	private LocationListener locationListener;
-	double lati = 0.0;
-	double longi = 0.0;
 
 	static final int DO_SQL = 0;
 	static final int NO_SQL = 1;
@@ -101,6 +99,28 @@ public class BookReader extends Activity implements OnClickListener {
 		pages = new ArrayList<PageView>();
 
 		bookInfo = new BookInfo();
+		
+		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+	    locationListener = new LocationListener() {
+
+			public void onLocationChanged(Location location) {
+				Log.d("Location", location.toString());
+			}
+
+			public void onProviderDisabled(String arg0) {
+				// TODO Auto-generated method stub
+			}
+
+			public void onProviderEnabled(String arg0) {
+				// TODO Auto-generated method stub
+			}
+
+			public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+				
+			}
+	    };
+	     
+	    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
 
 		init();
 	}
@@ -246,39 +266,32 @@ public class BookReader extends Activity implements OnClickListener {
 			Log.i("msg", valueStr);
 			break;
 
+		// 책 업로드
+		// GPS로부터 좌표를 읽어들여 서버로 전송한다.
 		case R.id.upload_button:
-//			Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//			
-//			double lati = l.getLatitude();
-//			double longi = l.getLongitude();
-			
-//			Toast.makeText(getBaseContext(),
-//					l.getLatitude() + " , " + l.getLongitude(),
-//					Toast.LENGTH_LONG).show();
-		
-	        GeoPoint gp = new GeoPoint((int)lati, (int)longi);
-	        Log.i("BookReader msg","ll : " + lati + "," + longi);			
-	        Log.i("BookReader msg","gp : " + gp.getLatitudeE6() + "," + gp.getLongitudeE6());
-			
-//			if(l != null) {
-	        if(lati != 0.0 && longi != 0.0){
+			Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-			}
-	        
-			String path = ftm.upload(getFilesDir().getPath().toString() + "/",
-					bookInfo.getBookFileName(), 37230281, 127183983);
-			for (int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
-				try {
-					ftm.DoImageUpload(path, getFilesDir().getPath().toString()
-							+ "/" + bookInfo.getUploadFileNames().get(i));
-				} catch (IOException e) {
-					Toast.makeText(getApplicationContext(), "뭔가 잘못되었어요!",
-							Toast.LENGTH_SHORT).show();
-					e.printStackTrace();
+			if(l != null) {
+				int latitude = (int)(l.getLatitude() * 1000000);
+				int longitude = (int)(l.getLongitude() * 1000000);
+				String path = ftm.upload(getFilesDir().getPath().toString() + "/",
+						bookInfo.getBookFileName(), latitude, longitude);
+				for (int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
+					try {
+						ftm.DoImageUpload(path, getFilesDir().getPath().toString()
+								+ "/" + bookInfo.getUploadFileNames().get(i));
+					} catch (IOException e) {
+						Toast.makeText(getApplicationContext(), "뭔가 잘못되었어요!",
+								Toast.LENGTH_SHORT).show();
+						e.printStackTrace();
+					}
 				}
+				Toast.makeText(getApplicationContext(), "업로드 성공!",
+						Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(getApplicationContext(), "GPS 정보를 받지 못하였습니다.", Toast.LENGTH_LONG).show();
 			}
-			Toast.makeText(getApplicationContext(), "업로드 성공!",
-					Toast.LENGTH_SHORT).show();
+			
 			break;
 		}
 	}
@@ -802,8 +815,7 @@ public class BookReader extends Activity implements OnClickListener {
 	public class MyLocationListener implements LocationListener {
 
 		public void onLocationChanged(Location l) {
-			lati = l.getLatitude();
-			longi = l.getLongitude();
+			Log.d("Location", l.toString());
 		}
 
 		public void onProviderDisabled(String provider) {

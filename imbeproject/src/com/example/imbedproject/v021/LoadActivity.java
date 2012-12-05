@@ -64,7 +64,7 @@ public class LoadActivity extends Activity {
 			}
 	    };
 	     
-	    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+	    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
 	    
 	    Button findBook = (Button) findViewById(R.id.find_book);
 	    findBook.setOnClickListener(new Button.OnClickListener() {
@@ -221,5 +221,12 @@ public class LoadActivity extends Activity {
 			ContentResolver cr = getContentResolver();
 			cr.delete(MyProvider.CONTENT_URI, "_id=?", new String[]{sId+""});	//db에서 해당 id의 투플 삭제
 		}
+	}
+	
+	public void onDestroy() {
+		Log.i("msg", "BookEditor onDestroy");
+		super.onDestroy();
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		locationManager.removeUpdates(locationListener);
 	}
 }
