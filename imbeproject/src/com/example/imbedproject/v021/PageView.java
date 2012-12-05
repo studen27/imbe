@@ -26,7 +26,7 @@ import android.widget.EditText;
 import com.example.imbedproject.v021.Constants.ANCHOR_TYPE;
 import com.example.imbedproject.v021.Constants.DRAWING_STATE;
  
-//created by 60022495 정민규setBgImg
+//created by 60022495 정민규
 //created date : 2012/11/17
 //last modify : 2012/11/23
 public class PageView extends SurfaceView implements Callback, Serializable {

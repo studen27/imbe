@@ -10,7 +10,7 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.IBinder;
 
-//created by 60022495 Á¤¹Î±Ô
+//created by 60022495 ì •ë¯¼ê·œ
 //created date : 2012/11/28
 //last modify : 2012/11/28
 public class BgmService extends Service {
