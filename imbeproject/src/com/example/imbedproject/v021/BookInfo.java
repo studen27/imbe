@@ -10,6 +10,8 @@ public class BookInfo implements Serializable {
 	private static final long serialVersionUID = 5874151527970460574L;	//직렬화 용
 	String bookName;	//책제목
 	ArrayList<PageViewInfo> pageInfos;	//페이지정보 객체 배열
+	String bookFileName;
+	ArrayList<String> uploadFileNames;
 	
 	//constructor
 	public BookInfo() {
@@ -30,4 +32,16 @@ public class BookInfo implements Serializable {
 	public String getBookName() {
 		return bookName;
 	}
+	public String getBookFileName() {
+		return bookFileName;
+	}
+	public void setBookFileName(String bookFileName) {
+		this.bookFileName = bookFileName;
+	}
+	public ArrayList<String> getUploadFileNames() {
+		return uploadFileNames;
+	}
+	public void setUploadFileNames(ArrayList<String> uploadFileNames) {
+		this.uploadFileNames = uploadFileNames;
+	}	
 }

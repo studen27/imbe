@@ -32,8 +32,8 @@ public class MainActivity extends Activity {
         Button readButton = (Button) findViewById(R.id.read_start);
         readButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View arg0) {
-				Intent intent = new Intent(MainActivity.this, LoadActivity.class);
-				startActivityForResult(intent, 0);
+				Intent intent = new Intent(MainActivity.this, BookReader.class);
+				startActivity(intent);
 			}
         });
         

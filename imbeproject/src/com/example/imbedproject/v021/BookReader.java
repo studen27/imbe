@@ -78,7 +78,7 @@ public class BookReader extends Activity implements OnClickListener {
 		// Button 참조변수
 		prev_butten = (Button) findViewById(R.id.prev_button);
 		next_button = (Button) findViewById(R.id.next_button);
-		bgmBtn = (Button) findViewById(R.id.bgmBtn);
+		bgmBtn = (Button) findViewById(R.id.reader_bgmBtn);
 
 		pageNumberView = (TextView) findViewById(R.id.page_number);
 		pageViewer = (FrameLayout) findViewById(R.id.farme);
@@ -116,19 +116,8 @@ public class BookReader extends Activity implements OnClickListener {
 		// 페이지번호 설정
 		pageNumberView.setText(currentPageNumber.toString() + "/"
 				+ maxPageNumber.toString());
-		
-		Intent i = getIntent();							//인텐트를 메인에서 받았을때, 넘겨받은 책이름으로 로드함.
-		int type = i.getIntExtra(Constants.CALL_TYPE, 0);
-		if (type == Constants.MAIN_EDIT_LOAD){		
-			int sId = i.getIntExtra("SelectedId", 0);			//선택된 줄의 id, 책이름 설정
-			String sName = i.getStringExtra("SelectedName");
-			loadWork(sId, sName);
-		}
-		
-		Intent intent = getIntent();
-		int sId = intent.getIntExtra("SelectedId", 0);
-		String sName = intent.getStringExtra("SelectedName");			//선택된 줄의 id, 책이름 설정
-		loadWork(sId, sName);
+
+		loadWork();
 	}
 
 	public void onStart() {

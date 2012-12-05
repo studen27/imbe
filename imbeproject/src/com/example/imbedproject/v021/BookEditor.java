@@ -293,13 +293,13 @@ public class BookEditor extends Activity implements OnClickListener {
 		pageNumberView.setText(currentPageNumber.toString() + "/"
 				+ maxPageNumber.toString());
 		
-		Intent i = getIntent();							//인텐트를 메인에서 받았을때, 넘겨받은 책이름으로 로드함.
-		int type = i.getIntExtra(Constants.CALL_TYPE, 0);
-		if (type == Constants.MAIN_EDIT_LOAD){		
-			int sId = i.getIntExtra("SelectedId", 0);			//선택된 줄의 id, 책이름 설정
-			String sName = i.getStringExtra("SelectedName");
-			loadWork(sId, sName);
-		}
+//		Intent i = getIntent();							//인텐트를 메인에서 받았을때, 넘겨받은 책이름으로 로드함.
+//		int type = i.getIntExtra(Constants.CALL_TYPE, 0);
+//		if (type == Constants.MAIN_EDIT_LOAD){		
+//			int sId = i.getIntExtra("SelectedId", 0);			//선택된 줄의 id, 책이름 설정
+//			String sName = i.getStringExtra("SelectedName");
+//			loadWork(sId, sName);
+//		}
 	}
 
 	public void onStart() {
@@ -485,11 +485,15 @@ public class BookEditor extends Activity implements OnClickListener {
 			String prefix; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
 			prefix = "";					//------------ 그냥 세이브와 여기정도만 다름
 
+			bookInfo.setBookFileName(prefix + Constants.SAVE_FILENAME);		//저장될 정보파일 이름 셋 . pages.dat 임
+
 			FileOutputStream fos = openFileOutput(prefix
 					+ Constants.SAVE_FILENAME, Context.MODE_PRIVATE);
 			ObjectOutputStream oos = new ObjectOutputStream(
 					new BufferedOutputStream(fos));
 
+			ArrayList<String> uploadFileNames = new ArrayList<String>();	//bookInfo에 저장할 업로드파일배열
+			
 			// 이미지를 기기에 저장. DDMS에 data/data/패키지명/files/ 에 저장됨
 			Bitmap bm;
 			String bmName; // 파일명
@@ -503,6 +507,7 @@ public class BookEditor extends Activity implements OnClickListener {
 
 					try {
 						bm.compress(CompressFormat.PNG, 100, out); // 파일로 저장
+						uploadFileNames.add(bmName);						//bookInfo에 저장할 업로드파일배열에 추가
 					} catch (Exception e) {
 						e.printStackTrace();
 					} finally {
@@ -514,6 +519,8 @@ public class BookEditor extends Activity implements OnClickListener {
 					}
 				}
 			}
+
+			bookInfo.setUploadFileNames(uploadFileNames);						//bookInfo에 저장할 업로드파일배열 저장
 
 			// 페이지들 정보 셋팅
 			ArrayList<PageViewInfo> pageInfos = new ArrayList<PageViewInfo>();
@@ -604,7 +611,13 @@ public class BookEditor extends Activity implements OnClickListener {
 						}
 					}
 				}
-			}			
+			}
+	
+			//로그로 파일목록 제대로 로드되나 확인
+			Log.i("Book Editor msg", bookInfo.getBookFileName());
+			for(String s : bookInfo.getUploadFileNames()){
+				Log.i("Book Editor msg", s);
+			}
 
 			pageViewer.removeAllViews();
 			pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -654,9 +667,9 @@ public class BookEditor extends Activity implements OnClickListener {
 		} else {
 			prefix = ""; //책이름 ""이면 디폴트 파일명
 		}
-
-//		File file = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + prefix + Constants.SAVE_FILENAME);
 		
+		bookInfo.setBookFileName(prefix + Constants.SAVE_FILENAME);		//저장될 정보파일 이름 셋 ex) ~_pages.dat
+
 	    ContentResolver cr = getContentResolver();
 		Cursor cursor = cr.query(MyProvider.CONTENT_URI, new String[] { MyProvider.ID, MyProvider.NAME, MyProvider.AUTHOR },
 				MyProvider.NAME + "=?", new String[]{bookInfo.getBookName()}, null);		
@@ -684,18 +697,21 @@ public class BookEditor extends Activity implements OnClickListener {
 		}
 	}
 
-	//세이브작업2 (책이름 받아서 그걸로 저장)
+	//세이브작업2 (책이름 받아서 그걸로 저장). saveWork1에서 호출
 	public void saveWork2(int isDoSql) {
 		try {
 			String prefix; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
-			bookInfo.setBookName((pages.get(0).getEditText().getText().toString()));	//책이름 셋
 
 			if(isDoSql == NO_SQL){	//덮어씌우기일경우
 				deleteWork(bookInfo.getBookName());	//기존 저장된 이미지들 삭제
 			}
-			
+
 			if (!bookInfo.getBookName().equals("")) { // 책이름 "" 아니면 책이름으로				
 				prefix = bookInfo.getBookName();
+				// String[] filter_word =
+				// {"","\\.","\\?","\\/","\\~","\\!","\\@","\\#","\\$","\\%","\\^",
+				// "\\&","\\*","\\(","\\)","\\_","\\+","\\=","\\|","\\\\","\\}","\\]","\\{","\\[",
+				// "\\\"","\\'","\\:","\\;","\\<","\\,","\\>","\\.","\\?","\\/"};
 				String[] filter_word = { "\\p{Space} ", " ", "\\?", "\\/",
 						"\\*", "\\+", "\\|", "\\\\", "\\\"", "\\:", "\\<",
 						"\\>", "\\?", "\\/" };
@@ -708,15 +724,14 @@ public class BookEditor extends Activity implements OnClickListener {
 				prefix = ""; //책이름 ""이면 디폴트 파일명
 			}
 			
-			File file = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + prefix + Constants.SAVE_FILENAME);
-
+//			File file = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + bookInfo.getBookFileName());
 //			FileOutputStream fos = new FileOutputStream(file);			
-			FileOutputStream fos = openFileOutput(prefix
-					+ Constants.SAVE_FILENAME, Context.MODE_PRIVATE);
+			FileOutputStream fos = openFileOutput(bookInfo.getBookFileName(), Context.MODE_PRIVATE);
 			// ObjectOutputStream oos = new ObjectOutputStream(fos);
-			ObjectOutputStream oos = new ObjectOutputStream(
-					new BufferedOutputStream(fos));
+			ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(fos));
 
+			ArrayList<String> uploadFileNames = new ArrayList<String>();	//bookInfo에 저장할 업로드파일배열
+			
 			// 이미지를 기기에 저장. DDMS에 data/data/패키지명/files/ 에 저장됨
 			Bitmap bm;
 			String bmName; // 파일명
@@ -729,7 +744,8 @@ public class BookEditor extends Activity implements OnClickListener {
 					bm = pages.get(i).getImages().get(j).getBd().getBitmap(); // 원본그림 가져옴
 
 					try {
-						bm.compress(CompressFormat.PNG, 100, out); // 파일로 저장
+						bm.compress(CompressFormat.PNG, 100, out); // 파일로 저장						
+						uploadFileNames.add(bmName);						//bookInfo에 저장할 업로드파일배열에 추가
 					} catch (Exception e) {
 						e.printStackTrace();
 					} finally {
@@ -741,6 +757,8 @@ public class BookEditor extends Activity implements OnClickListener {
 					}
 				}
 			}
+			
+			bookInfo.setUploadFileNames(uploadFileNames);						//bookInfo에 저장할 업로드파일배열 저장
 
 			// 페이지들 정보 셋팅
 			ArrayList<PageViewInfo> pageInfos = new ArrayList<PageViewInfo>();
@@ -859,6 +877,12 @@ public class BookEditor extends Activity implements OnClickListener {
 				}
 			}
 
+			//로그로 파일목록 제대로 로드되나 확인
+			Log.i("Book Editor msg", bookInfo.getBookFileName());
+			for(String s : bookInfo.getUploadFileNames()){
+				Log.i("Book Editor msg", s);
+			}
+			
 			pageViewer.removeAllViews();
 			pageNumberView.setText(currentPageNumber.toString() + "/"
 					+ maxPageNumber.toString());
