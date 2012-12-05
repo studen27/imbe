@@ -14,6 +14,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
+import com.example.imbedproject.v021.BookEditor;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.OverlayItem;
 
@@ -60,7 +61,7 @@ public class ImageItemizedOverlay extends ItemizedOverlay {
 		InputStream inputStream;
 		try {
 			inputStream = new URL(SERVER_ADDRESS + "/" + item.getSnippet()).openStream();
-			File file = new File("/data/data/com.example.imbedproject.v021/files/" + item.getSnippet());
+			File file = new File(mContext.getFilesDir().getPath().toString() + "/" + item.getSnippet());
 			OutputStream out = new FileOutputStream(file);
 			writeFile(inputStream, out);
 			out.close();

@@ -13,13 +13,13 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
@@ -38,6 +38,14 @@ public class LoadActivity extends Activity {
 	    
 	    pages = new ArrayList<PageView>();//초기화
 
+	    Button findBook = (Button) findViewById(R.id.find_book);
+	    findBook.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View arg0) {
+				Intent intent = new Intent("com.example.imbedproject.v021.findIntent");
+				startActivity(intent);
+			}
+	    });
+	    
 		ListView lv = (ListView) findViewById(R.id.loadList);
 		
 	    ContentResolver cr = getContentResolver();
@@ -84,7 +92,7 @@ public class LoadActivity extends Activity {
 		        String sName = c.getString(1);			//해당 줄의 해당 번재 컬럼 가져옴
 		        Log.i("msg",sId+"");
 		        
-				Intent intent = new Intent();
+				Intent intent = new Intent("com.example.imbedproject.v021.readIntent");
 				intent.putExtra("SelectedId", sId);
 				intent.putExtra("SelectedName", sName);
 				setResult(Activity.RESULT_OK, intent);		//응답설정	    		

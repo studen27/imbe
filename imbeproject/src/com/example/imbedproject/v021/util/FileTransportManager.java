@@ -53,6 +53,7 @@ public class FileTransportManager {
     	
     	// 파일 업로드 성공 후 database에 기록을 위한 부분
     	// get을 이용하여 php파일에 접근하여 query를 날린다.
+    	
     	try {
             URL url = new URL(SERVER_ADDRESS + "/insert.php?"
                     + "origin_name=" + URLEncoder.encode(originName, "UTF-8")

@@ -29,19 +29,11 @@ public class MainActivity extends Activity {
 			}
         });
         
-        Button loadButton = (Button) findViewById(R.id.load_start);
-        loadButton.setOnClickListener(new Button.OnClickListener() {
-			public void onClick(View arg0) {
-				Intent intent = new Intent(MainActivity.this, LoadActivity.class);
-				startActivityForResult(intent, 0);
-			}
-        });        
-        
         Button readButton = (Button) findViewById(R.id.read_start);
         readButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View arg0) {
-				Intent intent = new Intent("com.example.imbedproject.v021.readIntent");
-				startActivity(intent);
+				Intent intent = new Intent(MainActivity.this, LoadActivity.class);
+				startActivityForResult(intent, 0);
 			}
         });
         
@@ -67,7 +59,7 @@ public class MainActivity extends Activity {
     			int sId = intent.getIntExtra("SelectedId", 0);			//선택된 줄의 id, 책이름 설정
     			String sName = intent.getStringExtra("SelectedName");
     			
-    			Intent i = new Intent(MainActivity.this, BookEditor.class);
+    			Intent i = new Intent("com.example.imbedproject.v021.readIntent");
     			i.putExtra(Constants.CALL_TYPE.toString(), Constants.MAIN_EDIT_LOAD);	//부르는 타입설정
     			i.putExtra("SelectedId", sId);
 				i.putExtra("SelectedName", sName);    			

@@ -34,9 +34,11 @@ public class BookFinder extends MapActivity {
 	    setContentView(R.layout.book_finder);
 	    
 	    // Intent를 이용하여 검색 좌표를 받는다.
-	    Intent intent = getIntent();
-	    int latitude = intent.getIntExtra("latitude", 37222281);
-	    int longitude = intent.getIntExtra("longitude", 127187283);
+	   // Intent intent = getIntent();
+	    //int latitude = intent.getIntExtra("latitude", 37222281);
+	    //int longitude = intent.getIntExtra("longitude", 127187283);
+	    int latitude = 37222281;
+	    int longitude = 127187283;
 	    
         ftm = new FileTransportManager();
         mv = (MapView) findViewById(R.id.mapview);
