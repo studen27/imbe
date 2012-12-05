@@ -18,6 +18,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.widget.Toast;
 
 import com.example.imbedproject.v021.BookInfo;
 import com.example.imbedproject.v021.Constants;
@@ -84,10 +85,11 @@ public class ImageItemizedOverlay extends ItemizedOverlay {
 				out.close();
 			}
 			
-			FileInputStream fis = mContext.openFileInput(item.getSnippet());
+			FileInputStream fis = mContext.openFileInput(item.getTitle());
 			ObjectInputStream ois = new ObjectInputStream(
 					new BufferedInputStream(fis));
 
+			
 			BookInfo bookInfo = null;
 			try {
 				bookInfo = (BookInfo) ois.readObject();
