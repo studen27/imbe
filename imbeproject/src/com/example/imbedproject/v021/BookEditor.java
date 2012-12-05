@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -45,6 +44,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.imbedproject.v021.util.FileTransportManager;
+
 //created by 60062446 박정실
 //created date : 2012/11/17
 //last modify : 2012/11/29
@@ -79,10 +80,10 @@ public class BookEditor extends Activity implements OnClickListener {
 	static final String AUTHOR = "AUTHOR";
 
 	// Buttons
-	private Button prev_butten;
-	private Button next_button;
-	private Button delete_button;
-	private Button insert_button;
+	private Button prevButten;
+	private Button nextButton;
+	private Button deleteButton;
+	private Button insertButton;
 	private Button clear;
 	private Button black;
 	private Button red;
@@ -234,10 +235,10 @@ public class BookEditor extends Activity implements OnClickListener {
 		type2.setOnClickListener(pageTypeListner);
 
 		// Button 참조변수
-		prev_butten = (Button) findViewById(R.id.prev_button);
-		next_button = (Button) findViewById(R.id.next_button);
-		delete_button = (Button) findViewById(R.id.delete_button);
-		insert_button = (Button) findViewById(R.id.insert_button);
+		prevButten = (Button) findViewById(R.id.prev_button);
+		nextButton = (Button) findViewById(R.id.next_button);
+		deleteButton = (Button) findViewById(R.id.delete_button);
+		insertButton = (Button) findViewById(R.id.insert_button);
 		clear = (Button) findViewById(R.id.clear);
 		black = (Button) findViewById(R.id.black);
 		red = (Button) findViewById(R.id.red);
@@ -260,10 +261,10 @@ public class BookEditor extends Activity implements OnClickListener {
 	// Initialization
 	public void init() {
 		// 버튼에 리스너 부착
-		prev_butten.setOnClickListener(this);
-		next_button.setOnClickListener(this);
-		delete_button.setOnClickListener(this);
-		insert_button.setOnClickListener(this);
+		prevButten.setOnClickListener(this);
+		nextButton.setOnClickListener(this);
+		deleteButton.setOnClickListener(this);
+		insertButton.setOnClickListener(this);
 		clear.setOnClickListener(this);
 		black.setOnClickListener(this);
 		red.setOnClickListener(this);

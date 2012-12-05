@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.widget.Toast;
 
 import com.example.imbedproject.v021.BookEditor;
 import com.google.android.maps.ItemizedOverlay;
@@ -63,6 +64,12 @@ public class ImageItemizedOverlay extends ItemizedOverlay {
 			inputStream = new URL(SERVER_ADDRESS + "/" + item.getSnippet()).openStream();
 			File file = new File(mContext.getFilesDir().getPath().toString() + "/" + item.getSnippet());
 			OutputStream out = new FileOutputStream(file);
+			writeFile(inputStream, out);
+			out.close();
+			
+			inputStream = new URL(SERVER_ADDRESS + "/" + item.getSnippet().subSequence(0, item.getSnippet().length() -4)).openStream();
+			file = new File(mContext.getFilesDir().getPath().toString() + "/" + item.getSnippet().subSequence(0, item.getSnippet().length() -4));
+			out = new FileOutputStream(file);
 			writeFile(inputStream, out);
 			out.close();
 		} catch (MalformedURLException e) {

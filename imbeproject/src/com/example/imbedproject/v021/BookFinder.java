@@ -54,7 +54,6 @@ public class BookFinder extends MapActivity {
         MapController mc = mv.getController();
         mc.animateTo(viewGp);
         mc.setZoom(16);
-        mapOverlays = mv.getOverlays();
         d = this.getResources().getDrawable(R.drawable.mark);
         itemizedOverlay = new ImageItemizedOverlay(d, this);
         
@@ -65,7 +64,10 @@ public class BookFinder extends MapActivity {
         	itemizedOverlay.addOverlay(overlayitem);
         }
         
-        mapOverlays.add(itemizedOverlay);
+        if(qr.size() > 0) {
+        	mapOverlays = mv.getOverlays();
+        	mapOverlays.add(itemizedOverlay);
+        }
 
     }
 

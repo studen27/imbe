@@ -10,6 +10,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
+import com.example.imbedproject.v021.util.FileTransportManager;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
@@ -53,6 +55,7 @@ public class BookReader extends Activity implements OnClickListener {
 	private LayoutInflater inflater;
 	private boolean isStart = true;		//처음 시작하나. (onResume때문)
 	SimpleCursorAdapter adapter;		//리스트 항목 정보얻기용
+	private FileTransportManager ftm; 	// 파일 전송 관리자
 	
 	static final int DO_SQL = 0;
 	static final int NO_SQL = 1;
@@ -64,6 +67,7 @@ public class BookReader extends Activity implements OnClickListener {
 	private Button prev_butten;
 	private Button next_button;
 	private Button bgmBtn;
+	private Button uploadButton;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -76,9 +80,11 @@ public class BookReader extends Activity implements OnClickListener {
 
 		// Components
 		// Button 참조변수
+		ftm = new FileTransportManager();
 		prev_butten = (Button) findViewById(R.id.prev_button);
 		next_button = (Button) findViewById(R.id.next_button);
 		bgmBtn = (Button) findViewById(R.id.reader_bgmBtn);
+		uploadButton = (Button) findViewById(R.id.upload_button);
 
 		pageNumberView = (TextView) findViewById(R.id.page_number);
 		pageViewer = (FrameLayout) findViewById(R.id.farme);
@@ -96,6 +102,7 @@ public class BookReader extends Activity implements OnClickListener {
 		prev_butten.setOnClickListener(this);
 		next_button.setOnClickListener(this);
 		bgmBtn.setOnClickListener(this);
+		uploadButton.setOnClickListener(this);
 
 		// 첫 page를 생성하고 pageViewer에 add
 		inflater = (LayoutInflater) context
@@ -219,6 +226,18 @@ public class BookReader extends Activity implements OnClickListener {
 			editor.commit(); // 변경사항 적용
 
 			Log.i("msg", valueStr);
+			break;
+		case R.id.upload_button:
+			String path = ftm.upload(getFilesDir().getPath().toString() + "/", bookInfo.getBookFileName(), 37222281, 127187283);
+			for(int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
+				try {
+					ftm.DoImageUpload(path, getFilesDir().getPath().toString() + "/" + bookInfo.getUploadFileNames().get(i));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 			break;
 		}
 	}
