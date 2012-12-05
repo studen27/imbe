@@ -119,6 +119,26 @@ public class FileTransportManager {
     	return qr;
     }
     
+    public ArrayList<String> getBookImage(String path) {
+    	ArrayList<String> nameList = null;
+    	try {
+            data.clear(); //반복적으로 누를경우 똑같은 값이 나오는 것을 방지하기 위해 data를 클리어함
+            URL url = new URL(SERVER_ADDRESS + "/search_image.php?"
+                    + "path=" + URLEncoder.encode(path, "UTF-8"));
+            url.openStream(); //서버의 serarch.php파일을 실행함
+            
+            nameList = getXmlDataList("search_image_result.xml", "name");
+          
+            
+        } catch(Exception e) {
+            Log.e("Error", e.getMessage());
+        } finally{
+            
+        }
+    	
+    	return nameList;
+    }
+    
     // 파일 업로드 함수
     private String DoFileUpload(String filePath) throws IOException {
 		Log.d("Test", "file path = " + filePath);

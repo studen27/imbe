@@ -75,9 +75,6 @@ public class BookEditor extends Activity implements OnClickListener {
 	
 	static final int DO_SQL = 0;
 	static final int NO_SQL = 1;
-	static final String KEY = "_ID";
-	static final String NAME = "NAME";
-	static final String AUTHOR = "AUTHOR";
 
 	// Buttons
 	private Button prevButten;
@@ -782,8 +779,8 @@ public class BookEditor extends Activity implements OnClickListener {
 
 			if(isDoSql != NO_SQL){	//덮어씌우기 아닐경우
 				ContentValues cv = new ContentValues();	//SQLITE로 DB에 추가
-				cv.put(NAME, bookInfo.getBookName());
-				cv.put(AUTHOR, "-");
+				cv.put(Constants.NAME, bookInfo.getBookName());
+				cv.put(Constants.AUTHOR, "-");
 				ContentResolver cr = getContentResolver();
 				cr.insert(Uri.parse(MyProvider.URI), cv);
 			}

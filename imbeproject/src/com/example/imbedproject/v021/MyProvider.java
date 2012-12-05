@@ -17,7 +17,7 @@ import android.util.Log;
 //created date : 2012/12/04
 //last modify : 2012/12/04
 public class MyProvider extends ContentProvider {
-	static final String URI = "content://" + Constants.PAKAGE_NAME + "/" + Constants.TABLE_NAME;
+	public static final String URI = "content://" + Constants.PAKAGE_NAME + "/" + Constants.TABLE_NAME;
 	static final Uri CONTENT_URI = Uri.parse(URI);
 	static final String DB_NAME = Constants.DB_FILENAME;
 	static final int DB_VERTION = 1;
