@@ -42,6 +42,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.imbedproject.v021.util.FileTransportManager;
+import com.google.android.maps.GeoPoint;
 
 //created by 60062446 박정실
 //created date : 2012/11/29
@@ -62,6 +63,8 @@ public class BookReader extends Activity implements OnClickListener {
 	private FileTransportManager ftm; // 파일 전송 관리자
 	private LocationManager locationManager;
 	private LocationListener locationListener;
+	double lati = 0.0;
+	double longi = 0.0;
 
 	static final int DO_SQL = 0;
 	static final int NO_SQL = 1;
@@ -132,24 +135,9 @@ public class BookReader extends Activity implements OnClickListener {
 
 		loadWork();
 
-		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		 
-		locationListener = new LocationListener() {
-		    public void onStatusChanged(String provider, int status, Bundle extras) {
-		    }
-		     
-		    public void onProviderEnabled(String provider) {
-		    }
-		     
-		    public void onProviderDisabled(String provider) {
-		    }
-		     
-		    public void onLocationChanged(Location location) {
-		        Log.d("Location", location.toString());
-		    }
-		};
-		 
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener);
+		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);		 
+		locationListener = new MyLocationListener();		 
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
 	}
 
 	public void onStart() {
@@ -259,8 +247,21 @@ public class BookReader extends Activity implements OnClickListener {
 			break;
 
 		case R.id.upload_button:
-			Location l = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			if(l != null) {
+//			Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//			
+//			double lati = l.getLatitude();
+//			double longi = l.getLongitude();
+			
+//			Toast.makeText(getBaseContext(),
+//					l.getLatitude() + " , " + l.getLongitude(),
+//					Toast.LENGTH_LONG).show();
+		
+	        GeoPoint gp = new GeoPoint((int)lati, (int)longi);
+	        Log.i("BookReader msg","ll : " + lati + "," + longi);			
+	        Log.i("BookReader msg","gp : " + gp.getLatitudeE6() + "," + gp.getLongitudeE6());
+			
+//			if(l != null) {
+	        if(lati != 0.0 && longi != 0.0){
 				String path = ftm.upload(getFilesDir().getPath().toString() + "/",
 						bookInfo.getBookFileName(), 37222281, 127187283);
 				for (int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
@@ -790,6 +791,8 @@ public class BookReader extends Activity implements OnClickListener {
 				for(int i = 0; i < pages.size(); i++) {
 					pages.get(i).setEnabled(false);
 				}
+			}else{
+				finish();
 			}
 		}
 	}
@@ -797,11 +800,8 @@ public class BookReader extends Activity implements OnClickListener {
 	public class MyLocationListener implements LocationListener {
 
 		public void onLocationChanged(Location l) {
-			// TODO Auto-generated method stub
-			Toast.makeText(getBaseContext(),
-					l.getLatitude() + " , " + l.getLongitude(),
-					Toast.LENGTH_LONG).show();
-
+			lati = l.getLatitude();
+			longi = l.getLongitude();
 		}
 
 		public void onProviderDisabled(String provider) {

@@ -487,8 +487,7 @@ public class BookEditor extends Activity implements OnClickListener {
 
 			FileOutputStream fos = openFileOutput(prefix
 					+ Constants.SAVE_FILENAME, Context.MODE_PRIVATE);
-			ObjectOutputStream oos = new ObjectOutputStream(
-					new BufferedOutputStream(fos));
+			ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(fos));
 
 			ArrayList<String> uploadFileNames = new ArrayList<String>();	//bookInfo에 저장할 업로드파일배열
 			
@@ -533,6 +532,7 @@ public class BookEditor extends Activity implements OnClickListener {
 			if (oos != null) { // 스트림 닫기
 				try {
 					oos.close();
+					fos.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -772,6 +772,7 @@ public class BookEditor extends Activity implements OnClickListener {
 			if (oos != null) { // 스트림 닫기
 				try {
 					oos.close();
+					fos.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
