@@ -10,9 +10,13 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,7 +33,9 @@ import android.widget.Toast;
 public class LoadActivity extends Activity {
 	protected BookInfo bookInfo; // 책정보 객체(로드/삭제용)
 	private ArrayList<PageView> pages; // ImageView Vector 객체 (로드/삭제용)
-	SimpleCursorAdapter adapter;	
+	SimpleCursorAdapter adapter;
+	LocationManager locationManager;
+	LocationListener locationListener;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -38,10 +44,39 @@ public class LoadActivity extends Activity {
 	    
 	    pages = new ArrayList<PageView>();//초기화
 
+	    locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+	    locationListener = new LocationListener() {
+
+			public void onLocationChanged(Location location) {
+				Log.d("Location", location.toString());
+			}
+
+			public void onProviderDisabled(String arg0) {
+				// TODO Auto-generated method stub
+			}
+
+			public void onProviderEnabled(String arg0) {
+				// TODO Auto-generated method stub
+			}
+
+			public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+				
+			}
+	    };
+	     
+	    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+	    
 	    Button findBook = (Button) findViewById(R.id.find_book);
 	    findBook.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View arg0) {
 				Intent intent = new Intent("com.example.imbedproject.v021.findIntent");
+				Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+				if(l != null) {
+					int latitude = (int)(l.getLatitude() * 1000000);
+					int  longitude = (int)(l.getLongitude() * 1000000);
+					intent.putExtra("latitude", latitude);
+					intent.putExtra("longitude", longitude);
+				}
 				startActivity(intent);
 			}
 	    });

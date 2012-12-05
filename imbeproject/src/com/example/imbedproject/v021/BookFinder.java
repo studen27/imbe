@@ -33,9 +33,9 @@ public class BookFinder extends MapActivity {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.book_finder);
 	    
-	    // 좌표, GPS를 이용하여 설정하여야함
-	    int latitude = 37222281;
-	    int longitude = 127187283;
+	    Intent intent = getIntent();
+	    int latitude = intent.getIntExtra("latitude", 37222281);
+	    int longitude = intent.getIntExtra("longitude", 127187283);
 	    
         ftm = new FileTransportManager();
         mv = (MapView) findViewById(R.id.mapview);
