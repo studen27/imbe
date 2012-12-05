@@ -60,8 +60,8 @@ public class BookReader extends Activity implements OnClickListener {
 	private boolean isStart = true; // 처음 시작하나. (onResume때문)
 	SimpleCursorAdapter adapter; // 리스트 항목 정보얻기용
 	private FileTransportManager ftm; // 파일 전송 관리자
-	private LocationManager lm;
-	private LocationListener ll;
+	private LocationManager locationManager;
+	private LocationListener locationListener;
 
 	static final int DO_SQL = 0;
 	static final int NO_SQL = 1;
@@ -132,6 +132,28 @@ public class BookReader extends Activity implements OnClickListener {
 
 		loadWork();
 
+		//for(int i = 0; i < pages.size(); i++) {
+		//	pages.get(i).setEnabled(false);
+		//}
+		
+		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+		 
+		locationListener = new LocationListener() {
+		    public void onStatusChanged(String provider, int status, Bundle extras) {
+		    }
+		     
+		    public void onProviderEnabled(String provider) {
+		    }
+		     
+		    public void onProviderDisabled(String provider) {
+		    }
+		     
+		    public void onLocationChanged(Location location) {
+		        Log.d("Location", location.toString());
+		    }
+		};
+		 
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener);
 	}
 
 	public void onStart() {
@@ -241,18 +263,21 @@ public class BookReader extends Activity implements OnClickListener {
 			break;
 
 		case R.id.upload_button:
-			String path = ftm.upload(getFilesDir().getPath().toString() + "/",
-					bookInfo.getBookFileName(), 37222281, 127187283);
-			for (int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
-				try {
-					ftm.DoImageUpload(path, getFilesDir().getPath().toString()
-							+ "/" + bookInfo.getUploadFileNames().get(i));
-					Toast.makeText(getApplicationContext(), "업로드 성공!",
-							Toast.LENGTH_SHORT).show();
-				} catch (IOException e) {
-					Toast.makeText(getApplicationContext(), "뭔가 잘못되었어요!",
-							Toast.LENGTH_SHORT).show();
-					e.printStackTrace();
+			Location l = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			if(l != null) {
+				String path = ftm.upload(getFilesDir().getPath().toString() + "/",
+						bookInfo.getBookFileName(), 37222281, 127187283);
+				for (int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
+					try {
+						ftm.DoImageUpload(path, getFilesDir().getPath().toString()
+								+ "/" + bookInfo.getUploadFileNames().get(i));
+						Toast.makeText(getApplicationContext(), "업로드 성공!",
+								Toast.LENGTH_SHORT).show();
+					} catch (IOException e) {
+						Toast.makeText(getApplicationContext(), "뭔가 잘못되었어요!",
+								Toast.LENGTH_SHORT).show();
+						e.printStackTrace();
+					}
 				}
 			}
 			break;
@@ -821,8 +846,8 @@ public class BookReader extends Activity implements OnClickListener {
 	public void onDestroy() {
 		Log.i("msg", "BookEditor onDestroy");
 		super.onDestroy();
-		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		lm.removeUpdates(ll);
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		locationManager.removeUpdates(locationListener);
 	}
 
 }

@@ -402,50 +402,51 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	protected final class MySimpleGestureListener extends GestureDetector.SimpleOnGestureListener{
 
 		public boolean onDown(MotionEvent event){
-			Log.i("msg","onDown");
-			
-			prevX = (int)x;
-			prevY = (int)y;  
-			x = (int)event.getX();  
-			y = (int)event.getY();
-
-//			path = new MyPath();	//패스 생성
-//			path.setPaint(pnt);
-//			path.moveTo(x,y);
-			
-			vertexes.add(new MyVertex(x, y, false, pnt));//정점추가
-
-			boolean anchorSelected = false;
-			if(selectedImage != null){	//선택된 그림이 있을시
-				if(selectedImage.isOnAnchor(x, y) == true && selectedImage.selectedAnchor != ANCHOR_TYPE.MOVE){//앵커위에있나 검사
-					if(selectedImage.selectedAnchor == ANCHOR_TYPE.ROTATE){
-						drawingState =  DRAWING_STATE.rotating;				//회전앵커 위에 있을시 회전
-					}else{					
-						drawingState =  DRAWING_STATE.resizing;				//다른앵커 위에 있을시 리사이징
-					}
-					anchorSelected = true;
-				}
-			}
-
-			if(anchorSelected == false){    		//선택된 앵커 없을시
-				if(isEnable) {
-					deSelect();							//모든그림 선택해제
-					drawingState =  DRAWING_STATE.drawing;	//상태를 그리기로 set
-					for(MyImage mi : images){//마우스가 그림위에있나 검사
-						if(mi.contains(x, y) == true){	//그림위에 있으면
-							mi.setSelected(true);		//해당그림을 선택된 그림으로 set
-							selectedImage = mi;
-							drawingState =  DRAWING_STATE.moving;	//상태를 이동으로 set
-							intervalX = x - mi.getX();
-							intervalY = y - mi.getY();
-							break;
-						}else{
-							selectedImage = null;
+			if(isEnable) {
+				Log.i("msg","onDown");
+				
+				prevX = (int)x;
+				prevY = (int)y;  
+				x = (int)event.getX();  
+				y = (int)event.getY();
+	
+	//			path = new MyPath();	//패스 생성
+	//			path.setPaint(pnt);
+	//			path.moveTo(x,y);
+				
+				vertexes.add(new MyVertex(x, y, false, pnt));//정점추가
+	
+				boolean anchorSelected = false;
+				if(selectedImage != null){	//선택된 그림이 있을시
+					if(selectedImage.isOnAnchor(x, y) == true && selectedImage.selectedAnchor != ANCHOR_TYPE.MOVE){//앵커위에있나 검사
+						if(selectedImage.selectedAnchor == ANCHOR_TYPE.ROTATE){
+							drawingState =  DRAWING_STATE.rotating;				//회전앵커 위에 있을시 회전
+						}else{					
+							drawingState =  DRAWING_STATE.resizing;				//다른앵커 위에 있을시 리사이징
 						}
+						anchorSelected = true;
 					}
 				}
+	
+				if(anchorSelected == false){    		//선택된 앵커 없을시
+						deSelect();							//모든그림 선택해제
+						drawingState =  DRAWING_STATE.drawing;	//상태를 그리기로 set
+						for(MyImage mi : images){//마우스가 그림위에있나 검사
+							if(mi.contains(x, y) == true){	//그림위에 있으면
+								mi.setSelected(true);		//해당그림을 선택된 그림으로 set
+								selectedImage = mi;
+								drawingState =  DRAWING_STATE.moving;	//상태를 이동으로 set
+								intervalX = x - mi.getX();
+								intervalY = y - mi.getY();
+								break;
+							}else{
+								selectedImage = null;
+							}
+						}
+				}
+				callOnDraw();
+			
 			}
-			callOnDraw();
 
 			return true;
 		}
@@ -534,6 +535,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 
 			return false;
 		}
+		
 	}
 	
 	//그리기 시작  
