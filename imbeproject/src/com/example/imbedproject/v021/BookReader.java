@@ -46,7 +46,7 @@ import com.google.android.maps.GeoPoint;
 
 //created by 60062446 박정실
 //created date : 2012/11/29
-//last modify : 2012/12/04
+//last modify : 2012/12/06
 public class BookReader extends Activity implements OnClickListener {
 	final Context context = this;
 
@@ -262,21 +262,23 @@ public class BookReader extends Activity implements OnClickListener {
 			
 //			if(l != null) {
 	        if(lati != 0.0 && longi != 0.0){
-				String path = ftm.upload(getFilesDir().getPath().toString() + "/",
-						bookInfo.getBookFileName(), 37222281, 127187283);
-				for (int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
-					try {
-						ftm.DoImageUpload(path, getFilesDir().getPath().toString()
-								+ "/" + bookInfo.getUploadFileNames().get(i));
-						Toast.makeText(getApplicationContext(), "업로드 성공!",
-								Toast.LENGTH_SHORT).show();
-					} catch (IOException e) {
-						Toast.makeText(getApplicationContext(), "뭔가 잘못되었어요!",
-								Toast.LENGTH_SHORT).show();
-						e.printStackTrace();
-					}
+
+			}
+	        
+			String path = ftm.upload(getFilesDir().getPath().toString() + "/",
+					bookInfo.getBookFileName(), 37230281, 127183983);
+			for (int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
+				try {
+					ftm.DoImageUpload(path, getFilesDir().getPath().toString()
+							+ "/" + bookInfo.getUploadFileNames().get(i));
+				} catch (IOException e) {
+					Toast.makeText(getApplicationContext(), "뭔가 잘못되었어요!",
+							Toast.LENGTH_SHORT).show();
+					e.printStackTrace();
 				}
 			}
+			Toast.makeText(getApplicationContext(), "업로드 성공!",
+					Toast.LENGTH_SHORT).show();
 			break;
 		}
 	}

@@ -1,32 +1,37 @@
 <?php
+// 60062446 박정실
+// create at 2012/12/02
+// modify at 2012/12/06
+
+// 책을 찾는 역할
 $db_hostname = 'localhost';
 $db_database = 'schoolradio';
 $db_username = 'schoolradio';
 $db_password = 'wjdtlf123';
 $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
 
-$connect = mysql_connect($db_hostname, $db_username, $db_password); //DB가 있는 주소(이것은 웹서버로 직접 접속하는 것이기 때문에 루프백 주소를 써도 됨)
-mysql_selectdb($db_database); //DB 선택
-mysql_query("set names utf8"); //이것 또한 한글(utf8)을 지원하기 위한 것
+$connect = mysql_connect($db_hostname, $db_username, $db_password);
+mysql_selectdb($db_database);
+mysql_query("set names utf8");
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 	if(isset($_GET['latitude'])) $latitude = $_GET['latitude'];
 	if(isset($_GET['longitude'])) $longitude = $_GET['longitude'];
 	
+	// 검색 대상이되는 범위 지정
 	$upper_latitude = $latitude + 10000;
 	$lower_latitude = $latitude - 10000;
 	$upper_longitude = $longitude + 10000;
 	$lower_longitude = $longitude - 10000;
 	
-	$query = "select * from books;";
 	$query = "select * from books where latitude <= $upper_latitude && latitude >= $lower_latitude " . 
 			"&& longitude <= $upper_longitude && longitude >= $lower_longitude;";
-	
-	
+
 	$result = mysql_query($query);
 	 
-	$xmlcode = "<?xml version = \"1.0\" encoding = \"utf-8\"?>\n"; //xml파일에 출력할 코드
-	 
+	$xmlcode = "<?xml version = \"1.0\" encoding = \"utf-8\"?>\n";
+	
+	// 결과로 받아온 정보를 xmlcode에 추가시킨다.
 	while($row = mysql_fetch_array($result)) {
 		$result_id = $row['id'];
 		$result_origin_name = $row['origin_name'];
@@ -40,13 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 		$xmlcode .= "<actual_name>$result_actual_name</actual_name>\n";
 		$xmlcode .= "<latitude>$result_latitude</latitude>\n";
 		$xmlcode .= "<longitude>$result_longitude</longitude>\n";
-		$xmlcode .= "</node>\n"; //DB쿼리로 받아낸 name과 price값을 xml파일에 출력하기 위한 코드
+		$xmlcode .= "</node>\n";
 	}
 	 
-	$dir = "$DOCUMENT_ROOT/test"; //searchresult.xml 파일을 저장할 경로
+	// xmlcode를 실제로 쓴다.
+	$dir = "$DOCUMENT_ROOT/test";
 	$filename = $dir."/searchresult.xml";
-	 
-	file_put_contents($filename, $xmlcode); //xmlcode의 내용을 xml파일로 출력
+	file_put_contents($filename, $xmlcode);
 	
 	}
 

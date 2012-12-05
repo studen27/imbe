@@ -35,7 +35,6 @@ public class FileTransportManager {
     
     public FileTransportManager() {
     	data = new ArrayList<String>();
-    	
 	}
     
     // File Upload Method
@@ -82,7 +81,7 @@ public class FileTransportManager {
     	//return getXmlData("insertresult.xml", "result"); //입력 성공여부 확인
     }
     
-    // 근처 책 목록을 받아오는 함수
+    // 근처 책 목록을 받아오는 메소드
     // int latitude : 좌표
     // int latitude : 좌표
     // 서버에 query를 날려 xml을 이용해 결과를 파싱한다.
@@ -119,6 +118,9 @@ public class FileTransportManager {
     	return qr;
     }
     
+    // 책에 포함된 이미지를 참는 메소드
+    // 외부 서버의 DB를 이용하여 목록을 xml받아온다.
+    // String path : 해당 이미지 디렉토리
     public ArrayList<String> getBookImage(String path) {
     	ArrayList<String> nameList = null;
     	try {
@@ -145,6 +147,7 @@ public class FileTransportManager {
 		return HttpFileUpload(SERVER_ADDRESS + "/upload.php", "", filePath);
 	}
     
+    // 책에 포함된 이미지를 업로드하는 함수
     public String DoImageUpload(String path, String filePath) throws IOException {
 		Log.d("Test", "file path = " + filePath);
 		return HttpFileUpload(SERVER_ADDRESS + "/upload_image.php?dir_name=" + path, "", filePath);
