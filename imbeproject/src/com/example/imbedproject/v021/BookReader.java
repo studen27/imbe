@@ -132,10 +132,6 @@ public class BookReader extends Activity implements OnClickListener {
 
 		loadWork();
 
-		//for(int i = 0; i < pages.size(); i++) {
-		//	pages.get(i).setEnabled(false);
-		//}
-		
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		 
 		locationListener = new LocationListener() {
@@ -790,6 +786,10 @@ public class BookReader extends Activity implements OnClickListener {
 																		// 책이름
 																		// 설정
 				loadWork(sId, sName);
+				
+				for(int i = 0; i < pages.size(); i++) {
+					pages.get(i).setEnabled(false);
+				}
 			}
 		}
 	}

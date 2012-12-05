@@ -182,6 +182,7 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
 		isEnable = enabled;		
+		editText.setEnabled(false);
 	}	
 	public EditText getEditText() {
 		return editText;
