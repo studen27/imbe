@@ -5,20 +5,19 @@ import java.io.Serializable;
 import kr.ac.mju.strangelibrary.Constants.ANCHOR_TYPE;
 
 import android.graphics.RectF;
-
-
 // created by 60022495 정민규
 // created date : 2012/11/17
 // last modify : 2012/11/21
-//도형에 표시할 앵커들을 갖고있는 클래스
+//그림에 표시할 앵커(리사이즈, 회전용) 들을 갖고있는 클래스
 public class MyAnchor extends RectF implements Serializable{
-	private static final long serialVersionUID = -1582315659954345536L;
+	private static final long serialVersionUID = -1582315659954345536L;	//직렬화시 써주는게 권장되어 자동생성시킴
 
 	//constructor
 	public MyAnchor() {
 		super();
 	}
 
+	//타입에 따라 자기의 위치를 결정하는 함수
 	public void setLocation(int x, int y, int right, int bottom, ANCHOR_TYPE anchorType){
 		switch(anchorType){
 		case NW:

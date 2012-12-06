@@ -7,10 +7,10 @@ import android.graphics.Path;
 
 //created by 60022495 정민규
 //created date : 2012/11/21
-//last modify : 2012/11/23
+//last modify : 2012/12/07
 //직렬화 로드시 정보사라짐. 안그렇게 할려면 action배열을 쓰면 되나, vertex배열을 쓰는것과 같아서 현재 사용안함
 public class MyPath extends Path implements Serializable {
-	private static final long serialVersionUID = -3492058858222144466L;
+	private static final long serialVersionUID = -3492058858222144466L;//직렬화시 써주는게 권장되어 자동생성시킴
 	protected MyPaint pnt;	
 	
 	//constructor

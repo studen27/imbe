@@ -24,6 +24,7 @@ import com.nemustech.tiffany.world.TFWorld;
 //created by 60062446 박정실
 //created date : 2012/11/17
 //last modify : 2012/11/29
+//메인 액티비티. 명지대에서 구입한 3d프레임웍인 tiffany를 사용. 센서 소스는 한승철 교수님 비주얼프로그래밍 강의자료 참조
 public class MainActivity extends Activity implements SensorEventListener {
 
 	private TickHandler tickHandler;	//정기처리 핸들러
@@ -190,10 +191,11 @@ public class MainActivity extends Activity implements SensorEventListener {
 	//정지시
 	protected void onStop(){
 		super.onStop();	//어플 정지
-		sensorManager.unregisterListener(this);
-		tickHandler = null;
+		sensorManager.unregisterListener(this);	//리스너 등록해제
+		tickHandler = null;						//핸들러 등록해제
 	}
 
+	//메뉴의 이미지로 쓸 그림들
 	private static final int[] IMAGE_RESOURCE = {
 		R.drawable.menu01,
 		R.drawable.menu02,
@@ -213,7 +215,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 					switch (selectedModel.getItemIndex()){
 						case 0:			//첫번째 메뉴 (책만들기)
 							intent = new Intent("com.example.imbedproject.v021.editIntent");
-							intent.putExtra(Constants.CALL_TYPE.toString(), Constants.MAIN_EDIT_CREATE);//부르는 타입설정
+							intent.putExtra(Constants.CALL_TYPE.toString(), Constants.MAIN_TO_CREATE);//부르는 타입설정
 							startActivity(intent);
 							break;
 						case 1:			//두번째 메뉴(보기)

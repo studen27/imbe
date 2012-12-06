@@ -6,7 +6,10 @@ import com.nemustech.tiffany.world.TFContentProvider;
 import com.nemustech.tiffany.world.TFModel;
 import com.nemustech.tiffany.world.TFObject;
 import com.nemustech.tiffany.world.TFTextureInfo;
-
+//created by 60022495 정민규
+//created date : 2012/12/07
+//last modify : 2012/12/07
+//메인액티비티가 명지대에서 구입한 3d프레임웍인 tiffany를 사용했는데, 거기서 필요한 객체. 소스는 그냥 가져와서 정확한 동작은 잘 모르겠습니다.
 public class ResourceProvider extends TFContentProvider<Integer> {
 	private String TAG = "ResourceProvider";
 	private Resources mResources;

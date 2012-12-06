@@ -6,17 +6,17 @@ import android.graphics.Paint;
 
 //created by 60022495 정민규
 //created date : 2012/11/21
-//last modify : 2012/11/23
+//last modify : 2012/12/07
 //정점 객체.
 public class MyVertex implements Serializable{
-	private static final long serialVersionUID = -7585507529930287998L;
-	private float x;
-	private float y;
-	private boolean doDraw;	
-	private MyPaint pnt;		//paint로 해도되나 일단 MyPaint로 사용
-	private MyPaintInfo pInfo;	//페인트정보를 담은 객체(그냥 paint는 로드시 정보사라짐)
+	private static final long serialVersionUID = -7585507529930287998L;//직렬화시 써주는게 권장되어 자동생성시킴
+	private float x;	//x좌표
+	private float y;	//y좌표
+	private boolean doDraw;	//이게 true이면 이전 점과 자신을 연결함
+	private MyPaint pnt;		//그릴때 쓴 페인트. paint로 해도되나 일단 MyPaint로 사용
+	private MyPaintInfo pInfo;	//페인트정보를 담은 객체(그냥 paint는 로드시 정보사라져버리고 clone도 안됨)
 
-	//constructor
+	//constructor (생성자. 넘어온 값으로 셋팅)
 	MyVertex(float ax, float ay, boolean doDraw, Paint p) {			
 		x = ax;
 		y = ay;
@@ -29,10 +29,11 @@ public class MyVertex implements Serializable{
 	public Paint getPaint(){
 		return this.pnt;
 	}	
-	public void setPaint (Paint p){
+	public void setPaint (Paint p){//페인트 셋팅
 		pnt.setColor(p.getColor());
     	pnt.setStrokeWidth(p.getStrokeWidth());
-        pnt.setStyle(p.getStyle());		
+        pnt.setStyle(p.getStyle());
+        pnt.setAntiAlias(true);		//부드럽게 라고 하나 별차이를 못느낌
 	}
 	public boolean isDraw() {
 		return doDraw;

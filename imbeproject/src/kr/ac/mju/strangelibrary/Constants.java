@@ -5,35 +5,38 @@ import android.app.Application;
 public class Constants extends Application {
 	public static int ANCHOR_SIZE = 20; // 이것의 두배가 앵커크기
 	public static int IMG_EDGE_RESTRICT = 20; // 이미지 최소크기
-	public static int IMG_MIN_SIZE = 40;
+	public static int IMG_MIN_SIZE = 40;	//이미지 최소사이즈
 	public static String PAKAGE_NAME = "kr.ac.mju.strangelibrary";// 그냥씀
-	public static String SAVE_FILENAME = "pages.dat";
-	public static String DB_FILENAME = "books.db";
+	public static String SAVE_FILENAME = "pages.dat";	//페이지정보 저장파일 기본이름. 실제 저장시엔 앞에 책이름이 붙게됨
+	public static String DB_FILENAME = "books.db";		//db파일명
 	public static String TABLE_NAME = "books";// 고치면 프로바이더 create도 고쳐야
 
-	public static final String KEY = "_ID";
-	public static final String NAME = "NAME";
-	public static final String AUTHOR = "AUTHOR";
+	public static final String KEY = "_ID";	//db 테이블의 첫 컬럼
+	public static final String NAME = "NAME";	//db테이블 컬럼 : 책이름
+	public static final String AUTHOR = "AUTHOR";	//db테이블 컬럼 : 작성자명
 
-	public static String CALL_TYPE = "CALL_TYPE";
-	public static int MAIN_EDIT_CREATE = 0;
-	public static int MAIN_EDIT_LOAD = 1;
+	public static String CALL_TYPE = "CALL_TYPE";	//액티비티 호출시 쓸 타입명(현재는 없어도됨)
+	public static int MAIN_TO_CREATE = 0;			//책만들기 액티비티 호출시 쓸 타입.
+//	public static int MAIN_EDIT_LOAD = 1;
 	
-	public static String PREF_BGM = "Bgm On/Off";
-	public static String PREF_USERNAME = "User Name";
+	public static String PREF_BGM = "Bgm Toggle";	//Preference 에 쓸 bgm on/off 키
+	public static String PREF_USERNAME = "User Name";	//Preference 에 쓸 사용자명 키
 
-	// public static enum CALL_TYPES {
+	// public static enum CALL_TYPES {	//enum과 int의 비교가 안되어 현재 막아놓음
 	// MAIN_EDIT_CREATE, MAIN_EDIT_LOAD
 	// }
 
+	//페이지 타입. 텍스트가 어느 위치에 붙을 것인가.
 	public static enum PAGE_TYPE {
 		Title, LeftText, RightText, NULL
 	}
 
+	//그림의 앵커 타입. 선택이 안될 경우 MOVE가 됨(도형 이동 위한 값)
 	public static enum ANCHOR_TYPE {
 		NW, NN, NE, WW, EE, SW, SS, SE, ROTATE, MOVE
 	}
 
+	//그리는 상태. 대기, 선그리기, 그림이동, 그림 리사이즈, 그림 회전  
 	public static enum DRAWING_STATE {
 		idle, drawing, moving, resizing, rotating,
 	}

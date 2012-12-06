@@ -26,9 +26,9 @@ public class CameraView extends SurfaceView implements Callback,
 
 	private SurfaceHolder holder;	//홀더
 	private Camera camera;		//카메라
-	private Context mContext;
-	static Handler handler;
-	boolean captured = false;
+	private Context mContext;	//컨텍스트
+	static Handler handler;		//핸들러(카메라 액티비티에 신호보내기용)
+	boolean captured = false;	//캡쳐상태(카메라 액티비티에서 종료조건으로 검사용)
 		
 	//getter & setter
 	public boolean isCaptured() {
@@ -38,12 +38,13 @@ public class CameraView extends SurfaceView implements Callback,
 		this.captured = captured;
 	}
 
+	//Constructor. 넘어온 정보 셋팅
 	public CameraView(Context context, Handler handler) {
 		super(context);
 		this.handler = handler;
 		mContext = context;
 		holder = getHolder();	//홀더생성
-		holder.addCallback(this);
+		holder.addCallback(this);//콜백(응답객체?)등록
 		holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);	//푸쉬 버퍼 지정
 	}
 	
@@ -53,13 +54,13 @@ public class CameraView extends SurfaceView implements Callback,
 			camera = Camera.open();	//카메라 초기화			
 			camera.setPreviewDisplay(holder);
 		} catch (RuntimeException e) {	//카메라 오픈 오류시
-			Message msg = handler.obtainMessage();
-			Bundle b = new Bundle();
-			b.putByteArray("byte", null);
-			msg.setData(b);
-			handler.sendMessage(msg);	
+			Message msg = handler.obtainMessage();	//핸들러로 null값 반환하기 위함
+			Bundle b = new Bundle();				//신호를 넣기위한 번들 생성
+			b.putByteArray("byte", null);			//번들에 키+null 넣음
+			msg.setData(b);							//메세지에 번들 셋
+			handler.sendMessage(msg);				//보냄. (이하 코드 여러번 나옴)
 		} catch (IOException e) {			
-			Message msg = handler.obtainMessage();
+			Message msg = handler.obtainMessage();//핸들러로 null값 반환함
 			Bundle b = new Bundle();
 			b.putByteArray("byte", null);
 			msg.setData(b);
@@ -72,7 +73,7 @@ public class CameraView extends SurfaceView implements Callback,
 		try {
 			camera.startPreview();	//미리보기 시작
 		} catch (RuntimeException e) {	//카메라 오픈 오류시
-			Message msg = handler.obtainMessage();
+			Message msg = handler.obtainMessage();//핸들러로 null값 반환함
 			Bundle b = new Bundle();
 			b.putByteArray("byte", null);
 			msg.setData(b);
@@ -83,8 +84,8 @@ public class CameraView extends SurfaceView implements Callback,
 	//끝내기 전
 	public void surfacePreDestroy() {
 		if(camera != null){
-			camera.setPreviewCallback(null);	//미리보기 정지
-			camera.stopPreview();
+			camera.setPreviewCallback(null);	//콜백해제
+			camera.stopPreview();				//미리보기 정지
 			camera.release();
 			camera = null;
 		}		
@@ -92,7 +93,7 @@ public class CameraView extends SurfaceView implements Callback,
 	
 	//사라질때
 	public void surfaceDestroyed(SurfaceHolder arg0) {
-//		camera.setPreviewCallback(null);	//미리보기 정지
+//		camera.setPreviewCallback(null);	//여기쓰면 에러났음. 미리호출해야 하므로 위 함수 surfacePreDestroy를 수동으로 호출함
 //		camera.stopPreview();
 //		camera.release();
 //		camera = null;
@@ -102,7 +103,7 @@ public class CameraView extends SurfaceView implements Callback,
 	public boolean onTouchEvent(MotionEvent e){
 		if (e.getAction() == MotionEvent.ACTION_DOWN){
 			camera.takePicture(null, null, this);	//스크린샷 구함
-			captured = true;
+			captured = true;						//캡쳐상태 true로(종료불가상태) 
 		}
 		return true;
 	}
@@ -110,21 +111,21 @@ public class CameraView extends SurfaceView implements Callback,
 	//촬영완료시
 	public void onPictureTaken(byte[] data, Camera camera) {
 		try{
-			BitmapFactory.Options options = new BitmapFactory.Options();
-	    	options.inSampleSize = 8;		//  1/8로 줄이는 옵션. 2의 지수만큼 비례할때 가장빠르다고 함    	
+			BitmapFactory.Options options = new BitmapFactory.Options();	//디코드옵션
+	    	options.inSampleSize = 8;		//  1/8로 줄이는 옵션. 2의 지수만큼 비례할때 가장빠르다고 함. 1/4로 하면 갤럭시에서 너무커서 메모리오류    	
 	    	BitmapDrawable bd = new BitmapDrawable(BitmapFactory.decodeByteArray(data, 0, data.length, options));//사이즈줄임. 어쩔수없이 bitmapfactory사용
 	    	Bitmap bitmap = bd.getBitmap();									//비트맵 얻음
 	    	
-	    	ByteArrayOutputStream stream = new ByteArrayOutputStream();
-	    	bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-	    	byte[] bitmapdata = stream.toByteArray();
+	    	ByteArrayOutputStream stream = new ByteArrayOutputStream();	//비트맵을 byte 배열로 변환위한 스트림
+	    	bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);	//비트맵을 스트림에쏨
+	    	byte[] bitmapdata = stream.toByteArray();					//스트림에서 byte[] 업음
 			
 			data2sd(getContext(),bitmapdata,"test.jpg");	//메소드 호출로 넘김
 		}catch(Exception e){
 			Log.e("camera msg","사진저장실패");
 		}
 		camera.startPreview();	//미리보기 재개
-		captured = false;
+		captured = false;		//캡쳐상태 false로 셋팅(종료가능상태)
 	}
 	
 	//바이트데이터(blob) 을 핸들러로 CameraActivity로 넘김
@@ -133,8 +134,6 @@ public class CameraView extends SurfaceView implements Callback,
 		Bundle b = new Bundle();
 		b.putByteArray("byte", bytes);
 		msg.setData(b);
-		handler.sendMessage(msg);			
-						
+		handler.sendMessage(msg);						
 	}
-
 }

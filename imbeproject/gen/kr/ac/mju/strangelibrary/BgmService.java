@@ -1,8 +1,10 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: C:\\Users\\mabi\\workspace\\imbeproject\\src\\kr\\ac\\mju\\strangelibrary\\BgmService.aidl
+ * Original file: Y:\\Github\\imbe\\imbeproject\\src\\kr\\ac\\mju\\strangelibrary\\BgmService.aidl
  */
 package kr.ac.mju.strangelibrary;
+//aidl을 위한 파일. 원격서비스 바인딩 위함
+
 public interface BgmService extends android.os.IInterface
 {
 /** Local-side IPC implementation stub class. */

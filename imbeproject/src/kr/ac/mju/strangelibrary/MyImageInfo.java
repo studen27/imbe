@@ -6,9 +6,9 @@ import android.graphics.drawable.BitmapDrawable;
 //created by 60022495 정민규
 //created date : 2012/11/21
 //last modify : 2012/11/23
-//이미지의 저장정보를 담은 객체
+//이미지의 저장정보를 담은 객체. (세이브시 이걸 이용함)
 public class MyImageInfo implements Serializable{
-	private static final long serialVersionUID = -986076128360470580L;
+	private static final long serialVersionUID = -986076128360470580L;//직렬화시 써주는게 권장되어 자동생성시킴
 	private String filename;
 //	private BitmapDrawable bd;		//원본그림
 	private int x;		//비트맵 위치정보

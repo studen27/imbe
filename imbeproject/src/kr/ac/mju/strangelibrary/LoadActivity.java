@@ -33,10 +33,10 @@ import android.widget.Toast;
 //불러올 파일선택 화면
 public class LoadActivity extends Activity {
 	protected BookInfo bookInfo; // 책정보 객체(로드/삭제용)
-	private ArrayList<PageView> pages; // ImageView Vector 객체 (로드/삭제용)
-	SimpleCursorAdapter adapter;
-	LocationManager locationManager;
-	LocationListener locationListener;
+	private ArrayList<PageView> pages; // 각 페이지들 객체배열 (로드/삭제용. 여기에서 각 페이지의 이미지파일의 수를 가져와서 로드/삭제를 함)
+	SimpleCursorAdapter adapter;		//목록에서 선택한 라인의 정보를 갖고오기 위한 어댑터. 때문에 여기에 선언함.
+	LocationManager locationManager;	//GPS 사용위함
+	LocationListener locationListener;	//GPS 사용위함
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class LoadActivity extends Activity {
 	    
 	    pages = new ArrayList<PageView>();//초기화
 
-	    locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+	    locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);//GPS사용을 위한 코드
 	    locationListener = new LocationListener() {
 
 			public void onLocationChanged(Location location) {
@@ -65,10 +65,10 @@ public class LoadActivity extends Activity {
 			}
 	    };
 	     
-	    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
+	    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);//위치리스너 붙임
 	    
-	    Button findBook = (Button) findViewById(R.id.find_book);
-	    findBook.setOnClickListener(new Button.OnClickListener() {
+	    Button findBook = (Button) findViewById(R.id.find_book);//XML에서 버튼연결하고
+	    findBook.setOnClickListener(new Button.OnClickListener() {//리스너 붙임
 	    	public void onClick(View arg0) {
 	    		/*
 				ConnectivityManager connect = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
@@ -86,27 +86,26 @@ public class LoadActivity extends Activity {
 				} else {
 					Toast.makeText(getApplicationContext(), "인터넷이 연결되어있지 않습니다.", Toast.LENGTH_LONG).show();
 				}
-				*/
+				*/				
 				
-				
-				Intent intent = new Intent("com.example.imbedproject.v021.findIntent");
-				Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+				Intent intent = new Intent("com.example.imbedproject.v021.findIntent");	//BookFinder로 보낼 인텐트
+				Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);	//마지막 위치 가져옴
 				if (l != null) {
-					int latitude = (int) (l.getLatitude() * 1000000);
+					int latitude = (int) (l.getLatitude() * 1000000);	//GPS위치를 MAP위치로 바꾸기 위해 1000000을 곱함
 					int longitude = (int) (l.getLongitude() * 1000000);
-					intent.putExtra("latitude", latitude);
+					intent.putExtra("latitude", latitude);				//인텐트에 위도, 경도 값 넣음
 					intent.putExtra("longitude", longitude);
 				}
-				startActivity(intent);
+				startActivity(intent);			//BookFinder액티비티 호출
 				
 			}
 	    });
 	    
-		ListView lv = (ListView) findViewById(R.id.loadList);
+		ListView lv = (ListView) findViewById(R.id.loadList);//xml에서 리스트뷰 연결(갖고있는 책목록을 보여줄)
 		
-	    ContentResolver cr = getContentResolver();
+	    ContentResolver cr = getContentResolver();	//컨텐트 프로바이더에 쿼리를 날리기 위한 컨텐트 리졸버
 		Cursor cursor = cr.query(MyProvider.CONTENT_URI, new String[] { MyProvider.ID, MyProvider.NAME, MyProvider.AUTHOR },
-				null, null, null);
+				null, null, null);			//모든 책목록을 가져옴
 
 		String[] from = new String[] { MyProvider.ID, MyProvider.NAME, MyProvider.AUTHOR };	//가져올 항목들
 		int[] to = new int[] { R.id.textId, R.id.textName, R.id.textAuthor };				//붙일 곳
@@ -114,43 +113,49 @@ public class LoadActivity extends Activity {
         lv.setAdapter(adapter);        
         
         lv.setOnItemLongClickListener(new OnItemLongClickListener() {		//롱클릭 리스너
-        	int pos;        
+        	int pos;        //선택한 줄이 리스트뷰의 몇변재 줄인지 알기위함
         
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {	//롱클릭시 삭제확인창
+        	//롱클릭시 
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {	
 				pos = position;
-				AlertDialog.Builder aDialog = new AlertDialog.Builder(LoadActivity.this);
+				AlertDialog.Builder aDialog = new AlertDialog.Builder(LoadActivity.this);//삭제확인창 띄움
 				aDialog.setTitle("삭제하시겠습니까?");
-				aDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				aDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {//yes클릭시
 					public void onClick(DialogInterface dialog, int which) {
 				        Cursor c = (Cursor) adapter.getItem(pos);	//쿼리결과의 해당 줄 가져옴 
-				        int sId = c.getInt(0);			//해당 줄의 해당 번재 컬럼 가져옴
-				        String sName = c.getString(1);			//해당 줄의 해당 번재 컬럼 가져옴
-				        Log.i("msg",sId+"");						
-						deleteWork(sId, sName);			//삭제작업						
+				        int sId = c.getInt(0);			//해당 줄의 0번재 컬럼("_id") 가져옴
+				        String sName = c.getString(1);			//해당 줄의 1번재 컬럼 ("NAME")가져옴
+				        String author = c.getString(2);			//해당 줄의 2 컬럼 ("author") 가져옴
+
+						deleteWork(sId, sName, author);			//삭제작업						
 					}
 				});
-				aDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+				aDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {//no클릭시
 					public void onClick(DialogInterface dialog, int which) {				
 					}
 				});
 				AlertDialog ad = aDialog.create();
-				ad.show();
+				ad.show();	//확인창 보여주기
 				
 				return false;
 			}
 		});
 
-		lv.setOnItemClickListener(new OnItemClickListener() {				//클릭리스너			
+        //그냥 클릭(터치)시
+		lv.setOnItemClickListener(new OnItemClickListener() {			
 			
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		        Cursor c = (Cursor) adapter.getItem(position);	//쿼리결과의 해당 줄 가져옴 
-		        int sId = c.getInt(0);			//해당 줄의 해당 번재 컬럼 가져옴
-		        String sName = c.getString(1);			//해당 줄의 해당 번재 컬럼 가져옴
+		        int sId = c.getInt(0);			//해당 줄의 0번재 컬럼("_id") 가져옴
+		        String sName = c.getString(1);			//해당 줄의 1번재 컬럼 ("NAME")가져옴
+		        String sAuthor = c.getString(2);			//해당 줄의 2 컬럼 ("author") 가져옴
+		        
 		        Log.i("msg",sId+"");
 		        
-				Intent intent = new Intent("com.example.imbedproject.v021.readIntent");
-				intent.putExtra("SelectedId", sId);
-				intent.putExtra("SelectedName", sName);
+				Intent intent = new Intent("com.example.imbedproject.v021.readIntent");//나를 호출한 액티비티에 반환할 인텐트
+				intent.putExtra("SelectedId", sId);			//id와
+				intent.putExtra("SelectedName", sName);		//책이름 넘겨줌
+				intent.putExtra("SelectedAuthor", sAuthor);	//작자명 넘겨줌
 				setResult(Activity.RESULT_OK, intent);		//응답설정	    		
 				finish();									//후 리턴
 			}
@@ -158,46 +163,32 @@ public class LoadActivity extends Activity {
 	}
 
 	//삭제작업_DB에서도 삭제
-	private void deleteWork(int sId, String sName) {	//선택된줄 id, 책이름 받음
+	private void deleteWork(int sId, String sName, String sAuthor) {	//선택된줄 id, 책이름, 작자명 받음
 		try {
-			Log.i("LoadActivity msg","sid : " + sId + " sName : " + sName);
+			Log.i("LoadActivity msg","sid : " + sId + " sName : " + sName + " sAuthor : " + sAuthor);
 			
-			String prefix = sName; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
-
-			if (!prefix.equals("")) { // 책이름 "" 아니면 책이름으로				
-				// String[] filter_word =
-				// {"","\\.","\\?","\\/","\\~","\\!","\\@","\\#","\\$","\\%","\\^",
-				// "\\&","\\*","\\(","\\)","\\_","\\+","\\=","\\|","\\\\","\\}","\\]","\\{","\\[",
-				// "\\\"","\\'","\\:","\\;","\\<","\\,","\\>","\\.","\\?","\\/"};
-				String[] filter_word = { "\\p{Space} ", " ", "\\?", "\\/",
-						"\\*", "\\+", "\\|", "\\\\", "\\\"", "\\:", "\\<",
-						"\\>", "\\?", "\\/" };
-				for (int i = 0; i < filter_word.length; i++) { // 파일명으로 쓸수없는 특수문자를 "_"로 교체
-					prefix = prefix.replaceAll(filter_word[i], "_");
-				}
-
-				prefix = prefix + "_";
-			} else {
-				prefix = ""; // 책이름 ""이면 디폴트 파일명
+			String prefix = sName + "_" + sAuthor + "_"; // 파일명 앞에붙을이름
+			
+			String[] filter_word = { "\\p{Space} ", " ", "\\?", "\\/",
+					"\\*", "\\+", "\\|", "\\\\", "\\\"", "\\:", "\\<",
+					"\\>", "\\?", "\\/" };
+			for (int i = 0; i < filter_word.length; i++) { // 파일명으로 쓸수없는 특수문자를 "_"로 교체
+				prefix = prefix.replaceAll(filter_word[i], "_");
 			}
 
-			// File file = new
-			// File(getDir(getApplicationContext().getPackageName(),MODE_PRIVATE)
-			// + "/" + Constants.SAVE_FILENAME);
-			// FileInputStream fis = new FileInputStream(file);
-			Log.i("LoadActivity msg",prefix	+ Constants.SAVE_FILENAME);
+			Log.i("LoadActivity msg",prefix	+ Constants.SAVE_FILENAME);	//삭제할 파일 로그로 찍어봄
 			
-			FileInputStream fis = openFileInput(prefix
-					+ Constants.SAVE_FILENAME);
+			FileInputStream fis = openFileInput(prefix + Constants.SAVE_FILENAME);	//삭제를 위해 정보객체를 읽기위한 스트림
 			// ObjectInputStream ois = new ObjectInputStream(fis);
 			ObjectInputStream ois = new ObjectInputStream(
 					new BufferedInputStream(fis));
 
-			bookInfo = (BookInfo) ois.readObject();
+			bookInfo = (BookInfo) ois.readObject();	//정보객체 읽어옴
 
 			if (ois != null) { // 스트림 닫기
 				try {
 					ois.close();
+					fis.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -216,14 +207,14 @@ public class LoadActivity extends Activity {
 			
 			// 이미지들 삭제			
 			String bmName; // 파일명
-			File tempFile;			
+			File tempFile;			//임시로 쓸 파일객체
 			for (int i = 0; i < maxPageNumber; i++) { // 각 페이지에
 				for (int j = 0; j < pages.get(i).getImages().size(); j++) { // 각 이미지를
 					bmName = prefix + i + "_" + j + "" + ".PNG"; // 파일명 : 책이름+페이지번호+이미지번호
 					
 					tempFile = new File(getApplicationContext().getFilesDir().getPath().toString() + "/" + bmName);
 					Log.i("bookeditor msg",getApplicationContext().getFilesDir().getPath().toString() + "/" + bmName);
-					if(tempFile.exists()){
+					if(tempFile.exists()){	//존재하면
 						tempFile.delete();	//삭제시도
 					}
 				}
@@ -235,7 +226,7 @@ public class LoadActivity extends Activity {
 				datFile.delete();	
 			}
 
-			Toast.makeText(this, "삭제성공", 0).show();
+			Toast.makeText(this, "삭제성공", 0).show();	//성공여부 메세지 띄움
 		}catch(Exception e){
 			Toast.makeText(this, "이미 삭제됨", 0).show();
 		}finally{
@@ -244,6 +235,7 @@ public class LoadActivity extends Activity {
 		}
 	}
 	
+	//종료시
 	public void onDestroy() {
 		Log.i("msg", "BookEditor onDestroy");
 		super.onDestroy();
