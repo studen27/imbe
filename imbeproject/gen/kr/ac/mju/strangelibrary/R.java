@@ -75,10 +75,10 @@ public final class R {
         public static final int loadList=0x7f080001;
         public static final int main_linear_layout=0x7f080005;
         public static final int mapview=0x7f080018;
-        public static final int menu_Qload=0x7f08002c;
-        public static final int menu_Qsave=0x7f08002b;
-        public static final int menu_load=0x7f08002e;
-        public static final int menu_save=0x7f08002d;
+        public static final int menu_Qload=0x7f08002b;
+        public static final int menu_Qsave=0x7f08002d;
+        public static final int menu_load=0x7f08002c;
+        public static final int menu_save=0x7f08002e;
         public static final int menu_settings=0x7f08002a;
         public static final int name_TextView=0x7f080027;
         public static final int next_button=0x7f080016;
@@ -124,6 +124,7 @@ public final class R {
         public static final int activity_camera=0x7f070000;
         public static final int activity_main=0x7f070001;
         public static final int bookeditor_menu=0x7f070002;
+        public static final int bookreader_menu=0x7f070003;
     }
     public static final class raw {
         public static final int bgm1=0x7f040000;

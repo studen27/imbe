@@ -2,7 +2,6 @@ package kr.ac.mju.strangelibrary;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,15 +11,9 @@ import java.util.ArrayList;
 
 import kr.ac.mju.strangelibrary.util.FileTransportManager;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
@@ -29,7 +22,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -167,21 +159,15 @@ public class BookReader extends Activity implements OnClickListener {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.bookeditor_menu, menu);
+		getMenuInflater().inflate(R.menu.bookreader_menu, menu);
 		return true;
 	}
 
 	// 메뉴아이템 선택시
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_Qsave: // 퀵세이브
-			saveWorkQ();
-			break;
 		case R.id.menu_Qload: // 퀵로드
 			loadWorkQ();
-			break;
-		case R.id.menu_save: // 세이브
-			saveWork();
 			break;
 		case R.id.menu_load: // 로드
 			loadWork();
@@ -388,445 +374,181 @@ public class BookReader extends Activity implements OnClickListener {
 			String prefix; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
 			prefix = "";
 
-			FileInputStream fis = openFileInput(prefix
-					+ Constants.SAVE_FILENAME);
-			ObjectInputStream ois = new ObjectInputStream(
-					new BufferedInputStream(fis));
+			FileInputStream fis = openFileInput(prefix + Constants.SAVE_FILENAME);		//로드위한 파일스트림
+			ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(fis));//버퍼스트림으로도 감쌈(안써도 되긴함)
 
-			bookInfo = (BookInfo) ois.readObject();
+			bookInfo = (BookInfo) ois.readObject();		//파일에서 불러와 책정보 객체에 저장함
 
 			if (ois != null) { // 스트림 닫기
 				try {
 					ois.close();
+					fis.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 
-			// 불러온정보 셋팅
-			maxPageNumber = bookInfo.getPageInfos().size();
-			// pages.get(currentPageNumber - 1).stopThread(); //스레드 중지
+			// 불러온정보 셋팅(bookInfo의 정보를 이용해 셋팅)
+			maxPageNumber = bookInfo.getPageInfos().size();	//최대페이지 수 설정
+//			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 			pages.clear(); // 모든 페이지 지움
 			for (int i = 0; i < maxPageNumber; i++) { // 불러온 페이지정보대로 셋팅
-				PageView pv = new PageView(this);
+				PageView pv = new PageView(this);		//추가할 임시 페이지(PageView) 생성
 				pv.setPageViewInfo(bookInfo.getPageInfos().get(i)); // 페이지정보 줌
-				pv.setByPageViewInfo(); // 페이지정보대로 페이지 셋
-				pv.createTextView(pv.getPageType(), inflater); // 각페이지 text 셋
-				Log.i("bookeditor msg", "" + pv.getPageType());
-				pages.add(pv);
+				pv.setByPageViewInfo();								// 페이지정보대로 페이지 셋
+				pv.createTextView(pv.getPageType(), inflater);		//각페이지 text 셋
+				Log.i("bookeditor msg",""+pv.getPageType());
+				pages.add(pv);										//페이지들 배열에 추가
 			}
-			currentPageNumber = 1;
+			currentPageNumber = 1;					//불러온후 현재페이지는 1페이지로 설정함
 
 			// 이미지 로드해 셋 data/data/패키지명/files/ 에서 불러옴
 			String bmName; // 파일명
-			FileInputStream in;
-			BitmapDrawable bd;
+			FileInputStream in;	//불러오기 위한 파일스트림
+			BitmapDrawable bd;	//이미지를 임시저장할 객체
 			for (int i = 0; i < maxPageNumber; i++) { // 페이지 수 만큼
-				for (int j = 0; j < pages.get(i).getImages().size(); j++) { // 각
-																			// 이미지만큼
-					bmName = prefix + i + "_" + j + "" + ".PNG"; // 파일명 :
-																	// 책이름+페이지번호+이미지번호
-					in = openFileInput(bmName);
+				for (int j = 0; j < pages.get(i).getImages().size(); j++) { // 각 이미지만큼
+					bmName = prefix + i + "_" + j + "" + ".PNG"; //파일명 : 책이름+작자명+페이지번호+이미지번호
+					in = openFileInput(bmName);					//파일 열기
 
-					// bm = BitmapFactory.decodeFile(bmName); //메모리누수 우려
-					bd = new BitmapDrawable(in); // 파일에서 그림 가져옴
-					pages.get(i).getImages().get(j).setBitmapByBd(bd);
+					// bm = BitmapFactory.decodeFile(bmName); //메모리누수 우려로 안씀
+					bd = new BitmapDrawable(in); //파일에서 그림 가져옴
+					pages.get(i).getImages().get(j).setBitmapByBd(bd);//해당 페이지의 해당 이미지에 그림을 셋팅시킴
 
 					Log.i("msg", pages.get(i).getImages().size() + "");
 
 					try {
-						bd = new BitmapDrawable(in);
-					} catch (Exception e) {
+						in.close();
+					} catch (IOException e) {
 						e.printStackTrace();
-					} finally {
-						try {
-							in.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
 					}
 				}
 			}
+	
+			//로그로 파일목록 제대로 로드되나 확인
+			Log.i("Book Editor msg", bookInfo.getBookFileName());
+			for(String s : bookInfo.getUploadFileNames()){
+				Log.i("Book Editor msg", s);
+			}
 
-			pageViewer.removeAllViews();
-			pageNumberView.setText(currentPageNumber.toString() + "/"
+			pageViewer.removeAllViews();	//프레임뷰에 쌓인 뷰들 없앰
+			pageNumberView.setText(currentPageNumber.toString() + "/"	//페이지번호 셋팅
 					+ maxPageNumber.toString());
-			pageViewer.addView(pages.get(currentPageNumber - 1));
-			pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
-			Toast.makeText(this, "불러왔습니다", 0).show();
-		} catch (Exception e) {
+			pageViewer.addView(pages.get(currentPageNumber - 1));		//프레임뷰에 페이지뷰 쌓음
+			pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());	//프레임뷰에 해당페이지의 텍스트뷰를 쌓음
+			Toast.makeText(this, "불러왔습니다", 0).show();	//성공여부 출력
+		}catch(Exception e){
 			Log.e("불러오기실패:", e.getMessage());
 			Toast.makeText(this, "불러오기실패!", 0).show();
 		}
 	}
 
 	// created 2012/11/29 정민규
-	// 세이브 (파일명 앞에 책이름 붙여 저장. ~_pages.dat + ?_?.PNG 들로 저장)
-	public void saveWork() {
-		String prefix; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
-		bookInfo.setBookName((pages.get(0).getEditText().getText().toString())); // 책이름
-																					// 셋
-
-		// pages.get(currentPageNumber -
-		// 1).getRootView().setDrawingCacheEnabled(true); //캡쳐소스이나 현재는 제대로안됨.
-		// 스레드로 바꿔도 동일
-		// Bitmap bm = pages.get(currentPageNumber -
-		// 1).getRootView().getDrawingCache(); //PageView는 검은화면으로 캡쳐됨
-		// String bmName; // 파일명
-		// FileOutputStream out;
-		// bmName = "1234.PNG"; // 파일명 : 책이름+페이지번호+이미지번호
-		// try {
-		// out = openFileOutput(bmName, Context.MODE_PRIVATE);
-		// bm.compress(CompressFormat.PNG, 100, out); // 파일로 저장
-		// } catch (FileNotFoundException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-
-		if (!bookInfo.getBookName().equals("")) { // 책이름 "" 아니면 책이름으로
-			prefix = bookInfo.getBookName();
-			// String[] filter_word =
-			// {"","\\.","\\?","\\/","\\~","\\!","\\@","\\#","\\$","\\%","\\^",
-			// "\\&","\\*","\\(","\\)","\\_","\\+","\\=","\\|","\\\\","\\}","\\]","\\{","\\[",
-			// "\\\"","\\'","\\:","\\;","\\<","\\,","\\>","\\.","\\?","\\/"};
-			String[] filter_word = { "\\p{Space} ", " ", "\\?", "\\/", "\\*",
-					"\\+", "\\|", "\\\\", "\\\"", "\\:", "\\<", "\\>", "\\?",
-					"\\/" };
-			for (int i = 0; i < filter_word.length; i++) { // 파일명으로 쓸수없는 특수문자를
-															// "_"로 교체
+	// 로드 (불러올 파일을 선택하는 액티비티 호출)
+	public void loadWork() {
+		Intent intent = new Intent(this, LoadActivity.class);
+		startActivityForResult(intent, 0);		
+	}
+	
+	//로드 (선택된 id, 선택된 책이름, 선택된 작자명 받음)     sId는 현재안씀
+	public void loadWork2(int sId, String sName, String sAuthor) {		
+		try {
+			String prefix = sName + "_" + sAuthor + "_"; // 파일명 앞에붙을이름
+			
+			String[] filter_word = { "\\p{Space} ", " ", "\\?", "\\/",
+					"\\*", "\\+", "\\|", "\\\\", "\\\"", "\\:", "\\<",
+					"\\>", "\\?", "\\/" };
+			for (int i = 0; i < filter_word.length; i++) { // 파일명으로 쓸수없는 특수문자를 "_"로 교체
 				prefix = prefix.replaceAll(filter_word[i], "_");
 			}
 
-			prefix = prefix + "_";
-		} else {
-			prefix = ""; // 책이름 ""이면 디폴트 파일명
-		}
+			FileInputStream fis = openFileInput(prefix + Constants.SAVE_FILENAME);		//로드위한 파일스트림
+			ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(fis));//버퍼스트림으로도 감쌈(안써도 되긴함)
 
-		// File file = new
-		// File(getApplicationContext().getFilesDir().getPath().toString() + "/"
-		// + prefix + Constants.SAVE_FILENAME);
-
-		ContentResolver cr = getContentResolver();
-		Cursor cursor = cr.query(MyProvider.CONTENT_URI, new String[] {
-				MyProvider.ID, MyProvider.NAME, MyProvider.AUTHOR },
-				MyProvider.NAME + "=?",
-				new String[] { bookInfo.getBookName() }, null);
-
-		if (cursor.getCount() > 0) { // 이미 있으면
-			AlertDialog.Builder aDialog = new AlertDialog.Builder(this);
-			aDialog.setTitle("같은 제목이 이미 있습니다. 덮어씌우시겠습니까?");
-			aDialog.setPositiveButton("Yes",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							saveWork2(NO_SQL); // 변수넘기기 어려워서
-						}
-					});
-			aDialog.setNegativeButton("No",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-						}
-					});
-			aDialog.setOnCancelListener(new OnCancelListener() { // 취소시
-				public void onCancel(DialogInterface arg0) {
-				}
-			});
-			AlertDialog ad = aDialog.create();
-			ad.show();
-		} else {
-			saveWork2(DO_SQL);
-		}
-	}
-
-	// 세이브작업2 (책이름 받아서 그걸로 저장)
-	public void saveWork2(int isDoSql) {
-		try {
-			String prefix; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
-			bookInfo.setBookName((pages.get(0).getEditText().getText()
-					.toString())); // 책이름 셋
-
-			if (isDoSql == NO_SQL) { // 덮어씌우기일경우
-				deleteWork(bookInfo.getBookName()); // 기존 저장된 이미지들 삭제
-			}
-
-			if (!bookInfo.getBookName().equals("")) { // 책이름 "" 아니면 책이름으로
-				prefix = bookInfo.getBookName();
-				String[] filter_word = { "\\p{Space} ", " ", "\\?", "\\/",
-						"\\*", "\\+", "\\|", "\\\\", "\\\"", "\\:", "\\<",
-						"\\>", "\\?", "\\/" };
-				for (int i = 0; i < filter_word.length; i++) { // 파일명으로 쓸수없는
-																// 특수문자를 "_"로 교체
-					prefix = prefix.replaceAll(filter_word[i], "_");
-				}
-
-				prefix = prefix + "_";
-			} else {
-				prefix = ""; // 책이름 ""이면 디폴트 파일명
-			}
-
-			File file = new File(getApplicationContext().getFilesDir()
-					.getPath().toString()
-					+ "/" + prefix + Constants.SAVE_FILENAME);
-
-			// FileOutputStream fos = new FileOutputStream(file);
-			FileOutputStream fos = openFileOutput(prefix
-					+ Constants.SAVE_FILENAME, Context.MODE_PRIVATE);
-			// ObjectOutputStream oos = new ObjectOutputStream(fos);
-			ObjectOutputStream oos = new ObjectOutputStream(
-					new BufferedOutputStream(fos));
-
-			// 이미지를 기기에 저장. DDMS에 data/data/패키지명/files/ 에 저장됨
-			Bitmap bm;
-			String bmName; // 파일명
-			FileOutputStream out;
-			for (int i = 0; i < maxPageNumber; i++) { // 각 페이지에
-				for (int j = 0; j < pages.get(i).getImages().size(); j++) { // 각
-																			// 이미지를
-					bmName = prefix + i + "_" + j + "" + ".PNG"; // 파일명 :
-																	// 책이름+페이지번호+이미지번호
-					out = openFileOutput(bmName, Context.MODE_PRIVATE);
-
-					bm = pages.get(i).getImages().get(j).getBd().getBitmap(); // 원본그림
-																				// 가져옴
-
-					try {
-						bm.compress(CompressFormat.PNG, 100, out); // 파일로 저장
-					} catch (Exception e) {
-						e.printStackTrace();
-					} finally {
-						try {
-							out.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-
-			// 페이지들 정보 셋팅
-			ArrayList<PageViewInfo> pageInfos = new ArrayList<PageViewInfo>();
-			for (int i = 0; i < maxPageNumber; i++) {
-				pages.get(i).createPageViewInfo();
-				pageInfos.add(pages.get(i).getPageViewInfo());
-				Log.i("bookeditor msg", "" + pages.get(i).getPageType());
-			}
-			bookInfo.setPageViewInfos(pageInfos); // bookInfo에 넣음
-
-			oos.writeObject(bookInfo); // bookInfo객체를 저장
-
-			if (oos != null) { // 스트림 닫기
-				try {
-					oos.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
-			if (isDoSql != NO_SQL) { // 덮어씌우기 아닐경우
-				ContentValues cv = new ContentValues(); // SQLITE로 DB에 추가
-				cv.put(NAME, bookInfo.getBookName());
-				cv.put(AUTHOR, "-");
-				ContentResolver cr = getContentResolver();
-				cr.insert(Uri.parse(MyProvider.URI), cv);
-			}
-
-			Toast.makeText(this, "저장되었습니다!", 0).show();
-		} catch (Exception e) {
-			Log.e("저장실패:", e.getMessage());
-			Toast.makeText(this, "저장실패!", 0).show();
-		}
-	}
-
-	// created 2012/11/29 정민규
-	// 로드 (로드 액티비티 호출)
-	public void loadWork() {
-		Intent intent = new Intent(this, LoadActivity.class);
-		startActivityForResult(intent, 0);
-	}
-
-	// 로드 (선택된 id, 선택된 name 받음. 이름으로 로드함) sId는 현재안씀
-	public void loadWork(int sId, String sName) {
-		try {
-			String prefix = sName; // 파일명 앞에붙을이름
-
-			if (!prefix.equals("")) { // 책이름 "" 아니면 책이름으로
-				String[] filter_word = { "\\p{Space} ", " ", "\\?", "\\/",
-						"\\*", "\\+", "\\|", "\\\\", "\\\"", "\\:", "\\<",
-						"\\>", "\\?", "\\/" };
-				for (int i = 0; i < filter_word.length; i++) { // 파일명으로 쓸수없는
-																// 특수문자를 "_"로 교체
-					prefix = prefix.replaceAll(filter_word[i], "_");
-				}
-
-				prefix = prefix + "_";
-			} else {
-				prefix = ""; // 책이름 ""이면 디폴트 파일명
-			}
-
-			FileInputStream fis = openFileInput(prefix
-					+ Constants.SAVE_FILENAME);
-			ObjectInputStream ois = new ObjectInputStream(
-					new BufferedInputStream(fis));
-
-			bookInfo = (BookInfo) ois.readObject();
+			bookInfo = (BookInfo) ois.readObject();		//파일에서 불러와 책정보 객체에 저장함
 
 			if (ois != null) { // 스트림 닫기
 				try {
 					ois.close();
+					fis.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 
-			// 불러온정보 셋팅
-			maxPageNumber = bookInfo.getPageInfos().size();
-			// pages.get(currentPageNumber - 1).stopThread(); //스레드 중지
+			// 불러온정보 셋팅(bookInfo의 정보를 이용해 셋팅)
+			maxPageNumber = bookInfo.getPageInfos().size();	//최대페이지 수 설정
+//			pages.get(currentPageNumber - 1).stopThread();	//스레드 중지
 			pages.clear(); // 모든 페이지 지움
 			for (int i = 0; i < maxPageNumber; i++) { // 불러온 페이지정보대로 셋팅
-				PageView pv = new PageView(this);
+				PageView pv = new PageView(this);		//추가할 임시 페이지(PageView) 생성
 				pv.setPageViewInfo(bookInfo.getPageInfos().get(i)); // 페이지정보 줌
-				pv.setByPageViewInfo(); // 페이지정보대로 페이지 셋
-				pv.createTextView(pv.getPageType(), inflater); // 각페이지 text 셋
-				Log.i("bookeditor msg", "" + pv.getPageType());
-				pages.add(pv);
+				pv.setByPageViewInfo();								// 페이지정보대로 페이지 셋
+				pv.createTextView(pv.getPageType(), inflater);		//각페이지 text 셋
+				Log.i("bookeditor msg",""+pv.getPageType());
+				pages.add(pv);										//페이지들 배열에 추가
 			}
-			currentPageNumber = 1;
+			currentPageNumber = 1;					//불러온후 현재페이지는 1페이지로 설정함
 
 			// 이미지 로드해 셋 data/data/패키지명/files/ 에서 불러옴
 			String bmName; // 파일명
-			FileInputStream in;
-			BitmapDrawable bd;
+			FileInputStream in;	//불러오기 위한 파일스트림
+			BitmapDrawable bd;	//이미지를 임시저장할 객체
 			for (int i = 0; i < maxPageNumber; i++) { // 페이지 수 만큼
-				for (int j = 0; j < pages.get(i).getImages().size(); j++) { // 각
-																			// 이미지만큼
-					bmName = prefix + i + "_" + j + "" + ".PNG"; // 파일명 :
-																	// 책이름+페이지번호+이미지번호
-					in = openFileInput(bmName);
+				for (int j = 0; j < pages.get(i).getImages().size(); j++) { // 각 이미지만큼
+					bmName = prefix + i + "_" + j + "" + ".PNG"; //파일명 : 책이름+작자명+페이지번호+이미지번호
+					in = openFileInput(bmName);					//파일 열기
 
-					// bm = BitmapFactory.decodeFile(bmName); //메모리누수 우려
-					bd = new BitmapDrawable(in); // 파일에서 그림 가져옴
-					pages.get(i).getImages().get(j).setBitmapByBd(bd);
+					// bm = BitmapFactory.decodeFile(bmName); //메모리누수 우려로 안씀
+					bd = new BitmapDrawable(in); //파일에서 그림 가져옴
+					pages.get(i).getImages().get(j).setBitmapByBd(bd);//해당 페이지의 해당 이미지에 그림을 셋팅시킴
 
 					Log.i("msg", pages.get(i).getImages().size() + "");
 
 					try {
-						bd = new BitmapDrawable(in);
-					} catch (Exception e) {
+						in.close();
+					} catch (IOException e) {
 						e.printStackTrace();
-					} finally {
-						try {
-							in.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
 					}
 				}
 			}
+	
+			//로그로 파일목록 제대로 로드되나 확인
+			Log.i("Book Editor msg", bookInfo.getBookFileName());
+			for(String s : bookInfo.getUploadFileNames()){
+				Log.i("Book Editor msg", s);
+			}
 
-			pageViewer.removeAllViews();
-			pageNumberView.setText(currentPageNumber.toString() + "/"
+			pageViewer.removeAllViews();	//프레임뷰에 쌓인 뷰들 없앰
+			pageNumberView.setText(currentPageNumber.toString() + "/"	//페이지번호 셋팅
 					+ maxPageNumber.toString());
-			pageViewer.addView(pages.get(currentPageNumber - 1));
-			pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
-			Toast.makeText(this, "불러왔습니다", 0).show();
-		} catch (Exception e) {
+			pageViewer.addView(pages.get(currentPageNumber - 1));		//프레임뷰에 페이지뷰 쌓음
+			pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());	//프레임뷰에 해당페이지의 텍스트뷰를 쌓음
+			Toast.makeText(this, "불러왔습니다", 0).show();	//성공여부 출력
+		}catch(Exception e){
 			Log.e("불러오기실패:", e.getMessage());
 			Toast.makeText(this, "불러오기실패!", 0).show();
 		}
 	}
 
-	// 삭제작업. DB는 놔둠 (덮어씌우기시)
-	private void deleteWork(String sName) { // 책이름 받음
-		try {
-			String prefix = sName; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
+	//부른 액티비티(로드)의 응답 받음
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent){
+    	super.onActivityResult(requestCode, resultCode, intent);
+    	if(requestCode == 0){
+    		if(resultCode == Activity.RESULT_OK){
+    			int sId = intent.getIntExtra("SelectedId", 0);
+    			String sName = intent.getStringExtra("SelectedName");			//선택된 줄의 id, 책이름 설정
+    			String sAuthor = intent.getStringExtra("SelectedAuthor");			//선택된 줄의 id, 책이름 설정
 
-			if (!prefix.equals("")) { // 책이름 "" 아니면 책이름으로
-				String[] filter_word = { "\\p{Space} ", " ", "\\?", "\\/",
-						"\\*", "\\+", "\\|", "\\\\", "\\\"", "\\:", "\\<",
-						"\\>", "\\?", "\\/" };
-				for (int i = 0; i < filter_word.length; i++) { // 파일명으로 쓸수없는
-																// 특수문자를 "_"로 교체
-					prefix = prefix.replaceAll(filter_word[i], "_");
-				}
-
-				prefix = prefix + "_";
-			} else {
-				prefix = ""; // 책이름 ""이면 디폴트 파일명
-			}
-
-			FileInputStream fis = openFileInput(prefix
-					+ Constants.SAVE_FILENAME);
-			// ObjectInputStream ois = new ObjectInputStream(fis);
-			ObjectInputStream ois = new ObjectInputStream(
-					new BufferedInputStream(fis));
-
-			BookInfo bookInfo = (BookInfo) ois.readObject(); // 임시변수 bookInfo따로씀
-			ArrayList<PageView> pages = new ArrayList<PageView>(); // 임시변수 pages
-																	// 따로씀
-
-			if (ois != null) { // 스트림 닫기
-				try {
-					ois.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
-			// 불러온정보 셋팅(각 페이지당 이미지 수 셋팅)
-			int maxPageNumber = bookInfo.getPageInfos().size();
-			// pages.get(currentPageNumber - 1).stopThread(); //스레드 중지
-			for (int i = 0; i < maxPageNumber; i++) { // 불러온 페이지정보대로 셋팅
-				PageView pv = new PageView(this);
-				pv.setPageViewInfo(bookInfo.getPageInfos().get(i)); // 페이지정보 줌
-				pv.setByPageViewInfo(); // 페이지정보대로 페이지 셋
-				// pv.createTextView(pv.getPageType(), inflater); //각페이지 text 셋
-				pages.add(pv);
-			}
-
-			// 이미지들 삭제
-			String bmName; // 파일명
-			File tempFile;
-			for (int i = 0; i < maxPageNumber; i++) { // 각 페이지에
-				for (int j = 0; j < pages.get(i).getImages().size(); j++) { // 각
-																			// 이미지를
-					bmName = prefix + i + "_" + j + "" + ".PNG"; // 파일명 :
-																	// 책이름+페이지번호+이미지번호
-
-					tempFile = new File(getApplicationContext().getFilesDir()
-							.getPath().toString()
-							+ "/" + bmName);
-					Log.i("bookeditor msg", getApplicationContext()
-							.getFilesDir().getPath().toString()
-							+ "/" + bmName);
-					if (tempFile.exists()) {
-						tempFile.delete(); // 삭제시도
-					}
-				}
-			}
-
-			Toast.makeText(this, "기존 데이터 삭제성공", Toast.LENGTH_SHORT).show();
-		} catch (Exception e) {
-			Toast.makeText(this, "기존 데이터 이미 삭제됨", Toast.LENGTH_SHORT).show();
-		}
-	}
-
-	// 부른 액티비티(로드)의 응답 받음
-	protected void onActivityResult(int requestCode, int resultCode,
-			Intent intent) {
-		super.onActivityResult(requestCode, resultCode, intent);
-		if (requestCode == 0) {
-			if (resultCode == Activity.RESULT_OK) {
-				int sId = intent.getIntExtra("SelectedId", 0);
-				String sName = intent.getStringExtra("SelectedName"); // 선택된 줄의 id, 책이름 설정
-				loadWork(sId, sName);
-				
-				for(int i = 0; i < pages.size(); i++) {
-					pages.get(i).setEnabled(false);
-				}
-			}else{
-				finish();
-			}
-		}
-	}
+    			loadWork2(sId, sName, sAuthor);
+    		}
+    	} else if(requestCode == 1){//사진찍은후 byte[]로 돌아올때
+    		if(resultCode == Activity.RESULT_OK){
+	    		byte[] b = intent.getByteArrayExtra("bytes");	//byte[] 받음
+	    		pages.get(currentPageNumber - 1).insertImage(b);
+    		}
+    	}  	
+    }
 
 	public class MyLocationListener implements LocationListener {
 
