@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: Y:\\Github\\imbe\\imbeproject\\src\\com\\example\\imbedproject\\v021\\BgmService.aidl
+ * Original file: C:\\Users\\mabi\\workspace\\imbe3\\src\\com\\example\\imbedproject\\v021\\BgmService.aidl
  */
 package com.example.imbedproject.v021;
 public interface BgmService extends android.os.IInterface

@@ -27,6 +27,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -269,17 +271,54 @@ public class BookReader extends Activity implements OnClickListener {
 		// 책 업로드
 		// GPS로부터 좌표를 읽어들여 서버로 전송한다.
 		case R.id.upload_button:
+			/*
+			ConnectivityManager connect = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+			if (connect.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+				Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+				if (l != null) {
+					int latitude = (int) (l.getLatitude() * 1000000);
+					int longitude = (int) (l.getLongitude() * 1000000);
+					String path = ftm.upload(getFilesDir().getPath().toString()
+							+ "/", bookInfo.getBookFileName(), latitude,
+							longitude);
+					for (int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
+						try {
+							ftm.DoImageUpload(path, getFilesDir().getPath()
+									.toString()
+									+ "/"
+									+ bookInfo.getUploadFileNames().get(i));
+						} catch (IOException e) {
+							Toast.makeText(getApplicationContext(),
+									"뭔가 잘못되었어요!", Toast.LENGTH_SHORT).show();
+							e.printStackTrace();
+						}
+					}
+					Toast.makeText(getApplicationContext(), "업로드 성공!",
+							Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(getApplicationContext(),
+							"GPS 정보를 받지 못하였습니다.", Toast.LENGTH_LONG).show();
+				}
+			} else {
+				Toast.makeText(getApplicationContext(), "인터넷이 연결되어있지 않습니다.",
+						Toast.LENGTH_LONG).show();
+			}
+			*/
+			
 			Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-			if(l != null) {
-				int latitude = (int)(l.getLatitude() * 1000000);
-				int longitude = (int)(l.getLongitude() * 1000000);
-				String path = ftm.upload(getFilesDir().getPath().toString() + "/",
-						bookInfo.getBookFileName(), latitude, longitude);
+			if (l != null) {
+				int latitude = (int) (l.getLatitude() * 1000000);
+				int longitude = (int) (l.getLongitude() * 1000000);
+				String path = ftm.upload(getFilesDir().getPath().toString()
+						+ "/", bookInfo.getBookFileName(), latitude, longitude);
 				for (int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
 					try {
-						ftm.DoImageUpload(path, getFilesDir().getPath().toString()
-								+ "/" + bookInfo.getUploadFileNames().get(i));
+						ftm.DoImageUpload(path, getFilesDir().getPath()
+								.toString()
+								+ "/"
+								+ bookInfo.getUploadFileNames().get(i));
 					} catch (IOException e) {
 						Toast.makeText(getApplicationContext(), "뭔가 잘못되었어요!",
 								Toast.LENGTH_SHORT).show();
@@ -289,9 +328,9 @@ public class BookReader extends Activity implements OnClickListener {
 				Toast.makeText(getApplicationContext(), "업로드 성공!",
 						Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(getApplicationContext(), "GPS 정보를 받지 못하였습니다.", Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), "GPS 정보를 받지 못하였습니다.",
+						Toast.LENGTH_LONG).show();
 			}
-			
 			break;
 		}
 	}

@@ -17,6 +17,8 @@ import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -69,16 +71,36 @@ public class LoadActivity extends Activity {
 	    
 	    Button findBook = (Button) findViewById(R.id.find_book);
 	    findBook.setOnClickListener(new Button.OnClickListener() {
-			public void onClick(View arg0) {
+	    	public void onClick(View arg0) {
+	    		/*
+				ConnectivityManager connect = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
+				if (connect.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() 
+						== NetworkInfo.State.CONNECTED) {
+					Intent intent = new Intent("com.example.imbedproject.v021.findIntent");
+					Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+					if (l != null) {
+						int latitude = (int) (l.getLatitude() * 1000000);
+						int longitude = (int) (l.getLongitude() * 1000000);
+						intent.putExtra("latitude", latitude);
+						intent.putExtra("longitude", longitude);
+					}
+					startActivity(intent);
+				} else {
+					Toast.makeText(getApplicationContext(), "인터넷이 연결되어있지 않습니다.", Toast.LENGTH_LONG).show();
+				}
+				*/
+				
+				
 				Intent intent = new Intent("com.example.imbedproject.v021.findIntent");
 				Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-				if(l != null) {
-					int latitude = (int)(l.getLatitude() * 1000000);
-					int  longitude = (int)(l.getLongitude() * 1000000);
+				if (l != null) {
+					int latitude = (int) (l.getLatitude() * 1000000);
+					int longitude = (int) (l.getLongitude() * 1000000);
 					intent.putExtra("latitude", latitude);
 					intent.putExtra("longitude", longitude);
 				}
 				startActivity(intent);
+				
 			}
 	    });
 	    
