@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	      android:id="@+id/main_linear_layout"
+	      android:orientation="vertical"
+	      android:layout_width="fill_parent"
+	      android:layout_height="fill_parent"
+	      android:background="#00000000"
+	      >
+
+  <FrameLayout
+     android:layout_width="fill_parent"
+     android:layout_height="0px"
+     android:layout_weight="1">
+    
+    <com.nemustech.tiffany.world.TFView android:id="@+id/glsurfaceview"
+					 android:layout_width="fill_parent"
+					 android:layout_height="fill_parent" />
+  </FrameLayout>
+
+  <TextView
+     android:id="@+id/overlayview"
+     android:layout_width="fill_parent"
+     android:layout_height="wrap_content"
+     android:layout_gravity="center"
+     android:gravity="center"
+     />
+
+	
+</LinearLayout>
+<!-- android:background="@drawable/translucent_background" -->
