@@ -22,6 +22,9 @@ public class Constants extends Application {
 	public static String CALL_TYPE = "CALL_TYPE";
 	public static int MAIN_EDIT_CREATE = 0;
 	public static int MAIN_EDIT_LOAD = 1;
+	
+	public static String PREF_BGM = "Bgm On/Off";
+	public static String PREF_USERNAME = "User Name";
 
 	// public static enum CALL_TYPES {
 	// MAIN_EDIT_CREATE, MAIN_EDIT_LOAD

@@ -110,7 +110,7 @@ public class ImageItemizedOverlay extends ItemizedOverlay {
 					// 다운받은 책을 DB에 등록한다.
 					ContentValues cv = new ContentValues();
 					cv.put(Constants.NAME, bookInfo.getBookName());
-					cv.put(Constants.AUTHOR, "-");
+					cv.put(Constants.AUTHOR, bookInfo.getAuthor());
 					ContentResolver cr = mContext.getContentResolver();
 					cr.insert(Uri.parse(MyProvider.URI), cv);
 					

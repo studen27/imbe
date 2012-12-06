@@ -511,19 +511,18 @@ public class BookEditor extends Activity implements OnClickListener {
 			pages.get(currentPageNumber - 1).setPaintColor(Color.YELLOW);
 			break;
 		case R.id.bgmBtn:	// bgm 켜기/끄기 (preference에 값 쓰고 변경, 원격서비스, aidl사용)
-			SharedPreferences pref = getSharedPreferences("Bgm Toggle",
-					MODE_PRIVATE);
+			SharedPreferences pref = getSharedPreferences(Constants.PREF_BGM, MODE_PRIVATE);
 			SharedPreferences.Editor editor = pref.edit(); // 수정용 에디터
 
-			String valueStr = pref.getString("Bgm On/Off", ""); // 값 읽기. 없을시  ""리턴
+			String valueStr = pref.getString(Constants.PREF_BGM, ""); // 값 읽기. 없을시  ""리턴
 			if (valueStr.equals("") || valueStr.equals("0")) {
-				editor.putString("Bgm On/Off", "1"); // 1로 씀
+				editor.putString(Constants.PREF_BGM, "1"); // 1로 씀
 
 				Intent intent = new Intent("com.example.pagemanager.BgmService"); // Bgm서비스 켬
 //				startService(intent);
 				bindService(intent, serviceConn, BIND_AUTO_CREATE);				
 			} else {
-				editor.putString("Bgm On/Off", "0"); // 0으로 씀
+				editor.putString(Constants.PREF_BGM, "0"); // 0으로 씀
 
 				Intent intent = new Intent("com.example.pagemanager.BgmService"); // Bgm서비스  끔
 //				stopService(intent);
@@ -553,7 +552,11 @@ public class BookEditor extends Activity implements OnClickListener {
 			String prefix; // 파일명 앞에붙을이름 (디렉토리생성은 현재 안됨)
 			prefix = "";					//------------ 그냥 세이브와 여기정도만 다름
 
+			SharedPreferences pref = getSharedPreferences(Constants.PREF_USERNAME, MODE_PRIVATE);//작성자명 preprence에서 읽기
+			String author = pref.getString(Constants.PREF_USERNAME, ""); // 값 읽기. 없을시  ""리턴
+
 			bookInfo.setBookFileName(prefix + Constants.SAVE_FILENAME);		//저장될 정보파일 이름 셋 . pages.dat 임
+			bookInfo.setAuthor(author);										//작성자명 셋		
 
 			FileOutputStream fos = openFileOutput(prefix
 					+ Constants.SAVE_FILENAME, Context.MODE_PRIVATE);
@@ -736,15 +739,20 @@ public class BookEditor extends Activity implements OnClickListener {
 			prefix = ""; //책이름 ""이면 디폴트 파일명
 		}
 		
+		
+		SharedPreferences pref = getSharedPreferences(Constants.PREF_USERNAME, MODE_PRIVATE);//작성자명 preprence에서 읽기
+		String author = pref.getString(Constants.PREF_USERNAME, ""); // 값 읽기. 없을시  ""리턴
+		
 		bookInfo.setBookFileName(prefix + Constants.SAVE_FILENAME);		//저장될 정보파일 이름 셋 ex) ~_pages.dat
+		bookInfo.setAuthor(author);										//작성자명 셋		
 
 	    ContentResolver cr = getContentResolver();
 		Cursor cursor = cr.query(MyProvider.CONTENT_URI, new String[] { MyProvider.ID, MyProvider.NAME, MyProvider.AUTHOR },
-				MyProvider.NAME + "=?", new String[]{bookInfo.getBookName()}, null);		
+				MyProvider.NAME + "=?" + " and " + MyProvider.AUTHOR + "=?", new String[]{bookInfo.getBookName(), bookInfo.getAuthor()}, null);		
 		
 		if(cursor.getCount() > 0){	//이미 있으면
 			AlertDialog.Builder aDialog = new AlertDialog.Builder(this);
-			aDialog.setTitle("같은 제목이 이미 있습니다. 덮어씌우시겠습니까?");
+			aDialog.setTitle("같은 책이름이 이미 있습니다. 덮어씌우시겠습니까?");
 			aDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					saveWork2(NO_SQL);	//변수넘기기 어려워서
@@ -848,10 +856,13 @@ public class BookEditor extends Activity implements OnClickListener {
 				}
 			}
 
+			SharedPreferences pref = getSharedPreferences(Constants.PREF_USERNAME, MODE_PRIVATE);//작성자명 preprence에서 읽기
+			String author = pref.getString(Constants.PREF_USERNAME, ""); // 값 읽기. 없을시  ""리턴
+			
 			if(isDoSql != NO_SQL){	//덮어씌우기 아닐경우
 				ContentValues cv = new ContentValues();	//SQLITE로 DB에 추가
 				cv.put(Constants.NAME, bookInfo.getBookName());
-				cv.put(Constants.AUTHOR, "-");
+				cv.put(Constants.AUTHOR, author);
 				ContentResolver cr = getContentResolver();
 				cr.insert(Uri.parse(MyProvider.URI), cv);
 			}
@@ -1127,9 +1138,5 @@ public class BookEditor extends Activity implements OnClickListener {
 	public void onDestroy() {
 		Log.i("msg","BookEditor onDestroy");
 		super.onDestroy();
-		
-		SharedPreferences pref = getSharedPreferences("Bgm Toggle",	MODE_PRIVATE);
-		SharedPreferences.Editor editor = pref.edit(); // 수정용 에디터
-		editor.remove("Bgm On/Off");	//액티비티 종료시 bgm재생여부 키값 삭제
 	}	
 }

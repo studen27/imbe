@@ -51,13 +51,15 @@ public class CameraView extends SurfaceView implements Callback,
 	
 	//생성시
 	public void surfaceCreated(SurfaceHolder arg0) {
-		camera = Camera.open();	//카메라 초기화
-		
 		try {
+			camera = Camera.open();	//카메라 초기화			
 			camera.setPreviewDisplay(holder);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException e) {	//카메라 오픈 오류시
+			Message msg = handler.obtainMessage();
+			Bundle b = new Bundle();
+			b.putByteArray("byte", null);
+			msg.setData(b);
+			handler.sendMessage(msg);	
 		}
 	}
 

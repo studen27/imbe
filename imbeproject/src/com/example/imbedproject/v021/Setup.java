@@ -18,18 +18,18 @@ public class Setup extends Activity {
 	    setContentView(R.layout.setup_layout);
 	
 	    userName = (EditText) findViewById(R.id.user_name);
-	    SharedPreferences pref = getSharedPreferences("User Name", MODE_PRIVATE);
-	    String valueStr = pref.getString("User Name", "");
+	    SharedPreferences pref = getSharedPreferences(Constants.PREF_USERNAME, MODE_PRIVATE);
+	    String valueStr = pref.getString(Constants.PREF_USERNAME, "");
 	    userName.setText(valueStr);
 	    
 	    Button setupButton = (Button) findViewById(R.id.setup_button);
 	    setupButton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View v) {
-				SharedPreferences pref = getSharedPreferences("User Name", MODE_PRIVATE);
+				SharedPreferences pref = getSharedPreferences(Constants.PREF_USERNAME, MODE_PRIVATE);
 				SharedPreferences.Editor editor = pref.edit(); // 수정용 에디터
 
-				editor.putString("User Name", userName.getText().toString());
+				editor.putString(Constants.PREF_USERNAME, userName.getText().toString());
 				editor.commit(); // 변경사항 적용
 				
 				finish();

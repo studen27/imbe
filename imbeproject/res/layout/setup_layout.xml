@@ -19,6 +19,7 @@
         android:layout_alignBaseline="@+id/name_TextView"
         android:layout_alignBottom="@+id/name_TextView"
         android:layout_centerHorizontal="true"
+        android:singleLine="true"
         android:ems="10" >
         <requestFocus />
     </EditText>

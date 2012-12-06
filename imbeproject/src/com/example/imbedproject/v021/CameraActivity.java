@@ -16,10 +16,17 @@ import android.view.Window;
 public class CameraActivity extends Activity {
 	CameraView cv;
 	
+	//핸들러
 	final Handler handler = new Handler(){
 		public void handleMessage(Message msg){
 			byte[] b = msg.getData().getByteArray("byte");
-			captured(b);
+			
+			if(b != null){			
+				captured(b);
+			}else{
+				cv.surfacePreDestroy();	//종료
+				finish();
+			}
 		}
 	};
 	

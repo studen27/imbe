@@ -12,6 +12,7 @@ public class BookInfo implements Serializable {
 	ArrayList<PageViewInfo> pageInfos;	//페이지정보 객체 배열
 	String bookFileName;				//세이브되는 정보파일명  ex) ~_pages.dat
 	ArrayList<String> uploadFileNames;	//세이브되는 이미지파일명 배열
+	String author;		//작성자명
 	
 	//constructor
 	public BookInfo() {
@@ -43,5 +44,11 @@ public class BookInfo implements Serializable {
 	}
 	public void setUploadFileNames(ArrayList<String> uploadFileNames) {
 		this.uploadFileNames = uploadFileNames;
+	}
+	public String getAuthor() {
+		return author;
+	}
+	public void setAuthor(String author) {
+		this.author = author;
 	}	
 }
