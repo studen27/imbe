@@ -1,9 +1,9 @@
 <?php
-// 60062446 ¹ÚÁ¤½Ç
+// 60062446 ë°•ì •ì‹¤
 // create at 2012/12/05
 // modify at 2012/12/06
 
-// Ã¥¿¡ °ü·ÃµÈ ÀÌ¹ÌÁö¸¦ ¾÷·ÎµåÇÏ´Â ¿ªÇÒ
+// ì±…ì— ê´€ë ¨ëœ ì´ë¯¸ì§€ë¥¼ ì—…ë¡œë“œí•˜ëŠ” ì—­í• 
 $db_hostname = 'localhost';
 $db_database = 'schoolradio';
 $db_username = 'schoolradio';
@@ -19,11 +19,11 @@ $img_name = $_FILES['uploadedfile']['name'];
 if(isset($_GET['dir_name'])) $dir_name = $_GET['dir_name'];
 $tmp_img = explode("." ,$dir_name); 
 
-// ÀÌ¹ÌÁö¸¦ DB¿¡ µî·ÏÇÑ´Ù.
+// ì´ë¯¸ì§€ë¥¼ DBì— ë“±ë¡í•œë‹¤.
 $query = "insert into book_image(path, name) values('$tmp_img[0]', '$img_name');";
 $result = mysql_query($query);
 
-// ÀÌ¹ÌÁö¸¦ ¾÷·ÎµåÇÑ´Ù.
+// ì´ë¯¸ì§€ë¥¼ ì—…ë¡œë“œí•œë‹¤.
 $target_path = $target_path. $tmp_img[0] . "/" . basename($img_name);
 if(move_uploaded_file($_FILES['uploadedfile']['tmp_name'], $target_path)) {
 	echo $img_name;

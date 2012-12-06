@@ -1,13 +1,13 @@
 <?php
-// 60062446 ¹ÚÁ¤½Ç
+// 60062446 ë°•ì •ì‹¤
 // create at 2012/12/02
 // modify at 2012/12/06
 
-// Ã¥ÆÄÀÏÀ» ¾÷·ÎµåÇÏ´Â ¿ªÇÒ
+// ì±…íŒŒì¼ì„ ì—…ë¡œë“œí•˜ëŠ” ì—­í• 
 $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
 $target_path = "$DOCUMENT_ROOT/test/";
 
-// Áßº¹µÈ ÀÌ¸§ÀÌ ¾øµµ·Ï ³¯Â¥¸¦ÀÌ¿ëÇÏ¿© Ã¥ÀÇ ÀÌ¸§À» º¯°æ½ÃÅ²´Ù.
+// ì¤‘ë³µëœ ì´ë¦„ì´ ì—†ë„ë¡ ë‚ ì§œë¥¼ì´ìš©í•˜ì—¬ ì±…ì˜ ì´ë¦„ì„ ë³€ê²½ì‹œí‚¨ë‹¤.
 $tmp_img = explode("." ,$_FILES['uploadedfile']['name']); 
 $img_name = $tmp_img[0]."_".date('Y-m-d_H_i_s').".".$tmp_img[1];
 $target_path = $target_path . basename($img_name);

@@ -1,9 +1,9 @@
 <?php
-// 60062446 ¹ÚÁ¤½Ç
+// 60062446 ë°•ì •ì‹¤
 // create at 2012/12/05
 // modify at 2012/12/06
 
-// Ã¥¿¡ °ü·ÃµÈ ÀÌ¹ÌÁö¸¦ Ã£´Â ¿ªÇÒ
+// ì±…ì— ê´€ë ¨ëœ ì´ë¯¸ì§€ë¥¼ ì°¾ëŠ” ì—­í• 
 $db_hostname = 'localhost';
 $db_database = 'schoolradio';
 $db_username = 'schoolradio';
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 	 
 	$xmlcode = "<?xml version = \"1.0\" encoding = \"utf-8\"?>\n";
 	
-	// °á°ú·Î ¹Ş¾Æ¿Â Á¤º¸¸¦ xmlcode¿¡ Ãß°¡½ÃÅ²´Ù.
+	// ê²°ê³¼ë¡œ ë°›ì•„ì˜¨ ì •ë³´ë¥¼ xmlcodeì— ì¶”ê°€ì‹œí‚¨ë‹¤.
 	while($row = mysql_fetch_array($result)) {
 		$name = $row['name'];
 	 
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 		$xmlcode .= "</node>\n";
 	}
 	
-	// xmlcode¸¦ ½ÇÁ¦·Î ¾´´Ù.
+	// xmlcodeë¥¼ ì‹¤ì œë¡œ ì“´ë‹¤.
 	$dir = "$DOCUMENT_ROOT/test";
 	$filename = $dir."/search_image_result.xml";
 	file_put_contents($filename, $xmlcode);

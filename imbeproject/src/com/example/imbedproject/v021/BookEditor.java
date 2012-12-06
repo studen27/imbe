@@ -65,6 +65,7 @@ public class BookEditor extends Activity implements OnClickListener {
 	private PageTypeSelectListener pageTypeListner;
 	private Dialog backgroundDialog; // background 선택을 위한 다이얼로그
 	private ImageInsertListener insertListner;
+	private Dialog illustrationDialog;
 	private Dialog humanImageDialog;
 	private Dialog animalImageDialog;
 	private Dialog objectImageDialog;
@@ -92,7 +93,7 @@ public class BookEditor extends Activity implements OnClickListener {
 	private Button setBackground;
 	private ImageButton cameraButton;
 
-	final CharSequence[] category = { "인물", "동물", "사물" };
+	final CharSequence[] category = { "삽화", "인물", "동물", "사물" };
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -132,6 +133,28 @@ public class BookEditor extends Activity implements OnClickListener {
 		}
 		sv.addView(tl);
 		backgroundDialog.setContentView(sv);
+		
+		// illustrationDialog 생성
+		illustrationDialog = new Dialog(this);
+		illustrationDialog.setTitle("삽화를 선택해 주세요.");
+		sv = new ScrollView(illustrationDialog.getContext());
+		tl = new TableLayout(sv.getContext());
+		for (int i = 0; i < Constants.Human.getLength(); i++) {
+
+			ImageView image = new ImageView(illustrationDialog.getContext());
+			image.setImageResource(Constants.Illustration.get(i));
+			image.setId(Constants.Illustration.get(i));
+			image.setMaxHeight(220);
+			image.setMaxWidth(400);
+			image.setPadding(50, 10, 50, 10);
+			image.setAdjustViewBounds(true);
+			image.setOnClickListener(insertListner);
+			TableRow tr = new TableRow(tl.getContext());
+			tr.addView(image);
+			tl.addView(tr);
+		}
+		sv.addView(tl);
+		illustrationDialog.setContentView(sv);
 
 		// humanImageDialog 생성
 		humanImageDialog = new Dialog(this);
@@ -206,12 +229,15 @@ public class BookEditor extends Activity implements OnClickListener {
 				imgInsertDialog.dismiss();
 				switch (item) {
 				case 0:
-					humanImageDialog.show();
+					illustrationDialog.show();
 					break;
 				case 1:
-					animalImageDialog.show();
+					humanImageDialog.show();
 					break;
 				case 2:
+					animalImageDialog.show();
+					break;
+				case 3:
 					objectImageDialog.show();
 					break;
 				}
@@ -977,7 +1003,6 @@ public class BookEditor extends Activity implements OnClickListener {
 			pages.get(currentPageNumber - 1).setBgImg();
 			backgroundDialog.dismiss();
 		}
-
 	}
 	
 	//이미지선택 리스너
@@ -987,6 +1012,7 @@ public class BookEditor extends Activity implements OnClickListener {
 			humanImageDialog.dismiss();
 			animalImageDialog.dismiss();
 			objectImageDialog.dismiss();
+			illustrationDialog.dismiss();
 			pages.get(currentPageNumber - 1).insertImage(v.getId());
 		}
 	}

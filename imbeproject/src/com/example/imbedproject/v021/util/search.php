@@ -1,9 +1,9 @@
 <?php
-// 60062446 ¹ÚÁ¤½Ç
+// 60062446 ë°•ì •ì‹¤
 // create at 2012/12/02
 // modify at 2012/12/06
 
-// Ã¥À» Ã£´Â ¿ªÇÒ
+// ì±…ì„ ì°¾ëŠ” ì—­í• 
 $db_hostname = 'localhost';
 $db_database = 'schoolradio';
 $db_username = 'schoolradio';
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 	if(isset($_GET['latitude'])) $latitude = $_GET['latitude'];
 	if(isset($_GET['longitude'])) $longitude = $_GET['longitude'];
 	
-	// °Ë»ö ´ë»óÀÌµÇ´Â ¹üÀ§ ÁöÁ¤
+	// ê²€ìƒ‰ ëŒ€ìƒì´ë˜ëŠ” ë²”ìœ„ ì§€ì •
 	$upper_latitude = $latitude + 10000;
 	$lower_latitude = $latitude - 10000;
 	$upper_longitude = $longitude + 10000;
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 	 
 	$xmlcode = "<?xml version = \"1.0\" encoding = \"utf-8\"?>\n";
 	
-	// °á°ú·Î ¹Ş¾Æ¿Â Á¤º¸¸¦ xmlcode¿¡ Ãß°¡½ÃÅ²´Ù.
+	// ê²°ê³¼ë¡œ ë°›ì•„ì˜¨ ì •ë³´ë¥¼ xmlcodeì— ì¶”ê°€ì‹œí‚¨ë‹¤.
 	while($row = mysql_fetch_array($result)) {
 		$result_id = $row['id'];
 		$result_origin_name = $row['origin_name'];
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 		$xmlcode .= "</node>\n";
 	}
 	 
-	// xmlcode¸¦ ½ÇÁ¦·Î ¾´´Ù.
+	// xmlcodeë¥¼ ì‹¤ì œë¡œ ì“´ë‹¤.
 	$dir = "$DOCUMENT_ROOT/test";
 	$filename = $dir."/searchresult.xml";
 	file_put_contents($filename, $xmlcode);

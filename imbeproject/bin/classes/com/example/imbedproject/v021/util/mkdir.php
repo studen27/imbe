@@ -1,9 +1,9 @@
 <?php
-// 60062446 ¹ÚÁ¤½Ç
+// 60062446 ë°•ì •ì‹¤
 // create at 2012/12/05
 // modify at 2012/12/06
 
-// Æú´õ »ý¼º
+// í´ë” ìƒì„±
 $DOCUMENT_ROOT = $_SERVER["DOCUMENT_ROOT"];
 $target_path = "$DOCUMENT_ROOT/test/";
 
