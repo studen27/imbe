@@ -36,6 +36,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.SimpleCursorAdapter;
@@ -89,6 +90,7 @@ public class BookEditor extends Activity implements OnClickListener {
 	private Button yellow;
 	private Button bgmBtn;
 	private Button setBackground;
+	private ImageButton cameraButton;
 
 	final CharSequence[] category = { "인물", "동물", "사물" };
 
@@ -244,6 +246,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		yellow = (Button) findViewById(R.id.yellow);
 		bgmBtn = (Button) findViewById(R.id.bgmBtn);
 		setBackground = (Button) findViewById(R.id.setBg);
+		cameraButton = (ImageButton) findViewById(R.id.cameraBtn);
 
 		pageNumberView = (TextView) findViewById(R.id.page_number);
 		pageViewer = (FrameLayout) findViewById(R.id.farme);
@@ -270,7 +273,8 @@ public class BookEditor extends Activity implements OnClickListener {
 		yellow.setOnClickListener(this);
 		bgmBtn.setOnClickListener(this);
 		setBackground.setOnClickListener(this);
-
+		cameraButton.setOnClickListener(this);
+		
 		// 첫 page를 생성하고 pageViewer에 add
 		inflater = (LayoutInflater) context
 				.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -330,7 +334,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		return true;
 	}	
 
-	// Button Event
+	// Button Event ---------------------버튼작업-------------------------------
 	public void onClick(View v) {
 		switch (v.getId()) {
 		// 전 페이지로 이동 버튼
@@ -447,9 +451,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		case R.id.yellow:
 			pages.get(currentPageNumber - 1).setPaintColor(Color.YELLOW);
 			break;
-		case R.id.bgmBtn:
-			// created 2012/11/22 정민규
-			// bgm 켜기/끄기 (preference)
+		case R.id.bgmBtn:	// bgm 켜기/끄기 (preference)
 			SharedPreferences pref = getSharedPreferences("Bgm Toggle",
 					MODE_PRIVATE);
 			SharedPreferences.Editor editor = pref.edit(); // 수정용 에디터
@@ -470,11 +472,15 @@ public class BookEditor extends Activity implements OnClickListener {
 
 			Log.i("msg", valueStr);
 			break;
-		case R.id.setBg :
+		case R.id.setBg :			//배경선택 버튼
 			backgroundDialog.show();
 			break;
+		case R.id.cameraBtn:		//카메라로 찍어 이미지넣는 버튼
+			Intent intent = new Intent(this, CameraActivity.class);
+			startActivityForResult(intent, 1);	//요청코드 1로 셋팅
+			break;
 		}
-	}
+	}//-----------------------------버튼작업 끝--------------------------------
 
 	// created 2012/11/22 정민규
 	// 퀵세이브
@@ -1020,7 +1026,12 @@ public class BookEditor extends Activity implements OnClickListener {
     			String sName = intent.getStringExtra("SelectedName");			//선택된 줄의 id, 책이름 설정
     			loadWork(sId, sName);
     		}
-    	}    	
+    	} else if(requestCode == 1){//사진찍은후 byte[]로 돌아올때
+    		if(resultCode == Activity.RESULT_OK){
+	    		byte[] b = intent.getByteArrayExtra("bytes");	//byte[] 받음
+	    		pages.get(currentPageNumber - 1).insertImage(b);
+    		}
+    	}  	
     }
 	
 	public void onResume() {

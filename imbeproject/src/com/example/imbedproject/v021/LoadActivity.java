@@ -30,6 +30,7 @@ import android.widget.Toast;
 //created by 60022495 정민규
 //created date : 2012/12/04
 //last modify : 2012/12/04
+//불러올 파일선택 화면
 public class LoadActivity extends Activity {
 	protected BookInfo bookInfo; // 책정보 객체(로드/삭제용)
 	private ArrayList<PageView> pages; // ImageView Vector 객체 (로드/삭제용)

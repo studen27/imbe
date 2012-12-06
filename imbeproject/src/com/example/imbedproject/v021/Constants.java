@@ -4,7 +4,7 @@ import android.app.Application;
 //created by 60022495 정민규
 //created date : 2012/11/21
 //last modify : 2012/11/23
-
+//상수 객체
 public class Constants extends Application {
 	public static int ANCHOR_SIZE = 20; // 이것의 두배가 앵커크기
 	public static int IMG_EDGE_RESTRICT = 20; // 이미지 최소크기

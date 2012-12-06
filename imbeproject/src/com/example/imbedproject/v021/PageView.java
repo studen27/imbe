@@ -29,6 +29,7 @@ import com.example.imbedproject.v021.Constants.DRAWING_STATE;
 //created by 60022495 정민규
 //created date : 2012/11/17
 //last modify : 2012/11/23
+//각 페이지의 정보를 담은 객체. SurfaceView
 public class PageView extends SurfaceView implements Callback, Serializable {
 	private static final long serialVersionUID = 5454058848627226403L;
 	private String bgFileName = "";		//배경그림 이름
@@ -295,6 +296,12 @@ public class PageView extends SurfaceView implements Callback, Serializable {
 //		
 //		callOnDraw();
 //	}
+	
+	//이미지넣기(byte[]로 받음)
+    public void insertImage(byte[] b) {
+    	images.add(new MyImage(getResources(), b, width/2 - 100, height/2 - 100));
+//    	callOnDraw();	//쓰면에러. byte[] -> 이미지 변환 시간때문인듯
+    }
     
     // 이미지 넣기
 	// created by 60062446 박정실

@@ -16,6 +16,7 @@ import android.util.Log;
 //created by 60022495 정민규
 //created date : 2012/12/04
 //last modify : 2012/12/04
+//컨텐트 프로바이더
 public class MyProvider extends ContentProvider {
 	public static final String URI = "content://" + Constants.PAKAGE_NAME + "/" + Constants.TABLE_NAME;
 	static final Uri CONTENT_URI = Uri.parse(URI);

@@ -9,6 +9,7 @@ import com.example.imbedproject.v021.Constants.ANCHOR_TYPE;
 // created by 60022495 정민규
 // created date : 2012/11/17
 // last modify : 2012/11/21
+//도형에 표시할 앵커들을 갖고있는 클래스
 public class MyAnchor extends RectF implements Serializable{
 	private static final long serialVersionUID = -1582315659954345536L;
 

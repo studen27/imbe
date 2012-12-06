@@ -7,14 +7,14 @@ import android.graphics.Paint;
 //created by 60022495 정민규
 //created date : 2012/11/21
 //last modify : 2012/11/23
-//정점의 페인트정보(세이브로드용)
+//정점 객체.
 public class MyVertex implements Serializable{
 	private static final long serialVersionUID = -7585507529930287998L;
 	private float x;
 	private float y;
 	private boolean doDraw;	
-	private MyPaint pnt;
-	private MyPaintInfo pInfo;
+	private MyPaint pnt;		//paint로 해도되나 일단 MyPaint로 사용
+	private MyPaintInfo pInfo;	//페인트정보를 담은 객체(그냥 paint는 로드시 정보사라짐)
 
 	//constructor
 	MyVertex(float ax, float ay, boolean doDraw, Paint p) {			

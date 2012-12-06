@@ -13,6 +13,7 @@ import android.os.IBinder;
 //created by 60022495 정민규
 //created date : 2012/11/28
 //last modify : 2012/11/28
+//BGM재생 서비스
 public class BgmService extends Service {
 	private MediaPlayer mp;
 

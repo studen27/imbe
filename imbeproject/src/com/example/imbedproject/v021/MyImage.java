@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -15,7 +16,8 @@ import com.example.imbedproject.v021.Constants.ANCHOR_TYPE;
 
 //created by 60022495 정민규
 //created date : 2012/11/17
-//last modify : 2012/11/21
+//last modify : 2012/12/06
+//이미지 그림 등의 정보를 갖고있는 클래스
 public class MyImage {
 	private int id;
 	private String filename = "";	
@@ -36,12 +38,12 @@ public class MyImage {
 	protected ANCHOR_TYPE selectedAnchor;
 	protected MyImageInfo imgInfo;
 	
-	//Constructor
+	//Constructor    아래 생성자로 넘김
 	public MyImage(Resources res, String filename) {
 		this(res, filename, 0, 0);	//put to constructor2
 	}
 	
-	//Contructor2
+	//Contructor2   (파일명, 생성할 위치 받음)
 	public MyImage(Resources res, String filename, int x, int y) {
 		this.filename = filename;
 		id = res.getIdentifier(filename, "drawable", res.getString(R.string.pakage_name));
@@ -66,11 +68,11 @@ public class MyImage {
 		initPaint();
 	}
 	
-	//Constructor3
+	//Constructor3  (필요함)
 	public MyImage(){
 	}
 	
-	//Contructor4
+	//Contructor4   (패키지내 이미지ID, 생성할 위치 받음)
 	public MyImage(Resources res, int imageID, int x, int y) {		
 		id = imageID;
 		bd = (BitmapDrawable)res.getDrawable(id);
@@ -94,6 +96,30 @@ public class MyImage {
 		initPaint();
 	}
 	
+	//Contructor5 (그림을 byte[]로 받음)
+	public MyImage(Resources res, byte[] b, int x, int y) {		
+		id = 0;		
+		bd = new BitmapDrawable(BitmapFactory.decodeByteArray(b, 0, b.length));//어쩔수없이 bitmapfactory사용
+		bitmap = bd.getBitmap();
+
+		this.x = x;
+		this.y = y;
+		this.right = x + bitmap.getWidth();
+		this.bottom = y + bitmap.getHeight();
+		width = right - x;
+		height = bottom - y;
+		transX = 0;
+		transY = 0;
+		isSelected = false;
+		matrix = new Matrix();
+		anchors = new ArrayList<MyAnchor>();
+		for (int i = 0; i < ANCHOR_TYPE.values().length; i++) {
+			anchors.add(new MyAnchor());
+		}
+
+		initPaint();
+	}
+
 	//getter & setter
 	public int getX(){
 		return this.x;		
