@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: Y:\\Github\\imbe\\imbeproject\\src\\kr\\ac\\mju\\strangelibrary\\BgmService.aidl
+ * Original file: C:\\Users\\mabi\\workspace\\imbeproject\\src\\kr\\ac\\mju\\strangelibrary\\BgmService.aidl
  */
 package kr.ac.mju.strangelibrary;
 public interface BgmService extends android.os.IInterface

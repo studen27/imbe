@@ -326,6 +326,24 @@ public class BookReader extends Activity implements OnClickListener {
 				Toast.makeText(getApplicationContext(), "GPS 정보를 받지 못하였습니다.",
 						Toast.LENGTH_LONG).show();
 			}
+			
+			String path = ftm.upload(getFilesDir().getPath().toString()
+					+ "/", bookInfo.getBookFileName(), 37222281, 127187283);
+			for (int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
+				try {
+					ftm.DoImageUpload(path, getFilesDir().getPath()
+							.toString()
+							+ "/"
+							+ bookInfo.getUploadFileNames().get(i));
+				} catch (IOException e) {
+					Toast.makeText(getApplicationContext(), "뭔가 잘못되었어요!",
+							Toast.LENGTH_SHORT).show();
+					e.printStackTrace();
+				}
+			}
+			Toast.makeText(getApplicationContext(), "업로드 성공!",
+					Toast.LENGTH_SHORT).show();
+			
 			break;
 		}
 	}

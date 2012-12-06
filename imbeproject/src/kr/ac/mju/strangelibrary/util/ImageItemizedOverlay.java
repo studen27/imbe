@@ -105,6 +105,7 @@ public class ImageItemizedOverlay extends ItemizedOverlay {
 						bookInfo = (BookInfo) ois.readObject();
 					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
+						Log.e("ERROR: ", item.getTitle());
 						e.printStackTrace();
 					}
 					
