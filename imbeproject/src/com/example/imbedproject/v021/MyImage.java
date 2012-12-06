@@ -175,6 +175,7 @@ public class MyImage {
         pnt = new Paint(Color.BLACK);
         pnt.setStrokeWidth(1);
         pnt.setStyle(Paint.Style.STROKE);
+        pnt.setAntiAlias(true);
 	}
 	
 	//리사이즈용 위치정보set
