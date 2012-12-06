@@ -51,10 +51,9 @@
         <activity android:name="CameraActivity">            
         </activity>
 
-        <service android:name="BgmService">
+        <service android:name="BgmService2">
             <intent-filter>
                 <action android:name="com.example.pagemanager.BgmService" />
-                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
         

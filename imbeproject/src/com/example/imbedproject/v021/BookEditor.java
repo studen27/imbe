@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.ServiceConnection;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,6 +29,8 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -95,6 +99,34 @@ public class BookEditor extends Activity implements OnClickListener {
 
 	final CharSequence[] category = { "삽화", "인물", "동물", "사물" };
 
+	private BgmService bgmService = null;
+	
+	//원격서비스 연결용 객체
+	private ServiceConnection serviceConn = new ServiceConnection() {
+
+		public void onServiceDisconnected(ComponentName p_name) {//끊겼을때
+			Log.i("bookeditor", "onServiceDisConnected");
+			try {
+				if (bgmService != null){
+					bgmService.bgmStop();	//bgm종료
+				}
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			bgmService = null;
+		}
+
+		public void onServiceConnected(ComponentName name, IBinder service) {//연결됐을때
+			Log.i("bookeditor", "onServiceConnected");
+			bgmService = BgmService.Stub.asInterface(service);
+			try {
+				bgmService.bgmStart();	//bgm시작
+			} catch (RemoteException e) {				
+				e.printStackTrace();
+			}
+		}
+	};
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -477,7 +509,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		case R.id.yellow:
 			pages.get(currentPageNumber - 1).setPaintColor(Color.YELLOW);
 			break;
-		case R.id.bgmBtn:	// bgm 켜기/끄기 (preference)
+		case R.id.bgmBtn:	// bgm 켜기/끄기 (preference에 값 쓰고 변경, 원격서비스, aidl사용)
 			SharedPreferences pref = getSharedPreferences("Bgm Toggle",
 					MODE_PRIVATE);
 			SharedPreferences.Editor editor = pref.edit(); // 수정용 에디터
@@ -487,12 +519,17 @@ public class BookEditor extends Activity implements OnClickListener {
 				editor.putString("Bgm On/Off", "1"); // 1로 씀
 
 				Intent intent = new Intent("com.example.pagemanager.BgmService"); // Bgm서비스 켬
-				startService(intent);
+//				startService(intent);
+				bindService(intent, serviceConn, BIND_AUTO_CREATE);				
 			} else {
 				editor.putString("Bgm On/Off", "0"); // 0으로 씀
 
 				Intent intent = new Intent("com.example.pagemanager.BgmService"); // Bgm서비스  끔
-				stopService(intent);
+//				stopService(intent);
+				try{
+					unbindService(serviceConn);
+				}catch(IllegalArgumentException e){					
+				}
 			}
 			editor.commit(); // 변경사항 적용
 
@@ -1088,5 +1125,9 @@ public class BookEditor extends Activity implements OnClickListener {
 	public void onDestroy() {
 		Log.i("msg","BookEditor onDestroy");
 		super.onDestroy();
+		
+		SharedPreferences pref = getSharedPreferences("Bgm Toggle",	MODE_PRIVATE);
+		SharedPreferences.Editor editor = pref.edit(); // 수정용 에디터
+		editor.remove("Bgm On/Off");	//액티비티 종료시 bgm재생여부 키값 삭제
 	}	
 }
