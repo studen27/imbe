@@ -1,11 +1,17 @@
 package com.example.imbedproject.v021;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.Menu;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.imbedproject.v021.util.FileTransportManager;
 import com.example.imbedproject.v021.util.ImageItemizedOverlay;
@@ -26,6 +32,7 @@ public class BookFinder extends MapActivity {
 	Drawable d;
 	ImageItemizedOverlay itemizedOverlay;
 	FileTransportManager ftm; // 파일 전송 관리자
+	TextView tv1;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -42,6 +49,7 @@ public class BookFinder extends MapActivity {
         mv.setBuiltInZoomControls(true);
         mv.setSatellite(true);
         mv.setTraffic(true);
+        tv1 = (TextView) findViewById(R.id.textAddress);
         
         // 검색 결과를 받아오는 QueryResult 객체
         QueryResult qr = ftm.getBookList(latitude, longitude);
@@ -65,6 +73,23 @@ public class BookFinder extends MapActivity {
         	mapOverlays = mv.getOverlays();
         	mapOverlays.add(itemizedOverlay);
         }
+        
+        //현재주소 표시
+		Geocoder geo = new Geocoder(BookFinder.this, Locale.KOREAN);
+		List<Address> addr;
+		try {
+			addr = geo.getFromLocation((double)latitude/1000000.0,(double)longitude/1000000.0, 2);
+			
+			String country = addr.get(0).getCountryName();
+			String addrline = addr.get(0).getAddressLine(0);
+			String phone = addr.get(0).getPhone();
+			String post = addr.get(0).getPostalCode();
+			String s = new String(country + " , " + addrline + " , "
+					+ phone + " , " + post);
+			tv1.setText("현재주소 : " + s);
+		} catch (IOException e) {			
+			Toast.makeText(this, "현재주소를 가져오지 못했습니다", Toast.LENGTH_SHORT).show();
+		}
 
     }
 
