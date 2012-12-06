@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,8 +63,8 @@ public class BookReader extends Activity implements OnClickListener {
 	static final String AUTHOR = "AUTHOR";
 
 	// Buttons
-	private Button prev_butten;
-	private Button next_button;
+	private ImageButton prev_butten;
+	private ImageButton next_button;
 	private Button bgmBtn;
 	private Button uploadButton;
 
@@ -79,8 +80,8 @@ public class BookReader extends Activity implements OnClickListener {
 		// Components
 		// Button 참조변수
 		ftm = new FileTransportManager();
-		prev_butten = (Button) findViewById(R.id.prev_button);
-		next_button = (Button) findViewById(R.id.next_button);
+		prev_butten = (ImageButton) findViewById(R.id.prev_button);
+		next_button = (ImageButton) findViewById(R.id.next_button);
 		bgmBtn = (Button) findViewById(R.id.reader_bgmBtn);
 		uploadButton = (Button) findViewById(R.id.upload_button);
 

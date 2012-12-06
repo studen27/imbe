@@ -81,8 +81,8 @@ public class BookEditor extends Activity implements OnClickListener {
 	static final int NO_SQL = 1;
 
 	// Buttons
-	private Button prevButten;
-	private Button nextButton;
+	private ImageButton prevButten;
+	private ImageButton nextButton;
 	private Button deleteButton;
 	private Button insertButton;
 	private Button clear;
@@ -300,8 +300,8 @@ public class BookEditor extends Activity implements OnClickListener {
 		type2.setOnClickListener(pageTypeListner);
 
 		// Button 참조변수
-		prevButten = (Button) findViewById(R.id.prev_button);
-		nextButton = (Button) findViewById(R.id.next_button);
+		prevButten = (ImageButton) findViewById(R.id.prev_button);
+		nextButton = (ImageButton) findViewById(R.id.next_button);
 		deleteButton = (Button) findViewById(R.id.delete_button);
 		insertButton = (Button) findViewById(R.id.insert_button);
 		clear = (Button) findViewById(R.id.clear);

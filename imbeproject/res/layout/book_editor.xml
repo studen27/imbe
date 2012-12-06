@@ -1,7 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:background="#000000" >
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -23,14 +24,21 @@
              
              <Button
                  android:id="@+id/delete_button"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:text="Delete" />
+                 android:layout_width="60dp"
+                 android:layout_height="fill_parent"
+                 android:text="삭제!!" />
+             
              <Button
                  android:id="@+id/insert_button"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:text="insert" />
+                 android:layout_width="60dp"
+                 android:layout_height="fill_parent"
+                 android:text="삽입!!" />
+             
+             <Button
+                 android:id="@+id/setBg"
+                 android:layout_width="60dp"
+                 android:layout_height="fill_parent"
+                 android:text="배경!!" />
            
              <Button
                  android:id="@+id/clear"
@@ -40,34 +48,34 @@
                  android:text="X" />
              <Button
                  android:id="@+id/black"
-                 android:layout_width="40px"
-                 android:layout_height="fill_parent"
+                 android:layout_width="36dp"
+                 android:layout_height="36dp"
                  android:background="#000000"
                  android:layout_gravity="left"/>
              <Button
                  android:id="@+id/red"
-                 android:layout_width="40px"
-                 android:layout_height="fill_parent"
+                 android:layout_width="36dp"
+                 android:layout_height="36dp"
                  android:background="#ff0000"
                  android:layout_gravity="left"/>
              <Button
                  android:id="@+id/green"
-                 android:layout_width="40px"
-                 android:layout_height="fill_parent"
+                 android:layout_width="36dp"
+                 android:layout_height="36dp"
                  android:background="#00ff00"
                  android:layout_gravity="left"/>
              <Button
                  android:id="@+id/blue"
-                 android:layout_width="40px"
-                 android:layout_height="fill_parent"
+                 android:layout_width="36dp"
+                 android:layout_height="36dp"
                  android:background="#0000ff"
                  android:layout_gravity="left"/>
-             <Button
+             <Button
                  android:id="@+id/yellow"
-                 android:layout_width="40px"
-                 android:layout_height="fill_parent"
-                 android:background="#ffff00"
-                 android:layout_gravity="left"/>             
+                 android:layout_width="36dp"
+                 android:layout_height="36dp"
+                 android:layout_gravity="left"
+                 android:background="#ffff00" />
                  
              <Button
                  android:id="@+id/bgmBtn"
@@ -76,17 +84,12 @@
                  android:layout_gravity="left"
                  android:text="BGM"/>
 
-             <Button
-                 android:id="@+id/setBg"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:text="set bg" />
-             
-              <ImageButton
+             <ImageButton
                  android:id="@+id/cameraBtn"
-                 android:layout_width="80px"
-                 android:layout_height="80px"
+                 android:layout_width="60px"
+                 android:layout_height="60px"
                  android:src="@drawable/icon_camera" />
+
 	    </LinearLayout>
         
 		<LinearLayout
@@ -95,12 +98,13 @@
 		    android:layout_weight="15"
 		    android:orientation="horizontal" >
 
-			<Button
+			<ImageButton
 			    android:id="@+id/prev_button"
 			    android:layout_width="fill_parent"
 			    android:layout_height="fill_parent"
 			    android:layout_weight="45"
-			    android:text="prev" />
+			    android:src="@drawable/previous"
+			    android:scaleType="fitXY" />
 			
 			<FrameLayout
 			    android:id="@+id/farme"
@@ -111,12 +115,13 @@
 
 			</FrameLayout>
 
-			<Button
+			<ImageButton
 		        android:id="@+id/next_button"
 		        android:layout_width="fill_parent"
 		        android:layout_height="fill_parent"
 				android:layout_weight="45"
-		        android:text="next" />
+				android:src="@drawable/next"
+				android:scaleType="fitXY" />
 
 			
 

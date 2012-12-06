@@ -197,9 +197,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 	//메뉴의 이미지로 쓸 그림들
 	private static final int[] IMAGE_RESOURCE = {
-		R.drawable.menu01,
-		R.drawable.menu02,
-		R.drawable.menu03,
+		R.drawable.create,
+		R.drawable.read,
+		R.drawable.setup,
 	};
 
 	static final int MODEL_COUNT = 3;
