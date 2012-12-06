@@ -78,6 +78,13 @@
             </intent-filter>
             
         </activity>
+        <activity android:name="Setup"
+             android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="com.example.imbedproject.v021.setupIntent" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

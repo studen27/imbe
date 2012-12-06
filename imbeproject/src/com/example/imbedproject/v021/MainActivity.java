@@ -37,6 +37,14 @@ public class MainActivity extends Activity {
 			}
         });
         
+        Button setupButton = (Button) findViewById(R.id.setup);
+        setupButton.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View arg0) {
+				Intent intent = new Intent("com.example.imbedproject.v021.setupIntent");
+				startActivity(intent);
+			}
+        });
+        
         //브로드캐스트 리시버. 현재 xml로 등록함
 //      BroadcastReceiver receiver = new MyReceiver();
 //      IntentFilter filter = new IntentFilter();
