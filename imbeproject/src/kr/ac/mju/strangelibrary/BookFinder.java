@@ -40,6 +40,7 @@ public class BookFinder extends MapActivity {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.book_finder);
 	    
+	    // 인텐트로부터 받은 Extra로 변수 값 설정
 	    Intent intent = getIntent();
 	    int latitude = intent.getIntExtra("latitude", 37222281);
 	    int longitude = intent.getIntExtra("longitude", 127187283);
@@ -62,13 +63,14 @@ public class BookFinder extends MapActivity {
         d = this.getResources().getDrawable(R.drawable.mark);
         itemizedOverlay = new ImageItemizedOverlay(d, this);
         
-        // 검색 결과를 이용하여 맵에 데이터를 표시한다.
+        // 해당 위치와 근접한 데이터를 검색 후 맵에 추가한다.
         for(int i = 0; i < qr.size(); i++) {
         	GeoPoint gp = new GeoPoint(qr.getLatitudeAt(i), qr.getLongitudeAt(i));
         	OverlayItem overlayitem = new OverlayItem(gp, qr.getOriginNameAt(i), qr.getActualNameAt(i));
         	itemizedOverlay.addOverlay(overlayitem);
         }
         
+        // 검색된 결과가 없을시 추가 안함
         if(qr.size() > 0) {
         	mapOverlays = mv.getOverlays();
         	mapOverlays.add(itemizedOverlay);

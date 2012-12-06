@@ -96,13 +96,14 @@ public class FileTransportManager {
                     + "&longitude=" + URLEncoder.encode("127187283", "UTF-8"));
             url.openStream(); //서버의 serarch.php파일을 실행함
             
-            
+            // 결과값을 따로따로 받아온다.
             ArrayList<String> idList = getXmlDataList("searchresult.xml", "id");
             ArrayList<String> originNameList = getXmlDataList("searchresult.xml", "origin_name");
             ArrayList<String> actualNameList = getXmlDataList("searchresult.xml", "actual_name");
             ArrayList<String> latitudeList = getXmlDataList("searchresult.xml", "latitude");
             ArrayList<String> longitudeList = getXmlDataList("searchresult.xml", "longitude");
             
+            // 결과값을 QueryResult객체 qr에 넣어준다.
             qr.setIdList(idList);
             qr.setOriginNameList(originNameList);
             qr.setActualNameList(actualNameList);

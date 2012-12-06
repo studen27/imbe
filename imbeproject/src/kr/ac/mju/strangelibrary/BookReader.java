@@ -27,6 +27,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -58,8 +60,8 @@ public class BookReader extends Activity implements OnClickListener {
 	private boolean isStart = true; // 처음 시작하나. (onResume때문)
 	SimpleCursorAdapter adapter; // 리스트 항목 정보얻기용
 	private FileTransportManager ftm; // 파일 전송 관리자
-	private LocationManager locationManager;
-	private LocationListener locationListener;
+	private LocationManager locationManager; // GPS관련 참조변수
+	private LocationListener locationListener; // GPS관련 참조변수
 
 	static final int DO_SQL = 0;
 	static final int NO_SQL = 1;
@@ -152,6 +154,7 @@ public class BookReader extends Activity implements OnClickListener {
 
 		loadWork();
 
+		// GPS를 이용하기위한 객체 생성후 설정
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);		 
 		locationListener = new MyLocationListener();		 
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
@@ -266,48 +269,28 @@ public class BookReader extends Activity implements OnClickListener {
 		// 책 업로드
 		// GPS로부터 좌표를 읽어들여 서버로 전송한다.
 		case R.id.upload_button:
-			/*
+			// wifi가 연결되었을때만 이용 가능하도록 함
 			ConnectivityManager connect = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 			if (connect.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
 				Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
+				int latitude;
+				int longitude;
+				// GPS로부터 수집된 값이 있으면 해당 값을 이용하고 없으면 명지대를 기본값으로 함
 				if (l != null) {
-					int latitude = (int) (l.getLatitude() * 1000000);
-					int longitude = (int) (l.getLongitude() * 1000000);
-					String path = ftm.upload(getFilesDir().getPath().toString()
-							+ "/", bookInfo.getBookFileName(), latitude,
-							longitude);
-					for (int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
-						try {
-							ftm.DoImageUpload(path, getFilesDir().getPath()
-									.toString()
-									+ "/"
-									+ bookInfo.getUploadFileNames().get(i));
-						} catch (IOException e) {
-							Toast.makeText(getApplicationContext(),
-									"뭔가 잘못되었어요!", Toast.LENGTH_SHORT).show();
-							e.printStackTrace();
-						}
-					}
-					Toast.makeText(getApplicationContext(), "업로드 성공!",
-							Toast.LENGTH_SHORT).show();
+					latitude = (int) (l.getLatitude() * 1000000);
+					longitude = (int) (l.getLongitude() * 1000000);
 				} else {
+					latitude = 37222281;
+					longitude = 127187283;
 					Toast.makeText(getApplicationContext(),
 							"GPS 정보를 받지 못하였습니다.", Toast.LENGTH_LONG).show();
 				}
-			} else {
-				Toast.makeText(getApplicationContext(), "인터넷이 연결되어있지 않습니다.",
-						Toast.LENGTH_LONG).show();
-			}
-			*/
-			
-			Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-			if (l != null) {
-				int latitude = (int) (l.getLatitude() * 1000000);
-				int longitude = (int) (l.getLongitude() * 1000000);
+				
+				// FileTransportManager을 이용한 파일전송 실행
+				// 관련된 이미지도 같이 전송한다.
 				String path = ftm.upload(getFilesDir().getPath().toString()
-						+ "/", bookInfo.getBookFileName(), latitude, longitude);
+						+ "/", bookInfo.getBookFileName(), latitude,
+						longitude);
 				for (int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
 					try {
 						ftm.DoImageUpload(path, getFilesDir().getPath()
@@ -315,34 +298,18 @@ public class BookReader extends Activity implements OnClickListener {
 								+ "/"
 								+ bookInfo.getUploadFileNames().get(i));
 					} catch (IOException e) {
-						Toast.makeText(getApplicationContext(), "뭔가 잘못되었어요!",
-								Toast.LENGTH_SHORT).show();
+						Toast.makeText(getApplicationContext(),
+								"뭔가 잘못되었어요!", Toast.LENGTH_SHORT).show();
 						e.printStackTrace();
 					}
 				}
 				Toast.makeText(getApplicationContext(), "업로드 성공!",
 						Toast.LENGTH_SHORT).show();
+				
 			} else {
-				Toast.makeText(getApplicationContext(), "GPS 정보를 받지 못하였습니다.",
+				Toast.makeText(getApplicationContext(), "인터넷이 연결되어있지 않습니다.",
 						Toast.LENGTH_LONG).show();
 			}
-			
-			String path = ftm.upload(getFilesDir().getPath().toString()
-					+ "/", bookInfo.getBookFileName(), 37222281, 127187283);
-			for (int i = 0; i < bookInfo.getUploadFileNames().size(); i++) {
-				try {
-					ftm.DoImageUpload(path, getFilesDir().getPath()
-							.toString()
-							+ "/"
-							+ bookInfo.getUploadFileNames().get(i));
-				} catch (IOException e) {
-					Toast.makeText(getApplicationContext(), "뭔가 잘못되었어요!",
-							Toast.LENGTH_SHORT).show();
-					e.printStackTrace();
-				}
-			}
-			Toast.makeText(getApplicationContext(), "업로드 성공!",
-					Toast.LENGTH_SHORT).show();
 			
 			break;
 		}
@@ -849,10 +816,7 @@ public class BookReader extends Activity implements OnClickListener {
 		if (requestCode == 0) {
 			if (resultCode == Activity.RESULT_OK) {
 				int sId = intent.getIntExtra("SelectedId", 0);
-				String sName = intent.getStringExtra("SelectedName"); // 선택된 줄의
-																		// id,
-																		// 책이름
-																		// 설정
+				String sName = intent.getStringExtra("SelectedName"); // 선택된 줄의 id, 책이름 설정
 				loadWork(sId, sName);
 				
 				for(int i = 0; i < pages.size(); i++) {

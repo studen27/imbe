@@ -138,6 +138,7 @@ public class ImageItemizedOverlay extends ItemizedOverlay {
 		return true;
 	}
 
+	// 파일을 쓰기위한 메소드, 값을 하나씩 써준다.
 	private void writeFile(InputStream is, OutputStream os) throws IOException {
 		// TODO Auto-generated method stub
 		 int c = 0;

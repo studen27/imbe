@@ -66,12 +66,12 @@ public class BookEditor extends Activity implements OnClickListener {
 	private BackgroundSelectListener backgroundListner; // background 선택을 위한 리스너
 	private PageTypeSelectListener pageTypeListner;
 	private Dialog backgroundDialog; // background 선택을 위한 다이얼로그
-	private ImageInsertListener insertListner;
-	private Dialog illustrationDialog;
-	private Dialog humanImageDialog;
-	private Dialog animalImageDialog;
-	private Dialog objectImageDialog;
-	private AlertDialog pageTypeDialog;
+	private ImageInsertListener insertListner; // Image를 삽입하기위한 다이얼로그
+	private Dialog illustrationDialog; // 삽화 삽입 다이얼로그
+	private Dialog humanImageDialog; // 사람 그림 삽입 다이얼로그
+	private Dialog animalImageDialog; // 동물 그림 삽입 다이얼로그
+	private Dialog objectImageDialog; // 사물 그림 삽입 다이얼로그
+	private AlertDialog pageTypeDialog; // 페이지타입 선택 다이얼로그
 	private String preBgFileName;
 	private LayoutInflater inflater;
 	private boolean isStart = true;		//처음 시작하나. (onResume때문)
@@ -95,6 +95,7 @@ public class BookEditor extends Activity implements OnClickListener {
 	private Button setBackground;
 	private ImageButton cameraButton;
 
+	// 그림 삽입 메뉴에 사용될 CharSequence 배열
 	final CharSequence[] category = { "삽화", "인물", "동물", "사물" };
 
 	private BgmService bgmService = null;
@@ -135,13 +136,17 @@ public class BookEditor extends Activity implements OnClickListener {
 		maxPageNumber = 1;
 
 		// Components
+		// 리스너 인스턴스화
 		backgroundListner = new BackgroundSelectListener();
 		insertListner = new ImageInsertListener();
 		pageTypeListner = new PageTypeSelectListener();
+		
+		// 다이얼로그 생성에 사용될 Scrollview와 TableLayout 참조변수
 		ScrollView sv;
 		TableLayout tl;
 
 		// backgroundDialog 생성
+		// Constants에서 관련된 이미지를 받아와 다이얼로그에 포함시킨다.
 		backgroundDialog = new Dialog(this);
 		backgroundDialog.setTitle("배경은 선택해 주세요");
 		sv = new ScrollView(backgroundDialog.getContext());
@@ -165,6 +170,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		backgroundDialog.setContentView(sv);
 		
 		// illustrationDialog 생성
+		// Constants에서 관련된 이미지를 받아와 다이얼로그에 포함시킨다.
 		illustrationDialog = new Dialog(this);
 		illustrationDialog.setTitle("삽화를 선택해 주세요.");
 		sv = new ScrollView(illustrationDialog.getContext());
@@ -187,6 +193,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		illustrationDialog.setContentView(sv);
 
 		// humanImageDialog 생성
+		// Constants에서 관련된 이미지를 받아와 다이얼로그에 포함시킨다.
 		humanImageDialog = new Dialog(this);
 		humanImageDialog.setTitle("이미지를 선택해 주세요");
 		sv = new ScrollView(humanImageDialog.getContext());
@@ -209,6 +216,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		humanImageDialog.setContentView(sv);
 
 		// animalImageDialog 생성
+		// Constants에서 관련된 이미지를 받아와 다이얼로그에 포함시킨다.
 		animalImageDialog = new Dialog(this);
 		animalImageDialog.setTitle("이미지를 선택해 주세요");
 		sv = new ScrollView(animalImageDialog.getContext());
@@ -231,6 +239,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		animalImageDialog.setContentView(sv);
 
 		// objectImageDialog 생성
+		// Constants에서 관련된 이미지를 받아와 다이얼로그에 포함시킨다.
 		objectImageDialog = new Dialog(this);
 		objectImageDialog.setTitle("이미지를 선택해 주세요");
 		sv = new ScrollView(objectImageDialog.getContext());
@@ -251,7 +260,8 @@ public class BookEditor extends Activity implements OnClickListener {
 		}
 		sv.addView(tl);
 		objectImageDialog.setContentView(sv);
-
+		
+		// 삽입 다이얼로그의 첫번째 화면
 		alertBuilder = new AlertDialog.Builder(this);
 		alertBuilder.setTitle("Select img");
 		alertBuilder.setItems(category, new DialogInterface.OnClickListener() {
@@ -276,11 +286,11 @@ public class BookEditor extends Activity implements OnClickListener {
 		imgInsertDialog = alertBuilder.create();
 
 		// 책장 레이아웃 다이얼로그
+		// 정의된 레이아웃을 이용해 생성한다.
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(LAYOUT_INFLATER_SERVICE);
 		View layout = inflater.inflate(R.layout.page_type_select_dialog,
 				(ViewGroup) findViewById(R.id.page_type_layout_root));
-
 		alertBuilder = new AlertDialog.Builder(context);
 		alertBuilder.setView(layout);
 		pageTypeDialog = alertBuilder.create();
@@ -308,7 +318,6 @@ public class BookEditor extends Activity implements OnClickListener {
 		pageViewer = (FrameLayout) findViewById(R.id.farme);
 
 		pages = new ArrayList<PageView>();
-
 		bookInfo = new BookInfo();
 
 		init();
@@ -408,7 +417,6 @@ public class BookEditor extends Activity implements OnClickListener {
 				if(pages.get(currentPageNumber - 1).getTextView() != null){
 					pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());
 				}
-
 			} else {
 				// 첫페이지일 경우 경고메세지 출력
 				Toast.makeText(this, "첫 페이지 입니다.", Toast.LENGTH_SHORT).show();
@@ -999,6 +1007,7 @@ public class BookEditor extends Activity implements OnClickListener {
 	}
 
 	//배경선택 리스너
+	// 선택된 배경의 이름을 Constants로부터 받아와 해당 PageView에 넘겨준다.
 	private class BackgroundSelectListener implements OnClickListener {
 
 		public void onClick(View v) {
@@ -1010,7 +1019,9 @@ public class BookEditor extends Activity implements OnClickListener {
 		}
 	}
 	
-	//이미지선택 리스너
+	// 이미지선택 리스너
+	// 선택되었을 시 이미지 삽입에대한 모든 다이얼로그를 닫고
+	// 해당 PageView 이미지를 삽입한다.
 	private class ImageInsertListener implements OnClickListener {
 
 		public void onClick(View v) {
@@ -1022,7 +1033,10 @@ public class BookEditor extends Activity implements OnClickListener {
 		}
 	}
 
-	//페이지타입선택 리스너
+	// 페이지타입선택 리스너
+	// 선택시 PageView의 TextView를 생성한다.
+	// 편집 화면에서 투명 TextView는 혼란을 주기때문에 하얀색으로 설정한다.
+	// pages로부터 TextView를 꺼내와 pageViewer에 붙여준다.
 	private class PageTypeSelectListener implements OnClickListener {
 
 		public void onClick(View v) {
