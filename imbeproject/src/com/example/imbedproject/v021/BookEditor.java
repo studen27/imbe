@@ -341,13 +341,14 @@ public class BookEditor extends Activity implements OnClickListener {
 		PageView pv = new PageView(this);		
 		
 		pv.createTextView(Constants.PAGE_TYPE.Title, inflater);//밑에써도됨
-		pages.add(pv);		
+		pages.add(pv);
 		
 //		pages.get(0).setTextView(view);
 		pageViewer.addView(pages.get(0));
 		if(pages.get(0).getTextView() != null){
 			pageViewer.addView(pages.get(0).getTextView());
-		}		
+			pages.get(0).getEditText().setBackgroundColor(Color.WHITE);
+		}
 
 		// 페이지번호 설정
 		pageNumberView.setText(currentPageNumber.toString() + "/"
@@ -1075,6 +1076,7 @@ public class BookEditor extends Activity implements OnClickListener {
 				break;
 			}
 
+			pages.get(maxPageNumber - 1).getEditText().setBackgroundColor(Color.WHITE);
 			pageViewer.addView(pages.get(maxPageNumber - 1).getTextView());
 			pageTypeDialog.dismiss();
 		}
