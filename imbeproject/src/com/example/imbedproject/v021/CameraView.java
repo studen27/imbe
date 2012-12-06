@@ -1,8 +1,6 @@
 package com.example.imbedproject.v021;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import android.content.Context;
@@ -54,18 +52,32 @@ public class CameraView extends SurfaceView implements Callback,
 		try {
 			camera = Camera.open();	//카메라 초기화			
 			camera.setPreviewDisplay(holder);
-		} catch (IOException e) {	//카메라 오픈 오류시
+		} catch (RuntimeException e) {	//카메라 오픈 오류시
+			Message msg = handler.obtainMessage();
+			Bundle b = new Bundle();
+			b.putByteArray("byte", null);
+			msg.setData(b);
+			handler.sendMessage(msg);	
+		} catch (IOException e) {			
+			Message msg = handler.obtainMessage();
+			Bundle b = new Bundle();
+			b.putByteArray("byte", null);
+			msg.setData(b);
+			handler.sendMessage(msg);
+		}
+	}
+
+	//변경시
+	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+		try {
+			camera.startPreview();	//미리보기 시작
+		} catch (RuntimeException e) {	//카메라 오픈 오류시
 			Message msg = handler.obtainMessage();
 			Bundle b = new Bundle();
 			b.putByteArray("byte", null);
 			msg.setData(b);
 			handler.sendMessage(msg);	
 		}
-	}
-
-	//변경시
-	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-		camera.startPreview();	//미리보기 시작
 	}
 	
 	//끝내기 전

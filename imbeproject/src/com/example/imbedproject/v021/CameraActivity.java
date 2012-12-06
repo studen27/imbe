@@ -1,10 +1,15 @@
 package com.example.imbedproject.v021;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,12 +35,31 @@ public class CameraActivity extends Activity {
 		}
 	};
 	
+	//생성시
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        cv = new CameraView(this, handler);        
-        setContentView(cv);
+        
+        final PackageManager packageManager = this.getPackageManager();
+        final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        PackageManager pm = getPackageManager();
+        boolean frontCam, rearCam;
+        //It would be safer to use the constant PackageManager.FEATURE_CAMERA_FRONT
+        //but since it is not defined for Android 2.2, I substituted the literal value
+        frontCam = pm.hasSystemFeature("android.hardware.camera.front");
+        rearCam = pm.hasSystemFeature(PackageManager.FEATURE_CAMERA);
+
+        Log.i("Camera ",frontCam + " : " + rearCam);
+
+        if(frontCam == true && rearCam == true){
+	        requestWindowFeature(Window.FEATURE_NO_TITLE);
+	        cv = new CameraView(this, handler);        
+	        setContentView(cv); 
+        }else{
+        	setContentView(R.layout.camera);
+        	finish();
+        }
     }
 
     //사진찍은후

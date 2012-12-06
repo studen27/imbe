@@ -171,7 +171,7 @@ public class BookEditor extends Activity implements OnClickListener {
 		illustrationDialog.setTitle("삽화를 선택해 주세요.");
 		sv = new ScrollView(illustrationDialog.getContext());
 		tl = new TableLayout(sv.getContext());
-		for (int i = 0; i < Constants.Human.getLength(); i++) {
+		for (int i = 0; i < Constants.Illustration.getLength(); i++) {
 
 			ImageView image = new ImageView(illustrationDialog.getContext());
 			image.setImageResource(Constants.Illustration.get(i));

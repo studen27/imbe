@@ -105,11 +105,12 @@ public final class R {
         public static final int book_finder=0x7f030003;
         public static final int book_reader=0x7f030004;
         public static final int book_title=0x7f030005;
-        public static final int page_text_left=0x7f030006;
-        public static final int page_text_right=0x7f030007;
-        public static final int page_type_select_dialog=0x7f030008;
-        public static final int row=0x7f030009;
-        public static final int setup_layout=0x7f03000a;
+        public static final int camera=0x7f030006;
+        public static final int page_text_left=0x7f030007;
+        public static final int page_text_right=0x7f030008;
+        public static final int page_type_select_dialog=0x7f030009;
+        public static final int row=0x7f03000a;
+        public static final int setup_layout=0x7f03000b;
     }
     public static final class menu {
         public static final int activity_camera=0x7f070000;
