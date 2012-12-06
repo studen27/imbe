@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.imbedproject.v021"
+    package="kr.ac.mju.strangelibrary"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -51,13 +51,13 @@
         <activity android:name="CameraActivity">            
         </activity>
 
-        <service android:name="BgmService2">
+        <service android:name="kr.ac.mju.strangelibrary.BgmService2">
             <intent-filter>
                 <action android:name="com.example.pagemanager.BgmService" />
             </intent-filter>
         </service>
         
-        <receiver android:name="MyReceiver" >
+        <receiver android:name="kr.ac.mju.strangelibrary.MyReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" >
                 </action>
@@ -67,8 +67,8 @@
         </receiver>        
         
         <provider
-             android:name="MyProvider"
-             android:authorities="com.example.imbedproject.v021">            
+             android:name="kr.ac.mju.strangelibrary.MyProvider"
+             android:authorities="kr.ac.mju.strangelibrary">            
         </provider>
         <activity android:name="BookFinder"
             android:screenOrientation="landscape">
@@ -78,7 +78,7 @@
             </intent-filter>
             
         </activity>
-        <activity android:name="Setup"
+        <activity android:name="kr.ac.mju.strangelibrary.Setup"
              android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="com.example.imbedproject.v021.setupIntent" />
