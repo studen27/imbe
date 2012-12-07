@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/name_TextView"
         android:layout_centerVertical="true"
-        android:digits="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        android:digits="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
         android:ems="10"
         android:singleLine="true" />
 
