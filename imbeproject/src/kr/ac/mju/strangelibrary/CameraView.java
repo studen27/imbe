@@ -112,7 +112,7 @@ public class CameraView extends SurfaceView implements Callback,
 	public void onPictureTaken(byte[] data, Camera camera) {
 		try{
 			BitmapFactory.Options options = new BitmapFactory.Options();	//디코드옵션
-	    	options.inSampleSize = 8;		//  1/8로 줄이는 옵션. 2의 지수만큼 비례할때 가장빠르다고 함. 1/4로 하면 갤럭시에서 너무커서 메모리오류    	
+	    	options.inSampleSize = 6;		//  1/8로 줄이는 옵션. 2의 지수만큼 비례할때 가장빠르다고 함. 1/2/4/8  1/4로 하면 갤럭시에서 너무커서 메모리오류    	
 	    	BitmapDrawable bd = new BitmapDrawable(BitmapFactory.decodeByteArray(data, 0, data.length, options));//사이즈줄임. 어쩔수없이 bitmapfactory사용
 	    	Bitmap bitmap = bd.getBitmap();									//비트맵 얻음
 	    	
