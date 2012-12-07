@@ -17,6 +17,8 @@ import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -70,7 +72,7 @@ public class LoadActivity extends Activity {
 	    Button findBook = (Button) findViewById(R.id.find_book);//XML에서 버튼연결하고
 	    findBook.setOnClickListener(new Button.OnClickListener() {//리스너 붙임
 	    	public void onClick(View arg0) {
-	    		/*
+	    		
 				ConnectivityManager connect = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
 				if (connect.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() 
 						== NetworkInfo.State.CONNECTED) {
@@ -86,18 +88,7 @@ public class LoadActivity extends Activity {
 				} else {
 					Toast.makeText(getApplicationContext(), "인터넷이 연결되어있지 않습니다.", Toast.LENGTH_LONG).show();
 				}
-				*/				
-				
-				Intent intent = new Intent("com.example.imbedproject.v021.findIntent");	//BookFinder로 보낼 인텐트
-				Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);	//마지막 위치 가져옴
-				if (l != null) {
-					int latitude = (int) (l.getLatitude() * 1000000);	//GPS위치를 MAP위치로 바꾸기 위해 1000000을 곱함
-					int longitude = (int) (l.getLongitude() * 1000000);
-					intent.putExtra("latitude", latitude);				//인텐트에 위도, 경도 값 넣음
-					intent.putExtra("longitude", longitude);
-				}
-				startActivity(intent);			//BookFinder액티비티 호출
-				
+							
 			}
 	    });
 	    

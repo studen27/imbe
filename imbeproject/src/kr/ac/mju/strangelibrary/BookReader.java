@@ -270,7 +270,7 @@ public class BookReader extends Activity implements OnClickListener {
 					latitude = 37222281;
 					longitude = 127187283;
 					Toast.makeText(getApplicationContext(),
-							"GPS 정보를 받지 못하였습니다.", Toast.LENGTH_LONG).show();
+							"GPS 정보를 받지 못하여 기본좌표를 사용합니다.", Toast.LENGTH_LONG).show();
 				}
 				
 				// FileTransportManager을 이용한 파일전송 실행
@@ -525,6 +525,12 @@ public class BookReader extends Activity implements OnClickListener {
 					+ maxPageNumber.toString());
 			pageViewer.addView(pages.get(currentPageNumber - 1));		//프레임뷰에 페이지뷰 쌓음
 			pageViewer.addView(pages.get(currentPageNumber - 1).getTextView());	//프레임뷰에 해당페이지의 텍스트뷰를 쌓음
+			
+			for(int i = 0; i < pages.size(); i++) {
+				pages.get(i).setEnabled(false);
+			}
+			
+			
 			Toast.makeText(this, "불러왔습니다", 0).show();	//성공여부 출력
 		}catch(Exception e){
 			Log.e("불러오기실패:", e.getMessage());
